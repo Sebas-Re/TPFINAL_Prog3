@@ -1,0 +1,83 @@
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\bin\Debug\Entidades.dll
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\bin\Debug\Entidades.pdb
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\obj\Debug\Entidades.csprojAssemblyReference.cache
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\obj\Debug\Entidades.dll
+C:\Users\TAMAR\OneDrive\Desktop\ProyectosVisualStudio\AppEstructuraCapas\Entidades\obj\Debug\Entidades.pdb
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\bin\Debug\Entidades.dll
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\bin\Debug\Entidades.pdb
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\obj\Debug\Entidades.csprojAssemblyReference.cache
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\obj\Debug\Entidades.dll
+C:\Users\TAMAR\OneDrive\Desktop\AppEstructuraCapas\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
+C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Diamela\OneDrive - frgp.utn.edu.ar\Desktop\proyect\FINAL\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\bin\Debug\Entidades.dll
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\bin\Debug\Entidades.pdb
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\obj\Debug\Entidades.dll
+E:\UTN\Cuatrimestre 3\Programacion III\Aplicaciones web\Tp integrador\Entidades\obj\Debug\Entidades.pdb
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
+F:\CRISTIAN MATIAS GRAUS\PROG 3\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\Tp integrador\Entidades\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\Tp integrador\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\Tp integrador\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Amado\Desktop\Tp integrador\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\Tp integrador\Entidades\obj\Debug\Entidades.dll
+C:\Users\Amado\Desktop\Tp integrador\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\TP-prog3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\TP-prog3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\TP-prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Amado\Desktop\TP-prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\TP-prog3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Amado\Desktop\TP-prog3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\obj\Debug\Entidades.dll
+C:\Users\Amado\Desktop\pcboosterstore\Entidades\obj\Debug\Entidades.pdb
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\bin\Debug\Entidades.dll
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\bin\Debug\Entidades.pdb
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\obj\Debug\Entidades.dll
+E:\UTN\Cuatrimestre 3\Programacion III\FP3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\fp3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\fp3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\fp3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+C:\Users\Amado\Desktop\fp3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\fp3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Amado\Desktop\fp3\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\FRP3.2\Entidades\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\FRP3.2\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.dll
+C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.pdb
