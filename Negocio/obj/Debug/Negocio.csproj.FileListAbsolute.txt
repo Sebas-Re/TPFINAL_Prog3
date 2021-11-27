@@ -152,3 +152,14 @@ C:\Users\Amado\Desktop\FRP3.2\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs
 C:\Users\Amado\Desktop\FRP3.2\Negocio\obj\Debug\Negocio.dll
 C:\Users\Amado\Desktop\FRP3.2\Negocio\obj\Debug\Negocio.pdb
 C:\Users\Amado\Desktop\FRP3.2\Negocio\obj\Debug\Negocio.csproj.CopyComplete
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Negocio.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Negocio.pdb
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Dao.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Entidades.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Dao.pdb
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\bin\Debug\Entidades.pdb
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.csproj.CopyComplete
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.dll
+C:\Users\Sebas\Source\Repos\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.pdb

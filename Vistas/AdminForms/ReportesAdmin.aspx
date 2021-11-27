@@ -23,33 +23,36 @@
         .auto-style5 {
             margin-right: 0px;
         }
+        .auto-style6 {
+            height: 52px;
+        }
     </style>
 </head>
 <body style = "background-color: lightcyan">
     <form id="form1" runat="server">
         <table class="auto-style1">
             <tr>
-                <td class="auto-style2" colspan="6"><strong>PC -BOOSTER - STORE</strong></td>
+                <td class="auto-style2" colspan="7"><strong>PC -BOOSTER - STORE</strong></td>
             </tr>
             <tr>
-                <td colspan="6" style="background-color: #000066">&nbsp;</td>
+                <td colspan="7" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td colspan="3">BIENVENIDO :
                     <asp:Label ID="lblNombreAdmin" runat="server"></asp:Label>
                 </td>
-                <td class="auto-style3" colspan="3">
+                <td class="auto-style3" colspan="4">
                     <asp:HyperLink ID="hlVolverhome" runat="server" NavigateUrl="~/AdminForms/AdminHome.aspx">VOLVER</asp:HyperLink>
                 </td>
             </tr>
             <tr>
-                <td colspan="6" style="background-color: #000066">&nbsp;</td>
+                <td colspan="7" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">REPORTES CLIENTES</td>
                 <td>&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
-                <td>&nbsp;</td>
+                <td colspan="2">&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
@@ -58,11 +61,12 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <asp:Button ID="btnusuariobuscar" runat="server" Text="Encontrar Usuario" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove"/>
                 </td>
-                <td colspan="3">&nbsp;</td>
+                <td colspan="4">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">
-                    <asp:GridView ID="gvFacturas" runat="server" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3" AutoGenerateColumns="False" CssClass="auto-style5" Height="114px" OnSelectedIndexChanging="gvFacturas_SelectedIndexChanging" Width="205px">
+                    <asp:GridView ID="gvVentas" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" AutoGenerateColumns="False" CssClass="auto-style5" Height="114px" OnSelectedIndexChanging="gvVentas_SelectedIndexChanging" Width="205px" AutoGenerateSelectButton="True" GridLines="Vertical">
+                        <AlternatingRowStyle BackColor="#DCDCDC" />
                         <Columns>
                             <asp:TemplateField HeaderText="ID Venta">
                                 <ItemTemplate>
@@ -76,7 +80,7 @@
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Total Venta">
                                 <ItemTemplate>
-                                    <asp:Label ID="lblTotalVenta" runat="server" Text='<%# Bind("TotalVentas_ve") %>'></asp:Label>
+                                    <asp:Label ID="lblTotalVenta" runat="server" Text='<%# Bind("TotalVenta_ve") %>'></asp:Label>
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:TemplateField HeaderText="Fecha Venta">
@@ -85,76 +89,83 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
-                        <FooterStyle BackColor="White" ForeColor="#000066" />
-                        <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-                        <RowStyle ForeColor="#000066" />
-                        <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
+                        <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <HeaderStyle BackColor="#000084" Font-Bold="True" ForeColor="White" />
+                        <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+                        <RowStyle ForeColor="Black" BackColor="#EEEEEE" />
+                        <SelectedRowStyle BackColor="#008A8C" Font-Bold="True" ForeColor="White" />
                         <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                        <SortedAscendingHeaderStyle BackColor="#007DBB" />
+                        <SortedAscendingHeaderStyle BackColor="#0000A9" />
                         <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                        <SortedDescendingHeaderStyle BackColor="#00547E" />
+                        <SortedDescendingHeaderStyle BackColor="#000065" />
                     </asp:GridView>
                 </td>
-                <td colspan="5">
-                    <asp:GridView ID="gvDetallesVenta" runat="server" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3">
-                        <FooterStyle BackColor="White" ForeColor="#000066" />
-                        <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-                        <RowStyle ForeColor="#000066" />
-                        <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
+                <td colspan="6">
+                    <asp:GridView ID="gvDetallesVenta" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
+                        <AlternatingRowStyle BackColor="#DCDCDC" />
+                        <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <HeaderStyle BackColor="#000084" Font-Bold="True" ForeColor="White" />
+                        <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+                        <RowStyle ForeColor="Black" BackColor="#EEEEEE" />
+                        <SelectedRowStyle BackColor="#008A8C" Font-Bold="True" ForeColor="White" />
                         <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                        <SortedAscendingHeaderStyle BackColor="#007DBB" />
+                        <SortedAscendingHeaderStyle BackColor="#0000A9" />
                         <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                        <SortedDescendingHeaderStyle BackColor="#00547E" />
+                        <SortedDescendingHeaderStyle BackColor="#000065" />
                     </asp:GridView>
                 </td>
             </tr>
             <tr>
-                <td colspan="6" style="background-color: #000066">&nbsp;</td>
+                <td colspan="7" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">REPORTES ARTICULO</td>
                 <td>&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
-                <td>&nbsp;</td>
+                <td colspan="2">&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="3">COD ARTICULO :
+                <td colspan="3">TOP 10 ARTICULOS</td>
+                <td>COD ARTICULO :
+                    &nbsp;
+                    </td>
+                <td>
                     <asp:TextBox ID="txtCodArticulo" runat="server"></asp:TextBox>
-&nbsp;
+                </td>
+                <td colspan="2">
                     <asp:Button ID="btnencontrarArt" runat="server" Text="Encontrar Articulo" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove"/>
                 </td>
-                <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4" rowspan="3">
-                    <asp:GridView ID="gvArts" runat="server" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3">
-                        <FooterStyle BackColor="White" ForeColor="#000066" />
-                        <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-                        <RowStyle ForeColor="#000066" />
-                        <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
+                    &nbsp;</td>
+                <td colspan="6" class="auto-style6">
+                    <asp:GridView ID="gvArts" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
+                        <AlternatingRowStyle BackColor="#DCDCDC" />
+                        <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
+                        <HeaderStyle BackColor="#000084" Font-Bold="True" ForeColor="White" />
+                        <PagerStyle BackColor="#999999" ForeColor="Black" HorizontalAlign="Center" />
+                        <RowStyle ForeColor="Black" BackColor="#EEEEEE" />
+                        <SelectedRowStyle BackColor="#008A8C" Font-Bold="True" ForeColor="White" />
                         <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                        <SortedAscendingHeaderStyle BackColor="#007DBB" />
+                        <SortedAscendingHeaderStyle BackColor="#0000A9" />
                         <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                        <SortedDescendingHeaderStyle BackColor="#00547E" />
+                        <SortedDescendingHeaderStyle BackColor="#000065" />
                     </asp:GridView>
                 </td>
-                <td colspan="5">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="5">&nbsp;</td>
+                <td colspan="6">&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="5">&nbsp;</td>
+                <td colspan="6">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">&nbsp;</td>
                 <td>&nbsp;</td>
                 <td colspan="2">&nbsp;</td>
-                <td>&nbsp;</td>
+                <td colspan="2">&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
         </table>

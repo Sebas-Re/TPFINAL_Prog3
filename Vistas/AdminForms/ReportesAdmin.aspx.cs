@@ -13,20 +13,29 @@ namespace Vistas.AdminForms
 {
     public partial class ReportesAdmin : System.Web.UI.Page
     {
+        GestionDetalleVenta gestDetVen = new GestionDetalleVenta();
+        DetalleVentas detven = new DetalleVentas();
         GestionVentas gestven = new GestionVentas();
         Ventas venta = new Ventas();
         GestionArticulos gestart = new GestionArticulos();
         Articulo art = new Articulo();
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblNombreAdmin.Text = Session["NombreUsuario"].ToString();
+           // lblNombreAdmin.Text = Session["NombreUsuario"].ToString();
+            CargarGvVentas();
+        }
+
+        private void CargarGvVentas()
+        {
+            gvVentas.DataSource = gestven.getVentas();
+            gvVentas.DataBind();
         }
 
         protected void btnusuariobuscar_Click(object sender, EventArgs e)
         {            
             venta.Usuario1.IdUsuario1 = Convert.ToInt32(txtIdUsuarioBuscar.Text);           
-            gvFacturas.DataSource = gestven.getVenta(venta);
-            gvFacturas.DataBind();
+            gvVentas.DataSource = gestven.getVenta(venta);
+            gvVentas.DataBind();
         }
 
         protected void btnencontrarArt_Click(object sender, EventArgs e)
@@ -37,19 +46,11 @@ namespace Vistas.AdminForms
             
         }
 
-        protected void gvFacturas_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
+        protected void gvVentas_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
         {
-           // DetalleVentas detven = new DetalleVentas();
-          //  GestionDetalleVenta gesven = new GestionDetalleVenta();
-
-           // string IDventa = ((Label)gvFacturas.Rows[e.RowIndex].FindControl("lblidVenta")).Text;
-
-            //gvFacturas.se
-
-
-            // detven.IdDetVenta1 =  
-            //  detven.CodArticulo1 =
-           // gesven.getTabla(detven);
+            venta.IdVenta1 = Convert.ToInt32(((Label)gvVentas.Rows[e.NewSelectedIndex].FindControl("lblidVenta")).Text);
+            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(venta);
+            gvDetallesVenta.DataBind();
         }
 
         protected void btnusuariobuscar_Click1(object sender, EventArgs e)

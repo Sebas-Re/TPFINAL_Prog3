@@ -87,7 +87,9 @@
                 <td class="auto-style14" colspan="5">&nbsp;</td>
             </tr>
             <tr>
-                <td class="auto-style14" colspan="5">&nbsp;</td>
+                <td class="auto-style14" colspan="5">
+                    <asp:HyperLink ID="hlReportesAdmin" runat="server" NavigateUrl="~/AdminForms/ReportesAdmin.aspx">REPORTES</asp:HyperLink>
+                </td>
             </tr>
             <tr>
                 <td class="auto-style14" colspan="5">&nbsp;</td>

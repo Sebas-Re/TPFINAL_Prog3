@@ -60,13 +60,13 @@ namespace Vistas.AdminForms
         protected global::System.Web.UI.WebControls.Button btnusuariobuscar;
 
         /// <summary>
-        /// Control gvFacturas.
+        /// Control gvVentas.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvFacturas;
+        protected global::System.Web.UI.WebControls.GridView gvVentas;
 
         /// <summary>
         /// Control gvDetallesVenta.

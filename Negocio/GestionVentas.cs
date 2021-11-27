@@ -13,7 +13,7 @@ namespace Negocio
     public class GestionVentas
     {
         DaoVentas daov = new DaoVentas();
-       // DaoUsuarios daou = new DaoUsuarios();
+       
 
         public DataTable getVentas()
         {            
