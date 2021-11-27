@@ -94,22 +94,26 @@
             </tr>
             <tr>
                 <td colspan="3">
+                    <div class="auto-style18">
 &nbsp;
                     &nbsp;
                     &nbsp;
                     &nbsp;
                     &nbsp;
                     &nbsp;
-                    &nbsp;</td>
+                    &nbsp;</div>
+                    <div class="auto-style18">
+                    <asp:DataList ID="dlCategorias" runat="server" CellSpacing="12" RepeatDirection="Horizontal" Width="488px">
+                        <ItemTemplate>
+                            <asp:Button ID="btnCategoria" runat="server" Text='<%# Bind("Descripcion_ca") %>' CommandArgument='<%# bind("IdCategoria_ca") %>' CommandName="SeleccionarCategoria" OnCommand="btnCategoria_Command" Width="150px" />
+                        </ItemTemplate>
+                    </asp:DataList>
+                    </div>
+                </td>
             </tr>
             <tr>
                 <td class="auto-style17" rowspan="8">
-                    <asp:DataList ID="dlCategorias" runat="server">
-                        <ItemTemplate>
-                            <asp:Button ID="btnCategoria" runat="server" Text='<%# Bind("Descripcion_ca") %>' CommandArgument='<%# bind("IdCategoria_ca") %>' CommandName="SeleccionarCategoria" OnCommand="btnCategoria_Command" />
-                        </ItemTemplate>
-                    </asp:DataList>
-                </td>
+                    &nbsp;</td>
                 <td class="auto-style3" rowspan="8">
                     <asp:GridView ID="gvArticulos" runat="server" Height="167px" Width="228px" AutoGenerateSelectButton="True" style =" background-color:aliceblue" AutoGenerateColumns="False" OnSelectedIndexChanging="gvArticulos_SelectedIndexChanging" AllowPaging="True" OnPageIndexChanging="gvArticulos_PageIndexChanging" PageSize="5">
                         <Columns>
@@ -138,12 +142,23 @@
                         </Columns>
                     </asp:GridView>
                 </td>
-                <td class="auto-style11">SE ENVIO AL CARRITO:
-                    <asp:Label ID="lblMensajeSeleccionado" runat="server"></asp:Label>
-                </td>
+                <td class="auto-style11">&nbsp;Productos en tu carrito</td>
             </tr>
             <tr>
-                <td class="auto-style4">&nbsp;</td>
+                <td class="auto-style4">
+                    <asp:GridView ID="gvCarrito" runat="server" BackColor="White" BorderColor="#3366CC" BorderStyle="None" BorderWidth="1px" CellPadding="4">
+                        <FooterStyle BackColor="#99CCCC" ForeColor="#003399" />
+                        <HeaderStyle BackColor="#003399" Font-Bold="True" ForeColor="#CCCCFF" />
+                        <PagerStyle BackColor="#99CCCC" ForeColor="#003399" HorizontalAlign="Left" />
+                        <RowStyle BackColor="White" ForeColor="#003399" />
+                        <SelectedRowStyle BackColor="#009999" Font-Bold="True" ForeColor="#CCFF99" />
+                        <SortedAscendingCellStyle BackColor="#EDF6F6" />
+                        <SortedAscendingHeaderStyle BackColor="#0D4AC4" />
+                        <SortedDescendingCellStyle BackColor="#D6DFDF" />
+                        <SortedDescendingHeaderStyle BackColor="#002876" />
+                    </asp:GridView>
+                    <asp:Label ID="lblTotalCompra" runat="server"></asp:Label>
+                </td>
             </tr>
             <tr>
                 <td class="auto-style4">&nbsp;</td>

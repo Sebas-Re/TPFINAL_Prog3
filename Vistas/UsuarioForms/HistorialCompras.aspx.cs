@@ -27,6 +27,12 @@ namespace Vistas
 
             gvUsuarioCompras.DataSource = gestven.filtrarIdUsuario(us);
             gvUsuarioCompras.DataBind();
+            if (gvUsuarioCompras.Rows.Count == 0)
+            {
+                System.Windows.Forms.MessageBox.Show("Todavia no has realizado ninguna compra","Atención");
+                Server.Transfer("~/UsuarioForms/Catalogo.aspx");
+            }
+
         }
 
         protected void ddlMenuNavegacion_SelectedIndexChanged(object sender, EventArgs e)

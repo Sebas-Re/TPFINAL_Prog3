@@ -12,6 +12,7 @@ namespace Vistas
 {
     public partial class Catalogo : System.Web.UI.Page
     {
+        
         GestionArticulos gestart = new GestionArticulos();
         Articulo art = new Articulo();
         GestionCategorias gescat = new GestionCategorias();
@@ -38,7 +39,8 @@ namespace Vistas
                 DataTable TablaSeleccionados = gestart.CrearTablaArticulos();
                 gestart.AgregarFila(ref TablaSeleccionados, art);
                 Session["ArtSeleccionados"] = TablaSeleccionados;
-                lblMensajeSeleccionado.Text = "Producto Agregado: " + art.Descripcion1;
+                CargarGvArtsSeleccionados();
+                CargarTotal(TablaSeleccionados);
             }
             else
             {
@@ -47,6 +49,28 @@ namespace Vistas
 
             
         }
+
+        private void CargarTotal(DataTable Seleccionados)
+        {
+            float total = 0;
+            foreach (DataRow row in Seleccionados.Rows)
+            {
+                total += (float)Convert.ToDouble(row["PRECIO UNITARIO"]) * (float)Convert.ToDouble(row["CANTIDAD"]);
+
+            }
+            lblTotalCompra.Text = "$ " + total.ToString();
+            return;
+        }
+
+        private void CargarGvArtsSeleccionados()
+        {
+            DataTable Seleccionados = (DataTable)Session["ArtSeleccionados"];
+            gvCarrito.DataSource = Seleccionados;
+            gvCarrito.DataBind();
+
+
+        }
+
 
         private void ValidacionArtExiste()
         {
@@ -61,6 +85,8 @@ namespace Vistas
                     int Cantidad = Convert.ToInt32(row["CANTIDAD"]);
                     row.SetField("CANTIDAD", Cantidad + 1);
 
+                    CargarGvArtsSeleccionados();
+                    CargarTotal(TablaSeleccionados);
 
                 }
             }
@@ -69,12 +95,12 @@ namespace Vistas
             {
                 gestart.AgregarFila(ref TablaSeleccionados, art);
                 Session["ArtSeleccionados"] = TablaSeleccionados;
-                lblMensajeSeleccionado.Text = "Producto Agregado: " + art.Descripcion1;
+                CargarGvArtsSeleccionados();
+                CargarTotal(TablaSeleccionados);
+
             }
-            else
-            {
-               // System.Windows.Forms.MessageBox.Show("Este articulo ya fue añadido al carrito. Podrás modificar su cantidad mas tarde", "Atencion!");
-            }
+
+            
 
             return;
         }
@@ -148,6 +174,9 @@ namespace Vistas
                 art.Categoria1 = aux;
                 gvArticulos.DataSource = gestart.getarticulosXCategoria(art);
                 gvArticulos.DataBind();
+
+
+              
             }
         }
     }
