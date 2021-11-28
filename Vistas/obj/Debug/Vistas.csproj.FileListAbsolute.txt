@@ -1052,4 +1052,3 @@ C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Vista
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Vistas\obj\Debug\Vistas.csproj.CoreCompileInputs.cache
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Vistas\obj\Debug\Vistas.dll
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Vistas\obj\Debug\Vistas.pdb
-C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Vistas\obj\Debug\Vistas.csproj.CopyComplete

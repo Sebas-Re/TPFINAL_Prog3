@@ -29,6 +29,16 @@ namespace Negocio
             return dao.getTablaReportePorArtiuculos(art);
         }
 
+        public DataTable TopArticulos()
+        {
+            return dao.getTopArticulos();
+        }
+
+        public DataTable OrdenarArticulos(int op)
+        {
+            return dao.OrdenarArticulosx(op);
+        }
+
 
         public DataTable CrearTablaArticulos()
         {
