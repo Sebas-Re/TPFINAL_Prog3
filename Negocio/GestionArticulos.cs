@@ -18,7 +18,18 @@ namespace Negocio
         {
             return dao.getTablaArticulos();
         }
-        
+
+        public DataTable getReporteArticulos()
+        {
+            return dao.getTablaReporteArtiuculos();
+        }
+
+        public DataTable getReporteArticulo(Articulo art)
+        {
+            return dao.getTablaReportePorArtiuculos(art);
+        }
+
+
         public DataTable CrearTablaArticulos()
         {
             DataTable dt = new DataTable();
@@ -47,7 +58,7 @@ namespace Negocio
         public DataTable getArticuloCOD(Articulo art) //Devuelve un Articulo
         {
             return dao.GetTablaArticuloCOD(art);
-        }
+        }         
 
         public Articulo getarticuloXdescripcion(Articulo art)
         {

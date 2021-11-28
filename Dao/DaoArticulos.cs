@@ -67,6 +67,20 @@ namespace Dao
             return tabla;
         }
 
+        public DataTable getTablaReporteArtiuculos()
+        {
+            String NuevaConsul = "select CodArticulo_dv AS Codigo,Descripcion_ar AS Descripcion, SUM(Cantidad_dv) AS CantidadTotal,  sum(Cantidad_dv *Precio_Unitario_dv ) as totalventa from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv group by CodArticulo_dv,Descripcion_ar";
+            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas",NuevaConsul);
+            return tabla;
+        }
+        
+        public DataTable getTablaReportePorArtiuculos(Articulo art)
+        {
+            String NuevaConsul = "select CodArticulo_dv AS Codigo,Descripcion_ar AS Descripcion, SUM(Cantidad_dv) AS CantidadTotal,  sum(Cantidad_dv *Precio_Unitario_dv ) as totalventa from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv  group by CodArticulo_dv,Descripcion_ar where CodArticulo_dv = '" + art.CodArticulo1 + "'";
+            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", NuevaConsul);
+            return tabla;
+        }
+
         public bool ActualizarArticulo(Articulo art)
         {
             SqlCommand Comando = new SqlCommand();

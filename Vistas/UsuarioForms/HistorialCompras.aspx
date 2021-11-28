@@ -149,20 +149,7 @@
                 <td class="auto-style5" colspan="3"></td>
                 <td class="auto-style5"></td>
             </tr>
-            <tr>
-                <td colspan="3">&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    &nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style6" colspan="3"></td>
-                <td class="auto-style6"></td>
-            </tr>
-        </table>
+            </table>
     </form>
 </body>
 </html>

@@ -119,3 +119,11 @@ C:\Users\Amado\Desktop\FRP3.2\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
 C:\Users\Amado\Desktop\FRP3.2\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
 C:\Users\Amado\Desktop\FRP3.2\Dao\obj\Debug\Dao.dll
 C:\Users\Amado\Desktop\FRP3.2\Dao\obj\Debug\Dao.pdb
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\bin\Debug\Dao.dll
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\bin\Debug\Dao.pdb
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\bin\Debug\Entidades.dll
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\bin\Debug\Entidades.pdb
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.dll
+C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.pdb

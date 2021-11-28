@@ -26,33 +26,34 @@
         .auto-style6 {
             height: 52px;
         }
+        .auto-style8 {
+            text-align: left;
+        }
     </style>
 </head>
 <body style = "background-color: lightcyan">
     <form id="form1" runat="server">
         <table class="auto-style1">
             <tr>
-                <td class="auto-style2" colspan="7"><strong>PC -BOOSTER - STORE</strong></td>
+                <td class="auto-style2" colspan="4"><strong>PC -BOOSTER - STORE</strong></td>
             </tr>
             <tr>
-                <td colspan="7" style="background-color: #000066">&nbsp;</td>
+                <td colspan="4" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td colspan="3">BIENVENIDO :
                     <asp:Label ID="lblNombreAdmin" runat="server"></asp:Label>
                 </td>
-                <td class="auto-style3" colspan="4">
+                <td class="auto-style3">
                     <asp:HyperLink ID="hlVolverhome" runat="server" NavigateUrl="~/AdminForms/AdminHome.aspx">VOLVER</asp:HyperLink>
                 </td>
             </tr>
             <tr>
-                <td colspan="7" style="background-color: #000066">&nbsp;</td>
+                <td colspan="4" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">REPORTES CLIENTES</td>
                 <td>&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
@@ -61,7 +62,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <asp:Button ID="btnusuariobuscar" runat="server" Text="Encontrar Usuario" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove"/>
                 </td>
-                <td colspan="4">&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">
@@ -100,7 +101,7 @@
                         <SortedDescendingHeaderStyle BackColor="#000065" />
                     </asp:GridView>
                 </td>
-                <td colspan="6">
+                <td colspan="3">
                     <asp:GridView ID="gvDetallesVenta" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
                         <AlternatingRowStyle BackColor="#DCDCDC" />
                         <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
@@ -116,32 +117,22 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="7" style="background-color: #000066">&nbsp;</td>
+                <td colspan="4" style="background-color: #000066">&nbsp;</td>
             </tr>
             <tr>
                 <td class="auto-style4">REPORTES ARTICULO</td>
                 <td>&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
             <tr>
-                <td colspan="3">TOP 10 ARTICULOS</td>
-                <td>COD ARTICULO :
-                    &nbsp;
-                    </td>
-                <td>
+                <td colspan="4" class="auto-style8">BUSCAR ARTICULO (Codigo) :&nbsp;
                     <asp:TextBox ID="txtCodArticulo" runat="server"></asp:TextBox>
-                </td>
-                <td colspan="2">
-                    <asp:Button ID="btnencontrarArt" runat="server" Text="Encontrar Articulo" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove"/>
+                &nbsp;<asp:Button ID="btnencontrarArt" runat="server" Text="Encontrar Articulo" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" OnClick="btnencontrarArt_Click1"/>
                 </td>
             </tr>
             <tr>
-                <td class="auto-style4" rowspan="3">
-                    &nbsp;</td>
-                <td colspan="6" class="auto-style6">
-                    <asp:GridView ID="gvArts" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
+                <td class="auto-style4" rowspan="2">
+                    <asp:GridView ID="gvReporteArticulos" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
                         <AlternatingRowStyle BackColor="#DCDCDC" />
                         <FooterStyle BackColor="#CCCCCC" ForeColor="Black" />
                         <HeaderStyle BackColor="#000084" Font-Bold="True" ForeColor="White" />
@@ -154,21 +145,14 @@
                         <SortedDescendingHeaderStyle BackColor="#000065" />
                     </asp:GridView>
                 </td>
+                <td colspan="3" class="auto-style6">
+                    TOP (10) ARTICULOS EN LA ZONA DE FAVORITOS DE LOS CLIENTES</td>
             </tr>
             <tr>
-                <td colspan="6">&nbsp;</td>
+                <td colspan="3" class="auto-style6">
+                    &nbsp;</td>
             </tr>
-            <tr>
-                <td colspan="6">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-                <td>&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
-                <td colspan="2">&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-        </table>
+            </table>
     </form>
 </body>
 </html>

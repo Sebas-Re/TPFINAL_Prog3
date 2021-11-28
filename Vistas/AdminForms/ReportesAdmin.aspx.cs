@@ -23,6 +23,7 @@ namespace Vistas.AdminForms
         {
            // lblNombreAdmin.Text = Session["NombreUsuario"].ToString();
             CargarGvVentas();
+            CargargvReporteArticulos();
         }
 
         private void CargarGvVentas()
@@ -41,9 +42,8 @@ namespace Vistas.AdminForms
         protected void btnencontrarArt_Click(object sender, EventArgs e)
         {            
             art.CodArticulo1 = txtCodArticulo.Text;
-            gvArts.DataSource = gestart.ObtenerMaximo(art);
-            gvArts.DataBind();
-            
+            gvReporteArticulos.DataSource = gestart.getArticuloCOD(art);
+            gvReporteArticulos.DataBind();            
         }
 
         protected void gvVentas_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
@@ -56,6 +56,27 @@ namespace Vistas.AdminForms
         protected void btnusuariobuscar_Click1(object sender, EventArgs e)
         {
 
+        }
+        protected void CargargvReporteArticulos()
+        {
+            gvReporteArticulos.DataSource = gestart.getReporteArticulos();
+            gvReporteArticulos.DataBind();
+        }
+
+        protected void btnencontrarArt_Click1(object sender, EventArgs e)
+        {
+            if (txtCodArticulo.Text != "") 
+            {
+                art.CodArticulo1 = txtCodArticulo.Text;
+                gvReporteArticulos.DataSource = gestart.getReporteArticulo(art);
+                gvReporteArticulos.DataBind();
+            }
+            else
+            {
+                art.CodArticulo1 = txtCodArticulo.Text;
+                gvReporteArticulos.DataSource = gestart.getArticulos();
+                gvReporteArticulos.DataBind();
+            }
         }
     }
 }
