@@ -25,15 +25,6 @@ C:\Users\Sebas\source\repos\TP Integrador PROG3\Dao\obj\Debug\Dao.csproj.CoreCom
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Dao\obj\Debug\Dao.csproj.CopyComplete
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Dao\obj\Debug\Dao.dll
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Dao\obj\Debug\Dao.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\bin\Debug\Dao.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\bin\Debug\Dao.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\bin\Debug\Entidades.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\bin\Debug\Entidades.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\obj\Debug\Dao.csproj.CopyComplete
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\obj\Debug\Dao.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Dao\obj\Debug\Dao.pdb
 C:\Users\nicol\Desktop\TPFINAL_prog3\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
 C:\Users\nicol\Desktop\TPFINAL_prog3\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
 C:\Users\nicol\Desktop\TPFINAL_prog3\Dao\obj\Debug\Dao.dll
@@ -127,3 +118,12 @@ C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\o
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.dll
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Dao\obj\Debug\Dao.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\bin\Debug\Dao.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\bin\Debug\Dao.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\bin\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\bin\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.CopyComplete
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.pdb

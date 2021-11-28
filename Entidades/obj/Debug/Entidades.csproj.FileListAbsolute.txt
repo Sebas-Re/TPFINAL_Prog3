@@ -16,12 +16,6 @@ C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.cs
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.dll
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
 C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
 C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
 C:\Users\nicol\Desktop\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
@@ -81,3 +75,8 @@ C:\Users\Amado\Desktop\FRP3.2\Entidades\bin\Debug\Entidades.pdb
 C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
 C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.dll
 C:\Users\Amado\Desktop\FRP3.2\Entidades\obj\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Entidades\bin\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Entidades\bin\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.pdb

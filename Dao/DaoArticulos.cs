@@ -91,7 +91,7 @@ namespace Dao
         public DataTable OrdenarArticulosx(int op)
         {
             string NuevaConsulta =
-            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", NuevaConsul);
+              DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", NuevaConsul);
             return tabla;
         }
 
