@@ -77,5 +77,22 @@ namespace Vistas.AdminForms
             gvTopArticulos.DataSource = gestart.TopArticulos();
             gvTopArticulos.DataBind();
         }
+
+        protected void dpOrdenador_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int op = Convert.ToInt32(ddlOrdenador.SelectedValue);
+            switch (op)
+            {
+                case 0:
+                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(0);
+                    break;
+                case 1:
+                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(1);
+                    break;
+                case 2:
+                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(2);
+                    break;                
+            }
+        }
     }
 }

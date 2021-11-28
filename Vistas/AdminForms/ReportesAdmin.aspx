@@ -132,6 +132,15 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="5" class="auto-style8">ORDENAR POR&nbsp; :
+                    <asp:DropDownList ID="ddlOrdenador" runat="server" OnSelectedIndexChanged="dpOrdenador_SelectedIndexChanged">
+                        <asp:ListItem Value="0">CODIGO</asp:ListItem>
+                        <asp:ListItem Value="1">CANTIDAD</asp:ListItem>
+                        <asp:ListItem Value="2">RECAUDACION</asp:ListItem>
+                    </asp:DropDownList>
+                </td>
+            </tr>
+            <tr>
                 <td class="auto-style4" rowspan="2">
                     <asp:GridView ID="gvReporteArticulos" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" GridLines="Vertical">
                         <AlternatingRowStyle BackColor="#DCDCDC" />
