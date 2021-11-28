@@ -18,7 +18,6 @@ C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.dl
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Entidades\obj\Debug\Entidades.pdb
 C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.dll
 C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\bin\Debug\Entidades.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
 C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
 C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.dll
 C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Entidades\obj\Debug\Entidades.pdb
