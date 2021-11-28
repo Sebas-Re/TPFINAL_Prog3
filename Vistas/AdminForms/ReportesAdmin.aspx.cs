@@ -39,13 +39,6 @@ namespace Vistas.AdminForms
             gvVentas.DataBind();
         }
 
-        protected void btnencontrarArt_Click(object sender, EventArgs e)
-        {            
-            art.CodArticulo1 = txtCodArticulo.Text;
-            gvReporteArticulos.DataSource = gestart.getArticuloCOD(art);
-            gvReporteArticulos.DataBind();            
-        }
-
         protected void gvVentas_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
         {
             venta.IdVenta1 = Convert.ToInt32(((Label)gvVentas.Rows[e.NewSelectedIndex].FindControl("lblidVenta")).Text);
@@ -77,6 +70,12 @@ namespace Vistas.AdminForms
                 gvReporteArticulos.DataSource = gestart.getArticulos();
                 gvReporteArticulos.DataBind();
             }
+        }
+
+        protected void CargargvTopArticulos()
+        {
+            gvTopArticulos.DataSource = gestart.TopArticulos();
+            gvTopArticulos.DataBind();
         }
     }
 }

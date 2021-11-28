@@ -29,6 +29,8 @@ namespace Negocio
             return dao.getTablaReportePorArtiuculos(art);
         }
 
+        public
+
 
         public DataTable CrearTablaArticulos()
         {
