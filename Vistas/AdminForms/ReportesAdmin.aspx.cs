@@ -91,7 +91,7 @@ namespace Vistas.AdminForms
                     break;
                 case 2:
                     gvReporteArticulos.DataSource = gestart.OrdenarArticulos(2);
-                    break;                
+                    break;
             }
         }
     }

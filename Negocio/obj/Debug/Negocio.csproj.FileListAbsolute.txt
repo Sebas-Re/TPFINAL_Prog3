@@ -31,17 +31,6 @@ C:\Users\Sebas\source\repos\TP Integrador PROG3\Negocio\obj\Debug\Negocio.csproj
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Negocio\obj\Debug\Negocio.csproj.CopyComplete
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Negocio\obj\Debug\Negocio.dll
 C:\Users\Sebas\source\repos\TP Integrador PROG3\Negocio\obj\Debug\Negocio.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Negocio.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Negocio.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Dao.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Entidades.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Dao.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\bin\Debug\Entidades.pdb
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\obj\Debug\Negocio.csproj.CopyComplete
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\obj\Debug\Negocio.dll
-C:\Users\Sebas\Source\Repos\TPFINAL_prog3\Negocio\obj\Debug\Negocio.pdb
 C:\Users\nicol\Desktop\TPFINAL_prog3\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
 C:\Users\nicol\Desktop\TPFINAL_prog3\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
 C:\Users\nicol\Desktop\TPFINAL_prog3\Negocio\obj\Debug\Negocio.dll
@@ -174,3 +163,14 @@ C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Negoc
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.csproj.CopyComplete
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.dll
 C:\Users\Amado\Desktop\TPFINAL_Prog3_FUNCIONANDO\TPFINAL_Prog3_FUNCIONANDO\Negocio\obj\Debug\Negocio.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Negocio.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Negocio.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Dao.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Entidades.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Dao.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\bin\Debug\Entidades.pdb
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.CopyComplete
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.dll
+C:\Users\Sebas\source\repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.pdb
