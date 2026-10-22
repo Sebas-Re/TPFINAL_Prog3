@@ -213,6 +213,7 @@ namespace Vistas.E2E
                 "rbDebitoCredito", "1", "txtTarjetames", "12", "txtTarjetaAño", "2035", "txtCodSeguridad", "321"));
             Assert.Contains(carrito.Alertas, a => a.StartsWith("Tarjeta guardada"));
             Assert.Contains("Visa terminada en 0012 (Crédito)", carrito.Texto);
+            Assert.DoesNotContain("321", carrito.Control("ddlTarjetas").OuterHtml); // el código de seguridad no llega al navegador
 
             Pagina compras = await navegador.Enviar(carrito, "btnConfirmarCompra", Campos(
                 "txtDireccionDeEntrega", "Av. Siempreviva 742", "txtContacto", "Homero"));
@@ -224,6 +225,11 @@ namespace Vistas.E2E
 
             Pagina carritoVacio = await navegador.Abrir("UsuarioForms/Carrito.aspx");
             Assert.Contains("Tu carrito está vacío", carritoVacio.Texto);
+
+            Pagina cuenta = await navegador.Abrir("UsuarioForms/EdicionDatosUsuario.aspx");
+            cuenta = await navegador.Click(cuenta, cuenta.Links("a[title='Eliminar tarjeta']")[0]);
+            Assert.Contains(cuenta.Alertas, a => a.Contains("Eliminaste la tarjeta"));
+            Assert.Empty(cuenta.Links("a[title='Eliminar tarjeta']"));
         }
 
         [Fact]

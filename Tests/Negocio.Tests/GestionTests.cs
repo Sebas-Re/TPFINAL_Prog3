@@ -190,7 +190,7 @@ namespace Negocio.Tests
         {
             var gestion = new GestionVentas();
 
-            int idVenta = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "1122334455", true, 321, out string error);
+            int idVenta = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "1122334455", Datos.TarjetaDe(5), out string error);
 
             Assert.Null(error);
             Assert.True(idVenta > 0);
@@ -206,13 +206,27 @@ namespace Negocio.Tests
             var gestion = new GestionVentas();
             string error;
 
-            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", true, 321, out error);
+            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out error);
             var carrito = new Carrito();
             carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
-            int segunda = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", true, 321, out error);
+            int segunda = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out error);
 
             Assert.Equal(14300m, gestion.getVenta(new Ventas { IdVenta1 = primera }).Rows[0]["TotalVenta_ve"]);
             Assert.Equal(4750m, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["TotalVenta_ve"]);
+        }
+
+        [Fact]
+        public void ConfirmarCompraSoloAceptaUnaTarjetaDelUsuario()
+        {
+            var gestion = new GestionVentas();
+            long deOtroCliente = Datos.TarjetaDe(6);
+
+            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", deOtroCliente, out string ajena));
+            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", 0, out string inexistente));
+
+            Assert.Contains("tarjetas guardadas", ajena);
+            Assert.Contains("tarjetas guardadas", inexistente);
+            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
         }
 
         [Fact]
@@ -220,8 +234,9 @@ namespace Negocio.Tests
         {
             var gestion = new GestionVentas();
 
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, new Carrito(), "Calle 123", "11", false, 1, out string vacio));
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), " ", "11", false, 1, out string sinDireccion));
+            long tarjeta = Datos.TarjetaDe(5);
+            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, new Carrito(), "Calle 123", "11", tarjeta, out string vacio));
+            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), " ", "11", tarjeta, out string sinDireccion));
 
             Assert.Contains("vacío", vacio);
             Assert.Contains("dirección", sinDireccion);

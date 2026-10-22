@@ -71,13 +71,10 @@ namespace Vistas
 
         protected void gvTarjetas_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            DataKey clave = gvTarjetas.DataKeys[e.RowIndex];
             Tarjeta tarjeta = new Tarjeta
             {
                 Us = Sesion.Usuario,
-                Num_Tarjeta1 = Convert.ToInt64(clave["Num_Tarjeta_t"]),
-                Codigo_Seguridad1 = Convert.ToInt32(clave["Codigo_Seguridad_t"]),
-                Titular_Tarjeta1 = clave["Titular_Tarjeta_t"].ToString()
+                IdTarjeta1 = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
             };
             if (gestarj.eliminarTarjeta(tarjeta))
             {

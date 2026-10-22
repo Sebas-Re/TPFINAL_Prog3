@@ -35,7 +35,7 @@ namespace Vistas
             lblTotalCompra.Text = carrito.Total.ToString("C0");
         }
 
-        /* El valor de cada opción es "códigoSeguridad|tipo" (tipo 1 = crédito). */
+        /* El valor de cada opción es el id de la tarjeta: el código de seguridad no sale del servidor. */
         private void CargarTarjetas()
         {
             DataTable tarjetas = gestcard.getTablaTarjetasUsuario(Sesion.Usuario);
@@ -43,9 +43,8 @@ namespace Vistas
             ddlTarjetas.Items.Add(new ListItem("Elegí una tarjeta", ""));
             foreach (DataRow fila in tarjetas.Rows)
             {
-                bool credito = fila["Tipo_Tarjeta_t"].ToString() == "Crédito";
                 string texto = string.Format("{0} terminada en {1} ({2})", fila["Nombre_Tarjeta_t"], fila["Num_Tarjeta_t"], fila["Tipo_Tarjeta_t"]);
-                ddlTarjetas.Items.Add(new ListItem(texto, fila["Codigo_Seguridad_t"] + "|" + (credito ? "1" : "0")));
+                ddlTarjetas.Items.Add(new ListItem(texto, fila["IdTarjeta_t"].ToString()));
             }
             lblSinTarjetas.Visible = tarjetas.Rows.Count == 0;
             if (tarjetas.Rows.Count == 1)
@@ -95,10 +94,11 @@ namespace Vistas
 
         protected void btnConfirmarCompra_Click(object sender, EventArgs e)
         {
-            string[] tarjeta = ddlTarjetas.SelectedValue.Split('|');
+            long idTarjeta;
+            long.TryParse(ddlTarjetas.SelectedValue, out idTarjeta);
             string error;
             int idVenta = gestven.ConfirmarCompra(Sesion.Usuario, Sesion.Carrito, txtDireccionDeEntrega.Text.Trim(), txtContacto.Text.Trim(),
-                tarjeta[1] == "1", Convert.ToInt32(tarjeta[0]), out error);
+                idTarjeta, out error);
 
             if (idVenta == 0)
             {

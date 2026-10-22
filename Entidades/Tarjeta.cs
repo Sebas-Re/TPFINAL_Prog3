@@ -8,6 +8,7 @@ namespace Entidades
 {
    public class Tarjeta
     {
+        private long IdTarjeta; // rowid de la fila
         private Usuario us; //Id_TarjetaUsuario_t
         private string Titular_Tarjeta;
         private string Nombre_Tarjeta;
@@ -20,6 +21,7 @@ namespace Entidades
         {
         }
 
+        public long IdTarjeta1 { get => IdTarjeta; set => IdTarjeta = value; }
         public Usuario Us { get => us; set => us = value; }
         public string Titular_Tarjeta1 { get => Titular_Tarjeta; set => Titular_Tarjeta = value; }
         public string Nombre_Tarjeta1 { get => Nombre_Tarjeta; set => Nombre_Tarjeta = value; }

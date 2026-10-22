@@ -37,7 +37,7 @@ namespace Negocio.Tests
             carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 10);
             carrito.Agregar("fnt1", "Fuente Deepcool 700W", 7300m, 100);
             string error;
-            Assert.True(new GestionVentas().ConfirmarCompra(new Usuario { IdUsuario1 = idUsuario }, carrito, "Calle 1", "Yo", true, 123, out error) > 0, error);
+            Assert.True(new GestionVentas().ConfirmarCompra(new Usuario { IdUsuario1 = idUsuario }, carrito, "Calle 1", "Yo", Datos.TarjetaDe(idUsuario), out error) > 0, error);
         }
 
         [Fact]

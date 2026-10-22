@@ -354,12 +354,17 @@ namespace Dao.Tests
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);
             Assert.Equal(new DateTime(2099, 12, 1), tabla.Rows[0]["Fecha_Vencimiento_t"]);
+            // Lo que llega a las páginas no incluye el código de seguridad.
+            Assert.False(tabla.Columns.Contains("Codigo_Seguridad_t"));
 
-            // La página elimina con los últimos 4 dígitos, que es lo que muestra.
-            var deOtroUsuario = new Tarjeta { Us = new Usuario { IdUsuario1 = 6 }, Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
-            var porUltimos = new Tarjeta { Us = new Usuario { IdUsuario1 = 5 }, Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
-            Assert.Equal(0, dao.EliminarTarjeta(deOtroUsuario));
-            Assert.Equal(1, dao.EliminarTarjeta(porUltimos));
+            long id = Convert.ToInt64(tabla.Rows[0]["IdTarjeta_t"]);
+            Assert.Equal(321, dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Codigo_Seguridad1);
+            Assert.True(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Tipo_Tarjeta1);
+            Assert.Null(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 6 }, id));
+
+            // Se elimina por id, y solo dentro de las tarjetas del usuario.
+            Assert.Equal(0, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 6 }, IdTarjeta1 = id }));
+            Assert.Equal(1, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 5 }, IdTarjeta1 = id }));
             Assert.False(dao.ExisteTarjeta(tarjeta));
         }
 

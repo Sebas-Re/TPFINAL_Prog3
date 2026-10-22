@@ -13,6 +13,7 @@ namespace Negocio
     {
         DaoVentas daov = new DaoVentas();
         daoDetalleVentas daoDetalle = new daoDetalleVentas();
+        DaoTarjetas daoTarjetas = new DaoTarjetas();
        
 
         public DataTable getVentas()
@@ -63,7 +64,7 @@ namespace Negocio
            triggers de la base descuentan el stock y acumulan el total.
            Devuelve el id de la venta, o 0 si no se pudo registrar (en ese
            caso "error" explica el motivo). */
-        public int ConfirmarCompra(Usuario us, Carrito carrito, string direccion, string contacto, bool pagoConCredito, int codigoSeguridad, out string error)
+        public int ConfirmarCompra(Usuario us, Carrito carrito, string direccion, string contacto, long idTarjeta, out string error)
         {
             error = null;
             if (carrito == null || carrito.Vacio)
@@ -77,7 +78,15 @@ namespace Negocio
                 return 0;
             }
 
-            Ventas venta = new Ventas { Usuario1 = us, Metodo_Pago1 = pagoConCredito, Cod_Seguridad1 = codigoSeguridad };
+            // El medio de pago se toma de la base, no de lo que mande la página.
+            Tarjeta tarjeta = daoTarjetas.ObtenerTarjetaVigente(us, idTarjeta);
+            if (tarjeta == null)
+            {
+                error = "Elegí una de tus tarjetas guardadas que no esté vencida.";
+                return 0;
+            }
+
+            Ventas venta = new Ventas { Usuario1 = us, Metodo_Pago1 = tarjeta.Tipo_Tarjeta1, Cod_Seguridad1 = tarjeta.Codigo_Seguridad1 };
             if (!agregarVenta(venta))
             {
                 error = "No se pudo registrar la compra. Intentá nuevamente.";

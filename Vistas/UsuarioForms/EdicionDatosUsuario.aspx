@@ -42,7 +42,7 @@
                     <h2 class="h6 mb-3"><i class="bi bi-credit-card"></i> Mis tarjetas</h2>
                     <asp:Label ID="lblSinTarjetas" runat="server" CssClass="text-body-secondary" Text="No tenés tarjetas guardadas. Podés agregar una desde el carrito." />
                     <asp:GridView ID="gvTarjetas" runat="server" AutoGenerateColumns="false" CssClass="table mb-0" GridLines="None"
-                        DataKeyNames="Num_Tarjeta_t,Codigo_Seguridad_t,Titular_Tarjeta_t" OnRowDeleting="gvTarjetas_RowDeleting">
+                        DataKeyNames="IdTarjeta_t" OnRowDeleting="gvTarjetas_RowDeleting">
                         <Columns>
                             <asp:TemplateField HeaderText="Tarjeta">
                                 <ItemTemplate>
