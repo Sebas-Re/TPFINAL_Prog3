@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 using Dao;
 using Entidades;
 using Negocio;
@@ -198,11 +199,43 @@ namespace Dao.Tests
             var art = new Articulo
             {
                 CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 3 }, Descripcion1 = "Gabinete Gamemax",
-                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png"
+                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
             };
 
             Assert.True(dao.ActualizarArticulo(art));
             Assert.Equal(3L, dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Categoria_ar"]);
+        }
+
+        [Fact]
+        public void ActualizarArticuloPermiteReactivarlo()
+        {
+            var dao = new DaoArticulos();
+            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
+            var art = new Articulo
+            {
+                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Gabinete Gamemax",
+                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
+            };
+
+            Assert.True(dao.ActualizarArticulo(art));
+            Assert.True((bool)dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Estado_ar"]);
+        }
+
+        [Fact]
+        public void ElCatalogoSoloMuestraArticulosActivosDeCategoriasActivas()
+        {
+            var dao = new DaoArticulos();
+            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
+            new DaoCategorias().eliminarCategoria(new Categoria { IdCategoria1 = 1 }); // Fuente: 9 artículos
+
+            var catalogo = dao.getTablaArticulosCatalogo(null, null);
+
+            Assert.Equal(68 - 1 - 9, catalogo.Rows.Count);
+            Assert.DoesNotContain(catalogo.Rows.Cast<DataRow>(), f => (string)f["CodArticulo_ar"] == "gb1" || (long)f["Categoria_ar"] == 1);
+            Assert.Equal(8, dao.getTablaArticulosCatalogo(null, 2).Rows.Count);
+            Assert.Empty(dao.getTablaArticulosCatalogo(null, 1).Rows);
+            Assert.Equal(2, dao.getTablaArticulosCatalogo("ryzen", null).Rows.Count);
+            Assert.Empty(dao.getTablaArticulosCatalogo("Deepcool 700W", null).Rows);
         }
 
         [Fact]

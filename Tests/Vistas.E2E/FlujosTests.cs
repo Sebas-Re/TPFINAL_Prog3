@@ -191,6 +191,25 @@ namespace Vistas.E2E
         }
 
         [Fact]
+        public async Task UnArticuloDadoDeBajaNoSeVendeHastaReactivarlo()
+        {
+            await IniciarSesion("admNicolas", "admpsw2");
+            Pagina articulos = await navegador.Abrir("AdminForms/AdminGestionArticulos.aspx");
+            articulos = await navegador.Click(articulos, articulos.PorId("btnBuscarporCodigo"), Campos("txtIdArticulo", "pm9"));
+
+            articulos = await navegador.Click(articulos, articulos.Links("[id$=gvArticulos] a[title='Dar de baja']").Single());
+            Assert.Contains(articulos.Alertas, a => a.Contains("pm9 dado de baja"));
+            Assert.DoesNotContain("Placa Madre Gigabyte", (await navegador.Abrir("UsuarioForms/Catalogo.aspx?q=Gigabyte")).Texto);
+
+            Pagina edicion = await navegador.Click(articulos, articulos.Links("[id$=gvArticulos] a[title=Editar]").Single());
+            var guardar = edicion.Links("[id$=gvArticulos] a").First(a => a.TextContent.Trim() == "Guardar");
+            Pagina guardado = await navegador.Click(edicion, guardar, Campos("ddl_et_Estado", "true"));
+
+            Assert.Contains(guardado.Alertas, a => a.Contains("pm9 modificado"));
+            Assert.Contains("Placa Madre Gigabyte", (await navegador.Abrir("UsuarioForms/Catalogo.aspx?q=Gigabyte")).Texto);
+        }
+
+        [Fact]
         public async Task LasPaginasDeAdministracionCargan()
         {
             await IniciarSesion("admDiamela", "admpsw1");

@@ -17,6 +17,11 @@ namespace Negocio
             return dao.getTablaArticulos();
         }
 
+        public DataTable getArticulosCatalogo(string busqueda, int? categoria) //solo los que se pueden comprar
+        {
+            return dao.getTablaArticulosCatalogo(busqueda, categoria);
+        }
+
         public DataTable getReporteArticulos()
         {
             return dao.getTablaReporteArtiuculos();

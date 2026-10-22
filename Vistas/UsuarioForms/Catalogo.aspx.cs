@@ -72,22 +72,11 @@ namespace Vistas
 
         private void CargarArticulos()
         {
-            DataTable articulos;
-            if (Busqueda != "")
-            {
-                articulos = gestart.getArticuloBuscar(new Articulo { Descripcion1 = Busqueda });
-                lblResultado.Text = string.Format("Resultados para \"{0}\": {1}", HttpUtility.HtmlEncode(Busqueda), articulos.Rows.Count);
-            }
-            else if (CategoriaSeleccionada.HasValue)
-            {
-                articulos = gestart.getarticulosXCategoria(new Articulo { Categoria1 = new Categoria { IdCategoria1 = CategoriaSeleccionada.Value } });
-                lblResultado.Text = articulos.Rows.Count + " productos";
-            }
-            else
-            {
-                articulos = gestart.getArticulos();
-                lblResultado.Text = articulos.Rows.Count + " productos";
-            }
+            // La búsqueda tiene prioridad sobre la categoría, como en los links de la página.
+            DataTable articulos = gestart.getArticulosCatalogo(Busqueda, Busqueda != "" ? null : CategoriaSeleccionada);
+            lblResultado.Text = Busqueda != ""
+                ? string.Format("Resultados para \"{0}\": {1}", HttpUtility.HtmlEncode(Busqueda), articulos.Rows.Count)
+                : articulos.Rows.Count + " productos";
 
             int totalPaginas = Math.Max(1, (int)Math.Ceiling(articulos.Rows.Count / (double)ArticulosPorPagina));
             int pagina = Math.Min(PaginaActual, totalPaginas);
@@ -112,7 +101,7 @@ namespace Vistas
             }
             // Precio y stock se leen de la base, no de lo que muestra la página.
             DataTable tabla = gestart.getArticuloCOD(new Articulo { CodArticulo1 = e.CommandArgument.ToString() });
-            if (tabla.Rows.Count == 0)
+            if (tabla.Rows.Count == 0 || !(bool)tabla.Rows[0]["Estado_ar"])
             {
                 MostrarMensaje("El producto ya no está disponible.", TipoMensaje.Error);
                 return;

@@ -105,6 +105,12 @@
                             <ItemTemplate>
                                 <span class='<%# (bool)Eval("Estado_ar") ? "badge text-bg-success" : "badge text-bg-secondary" %>'><%# (bool)Eval("Estado_ar") ? "Activo" : "Dado de baja" %></span>
                             </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddl_et_Estado" runat="server" CssClass="form-select form-select-sm" SelectedValue='<%# Eval("Estado_ar").ToString().ToLower() %>'>
+                                    <asp:ListItem Value="true">Activo</asp:ListItem>
+                                    <asp:ListItem Value="false">Dado de baja</asp:ListItem>
+                                </asp:DropDownList>
+                            </EditItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField ItemStyle-CssClass="text-end text-nowrap">
                             <ItemTemplate>

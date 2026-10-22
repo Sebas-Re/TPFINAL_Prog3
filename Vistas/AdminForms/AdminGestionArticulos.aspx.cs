@@ -115,7 +115,8 @@ namespace Vistas.AdminForms
                 Descripcion1 = ((TextBox)fila.FindControl("txt_et_Descripcion")).Text.Trim(),
                 Stock1 = Convert.ToInt32(((TextBox)fila.FindControl("txt_et_Stock")).Text),
                 Precio_Unitario1 = (float)Convert.ToDouble(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
-                ImagenURL1 = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim()
+                ImagenURL1 = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim(),
+                Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
             };
 
             if (gestart.ExisteDescripcionArticuloModificar(art))
