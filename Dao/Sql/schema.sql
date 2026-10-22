@@ -92,12 +92,13 @@ begin
 	select raise(abort, 'Ck_Tarjetas_Fecha_Vencimiento: la tarjeta está vencida');
 end;
 
--- Calcula el total por compra
+-- Calcula el total por compra: suma el detalle solo a su venta.
+-- (El original filtraba por usuario y sumaba el monto a todas sus ventas.)
 create trigger tr_SumaTotal
 after insert on Detalle_Ventas
 begin
 	update Ventas set TotalVenta_ve = TotalVenta_ve + new.Cantidad_dv * new.Precio_Unitario_dv
-	where IdUsuario_ve = new.IdUsuario_dv;
+	where IdVentas_ve = new.IdDetVenta_dv;
 end;
 
 -- Descuenta el stock después de una compra

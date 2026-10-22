@@ -516,7 +516,6 @@ insert into Detalle_Ventas (IdDetVenta_dv, IdUsuario_dv, CodArticulo_dv, Cantida
 	(180, 23, 'fnt6', 1, 10690, 'Av. Santa Fe 665', 'Flor'),
 	(181, 27, 'fnt8', 1, 8590, 'San Martín 814', 'Ana');
 
--- tr_SumaTotal acumula el monto en todas las ventas del usuario; para el historial
--- de demo se recalcula el total real de cada venta a partir de sus detalles.
-update Ventas set TotalVenta_ve = (select coalesce(sum(Cantidad_dv * Precio_Unitario_dv), 0) from Detalle_Ventas where IdDetVenta_dv = IdVentas_ve);
+-- El generador saltea artículos cuando se acerca al límite de stock; las ventas
+-- que se quedaron sin ningún detalle se eliminan.
 delete from Ventas where TotalVenta_ve = 0;

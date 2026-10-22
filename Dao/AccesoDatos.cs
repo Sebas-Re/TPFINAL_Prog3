@@ -50,13 +50,14 @@ namespace Dao
 
         /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
            en esta versión; una existente se actualiza con los scripts de Migraciones. */
-        public const int VersionSchema = 2;
+        public const int VersionSchema = 3;
 
         /* Scripts que llevan una base de la versión N-1 a la N (índice 0 = versión 1). */
         static readonly String[][] Migraciones =
         {
             new[] { "migracion_1.sql" },
-            new[] { "migracion_2.sql", "articulos_detalle.sql" }
+            new[] { "migracion_2.sql", "articulos_detalle.sql" },
+            new[] { "migracion_3.sql" }
         };
 
         /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:

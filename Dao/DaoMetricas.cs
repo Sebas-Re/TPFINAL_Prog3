@@ -5,8 +5,8 @@ using System.Data.SQLite;
 namespace Dao
 {
     /* Consultas para el panel y los reportes. Los ingresos se calculan desde los
-       detalles (cantidad x precio) y no desde Ventas.TotalVenta_ve, porque el
-       trigger tr_SumaTotal acumula el monto en todas las ventas del usuario.
+       detalles (cantidad x precio), que es el dato de origen: así se pueden
+       desglosar por categoría o producto y siempre suman lo mismo que los totales.
 
        Los períodos son [inicio, fin) en días enteros relativos a hoy a las 00:00:
        "últimos 30 días" es inicio = -29, fin = 1 (mañana a las 00:00). */

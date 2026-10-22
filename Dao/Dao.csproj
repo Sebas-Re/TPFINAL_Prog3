@@ -60,6 +60,7 @@
     <EmbeddedResource Include="Sql\demo.sql" />
     <EmbeddedResource Include="Sql\migracion_1.sql" />
     <EmbeddedResource Include="Sql\migracion_2.sql" />
+    <EmbeddedResource Include="Sql\migracion_3.sql" />
     <EmbeddedResource Include="Sql\articulos_detalle.sql" />
   </ItemGroup>
   <ItemGroup>

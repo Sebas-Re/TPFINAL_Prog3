@@ -65,7 +65,7 @@ namespace Dao.Tests
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
             // Ninguna venta en el futuro ni fuera de los últimos 6 meses.
             Assert.Equal(0L, Escalar("select count(*) from Ventas where FechaVenta_ve > datetime('now','localtime') or FechaVenta_ve < datetime('now','localtime','-181 days')"));
-            // El total de cada venta coincide con sus detalles (tr_SumaTotal acumula de más).
+            // El total de cada venta (calculado por tr_SumaTotal) coincide con sus detalles.
             Assert.Equal(0L, Escalar("select count(*) from Ventas v where TotalVenta_ve <> (select sum(Cantidad_dv * Precio_Unitario_dv) from Detalle_Ventas where IdDetVenta_dv = v.IdVentas_ve)"));
             // Ningún cliente compra antes de darse de alta.
             Assert.Equal(0L, Escalar("select count(*) from Ventas v join Usuarios u on u.IdUsuario_us = v.IdUsuario_ve where v.FechaVenta_ve < u.FechaAlta_us"));
@@ -105,6 +105,48 @@ namespace Dao.Tests
                 Assert.Contains(": ", fila["Especificaciones_ar"].ToString());
                 Assert.True(Convert.ToInt32(fila["Garantia_ar"]) > 0);
             }
+        }
+
+        [Fact]
+        public void LaMigracion3CorrigeLosTotalesInfladosPorElTriggerViejo()
+        {
+            // Base en versión 2, con el tr_SumaTotal original (filtraba por usuario).
+            new DaoCategorias().getTablaCategorias();
+            Ejecutar("drop trigger tr_SumaTotal; " +
+                     "create trigger tr_SumaTotal after insert on Detalle_Ventas begin " +
+                     "update Ventas set TotalVenta_ve = TotalVenta_ve + new.Cantidad_dv * new.Precio_Unitario_dv where IdUsuario_ve = new.IdUsuario_dv; end; " +
+                     "pragma user_version = 2;");
+            int primera = Comprar("gb1", 3500);
+            int segunda = Comprar("fnt1", 7300);
+            Assert.Equal(10800m, Total(primera)); // inflado
+
+            ReiniciarApp();
+            new DaoCategorias().getTablaCategorias();
+
+            Assert.Equal(3500m, Total(primera));
+            Assert.Equal(7300m, Total(segunda));
+            int tercera = Comprar("gb2", 4750);
+            Assert.Equal(4750m, Total(tercera));
+            Assert.Equal(3500m, Total(primera));
+        }
+
+        decimal Total(int idVenta)
+        {
+            return Convert.ToDecimal(Escalar("select TotalVenta_ve from Ventas where IdVentas_ve = " + idVenta));
+        }
+
+        /* Una venta de Nom1 (id 5) con una unidad del artículo; devuelve el id de la venta. */
+        static int Comprar(string codigo, int precio)
+        {
+            var ventas = new DaoVentas();
+            ventas.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 1 });
+            int id = ventas.IDultimaventa(new Ventas()).IdVenta1;
+            new daoDetalleVentas().agregarDetalleVenta(new DetalleVentas
+            {
+                IdDetVenta1 = id, IdUsuario1 = 5, CodArticulo1 = codigo, Cantidad = 1, Precio1 = precio,
+                DireccionEntrega1 = "Calle 1", Contacto1 = "Yo"
+            });
+            return id;
         }
 
         [Fact]

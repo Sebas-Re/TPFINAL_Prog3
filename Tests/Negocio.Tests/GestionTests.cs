@@ -143,6 +143,21 @@ namespace Negocio.Tests
         }
 
         [Fact]
+        public void CadaCompraConservaSuPropioTotal()
+        {
+            var gestion = new GestionVentas();
+            string error;
+
+            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", true, 321, out error);
+            var carrito = new Carrito();
+            carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
+            int segunda = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", true, 321, out error);
+
+            Assert.Equal(14300m, gestion.getVenta(new Ventas { IdVenta1 = primera }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(4750m, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["TotalVenta_ve"]);
+        }
+
+        [Fact]
         public void ConfirmarCompraValidaCarritoYDatosDeEntrega()
         {
             var gestion = new GestionVentas();
