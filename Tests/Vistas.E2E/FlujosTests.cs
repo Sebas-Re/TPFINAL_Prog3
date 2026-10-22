@@ -142,6 +142,21 @@ namespace Vistas.E2E
         }
 
         [Fact]
+        public async Task CambiarElEmailPideLaContraseñaActual()
+        {
+            await RegistrarClienteNuevo();
+            Pagina cuenta = await navegador.Abrir("UsuarioForms/EdicionDatosUsuario.aspx");
+            string email = "cambiado" + azar.Next(100000, 999999) + "@test.com";
+
+            Pagina sinClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email));
+            Assert.Contains(sinClave.Alertas, a => a.Contains("ingresá tu contraseña actual"));
+
+            Pagina conClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email, "txtContraseñaActual", "clave1"));
+            Assert.Contains(conClave.Alertas, a => a.Contains("Guardamos tus cambios"));
+            Assert.Equal(email, conClave.Control("txtEmail").GetAttribute("value"));
+        }
+
+        [Fact]
         public async Task SinSesionLasPaginasRedirigenAlInicio()
         {
             Pagina pagina = await navegador.Abrir("UsuarioForms/Carrito.aspx");

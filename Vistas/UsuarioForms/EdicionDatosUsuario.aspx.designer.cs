@@ -12,6 +12,7 @@ namespace Vistas
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
         protected global::System.Web.UI.WebControls.TextBox txtTelefono;
         protected global::System.Web.UI.WebControls.TextBox txtContraseña;
+        protected global::System.Web.UI.WebControls.TextBox txtContraseñaActual;
         protected global::System.Web.UI.WebControls.Button btnGuardar;
         protected global::System.Web.UI.WebControls.Label lblSinTarjetas;
         protected global::System.Web.UI.WebControls.GridView gvTarjetas;

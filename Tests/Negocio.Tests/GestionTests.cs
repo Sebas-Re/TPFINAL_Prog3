@@ -145,6 +145,75 @@ namespace Negocio.Tests
             Assert.NotNull(gestion.Login("Nom1", "ctr1"));
         }
 
+        static Usuario CambiosDeNom4(string email = "ema4", string nombre = "Nom4", string nueva = "", string telefono = "23456")
+        {
+            return new Usuario { IdUsuario1 = 8, Nombre1 = nombre, Email1 = email, Contraseña1 = nueva, Telefono1 = telefono };
+        }
+
+        [Fact]
+        public void CambiarNombreOEmailExigeLaContraseñaActual()
+        {
+            var gestion = new GestionUsuarios();
+
+            Assert.Contains("contraseña actual", gestion.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com"), ""));
+            Assert.Contains("contraseña actual", gestion.ActualizarDatosPropios(CambiosDeNom4(nombre: "Intruso"), "incorrecta"));
+            Assert.Equal("ema4", gestion.get(new Usuario { IdUsuario1 = 8 }).Email1);
+            Assert.Equal("Nom4", gestion.get(new Usuario { IdUsuario1 = 8 }).Nombre1);
+
+            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com", nombre: "Nom4b"), "ctr4"));
+            var guardado = gestion.get(new Usuario { IdUsuario1 = 8 });
+            Assert.Equal("nuevo@mail.com", guardado.Email1);
+            Assert.Equal("Nom4b", guardado.Nombre1);
+            Assert.False(guardado.Tipo1);
+            Assert.True(guardado.Estado1);
+        }
+
+        [Fact]
+        public void CambiarSoloElTelefonoNoPideContraseña()
+        {
+            var gestion = new GestionUsuarios();
+
+            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(telefono: "1199887766"), ""));
+            Assert.Equal("1199887766", gestion.get(new Usuario { IdUsuario1 = 8 }).Telefono1);
+        }
+
+        [Fact]
+        public void CambiarLaContraseñaExigeLaActual()
+        {
+            var gestion = new GestionUsuarios();
+
+            Assert.NotNull(gestion.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), ""));
+            Assert.NotNull(gestion.Login("Nom4", "ctr4"));
+
+            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), "ctr4"));
+            Assert.Null(gestion.Login("Nom4", "ctr4"));
+            Assert.NotNull(gestion.Login("Nom4", "otra123"));
+        }
+
+        [Fact]
+        public void LosErroresDeContraseñaActualCuentanParaElBloqueo()
+        {
+            var gestion = new GestionUsuarios();
+            for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos; i++)
+            {
+                gestion.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "incorrecta");
+            }
+
+            Assert.Contains("Demasiados intentos", gestion.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "ctr4"));
+            Assert.True(gestion.LoginBloqueado("Nom4"));
+            Assert.Equal("ema4", gestion.get(new Usuario { IdUsuario1 = 8 }).Email1);
+
+            GestionUsuarios.DuracionBloqueo = TimeSpan.Zero;
+            try
+            {
+                Assert.NotNull(gestion.Login("Nom4", "ctr4")); // reinicia la cuenta de intentos
+            }
+            finally
+            {
+                GestionUsuarios.DuracionBloqueo = TimeSpan.FromMinutes(5);
+            }
+        }
+
         [Fact]
         public void NoPermiteAgregarUnArticuloConCodigoExistente()
         {

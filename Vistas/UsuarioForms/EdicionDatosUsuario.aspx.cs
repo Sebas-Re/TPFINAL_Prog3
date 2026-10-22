@@ -43,26 +43,19 @@ namespace Vistas
 
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            Usuario actual = gestus.get(new Usuario { IdUsuario1 = Sesion.Usuario.IdUsuario1 });
             Usuario usuario = new Usuario
             {
-                IdUsuario1 = actual.IdUsuario1,
+                IdUsuario1 = Sesion.Usuario.IdUsuario1,
                 Nombre1 = txtNombre.Text.Trim(),
                 Contraseña1 = txtContraseña.Text, // vacía = no cambiarla
                 Email1 = txtEmail.Text.Trim(),
-                Telefono1 = txtTelefono.Text.Trim(),
-                Tipo1 = actual.Tipo1,
-                Estado1 = true
+                Telefono1 = txtTelefono.Text.Trim()
             };
 
-            if (!gestus.VerificarNombreModificar(usuario) || !gestus.VerificarEmailModificar(usuario))
+            string error = gestus.ActualizarDatosPropios(usuario, txtContraseñaActual.Text);
+            if (error != null)
             {
-                MostrarMensaje("Ese nombre de usuario o e-mail ya lo usa otra cuenta.", TipoMensaje.Error);
-                return;
-            }
-            if (!gestus.ActualizarUsuario(usuario))
-            {
-                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudieron guardar los cambios.", TipoMensaje.Error);
+                MostrarMensaje(error, TipoMensaje.Error);
                 return;
             }
             Sesion.Usuario.Nombre1 = usuario.Nombre1;

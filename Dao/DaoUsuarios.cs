@@ -99,6 +99,14 @@ namespace Dao
             return Contrasenas.Verificar(us.Contraseña1, fila["Contraseña_us"].ToString());
         }
 
+        /* ¿Es la contraseña actual del usuario (activo) con ese id? */
+        public bool VerificarContraseña(int idUsuario, string contraseña)
+        {
+            DataTable tabla = ds.ObtenerTabla("Usuarios", "select Contraseña_us from Usuarios where IdUsuario_us = @IdUsuario and Estado_us = 1",
+                new SQLiteParameter("@IdUsuario", idUsuario));
+            return tabla.Rows.Count == 1 && Contrasenas.Verificar(contraseña, tabla.Rows[0]["Contraseña_us"].ToString());
+        }
+
         public bool TipoUsuarioLogin(Usuario us)
         {
             DataRow fila = ObtenerCredenciales(us);

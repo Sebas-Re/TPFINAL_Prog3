@@ -28,6 +28,11 @@
                             <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
                             <div class="form-text">Dejala vacía para mantener la actual.</div>
                         </div>
+                        <div class="col-sm-6">
+                            <asp:Label runat="server" AssociatedControlID="txtContraseñaActual" CssClass="form-label" Text="Contraseña actual" />
+                            <asp:TextBox ID="txtContraseñaActual" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="current-password" />
+                            <div class="form-text">Necesaria para cambiar el nombre, el e-mail o la contraseña.</div>
+                        </div>
                         <div class="col-12">
                             <asp:Button ID="btnGuardar" runat="server" Text="Guardar cambios" CssClass="btn btn-primary" ValidationGroup="Datos" OnClick="btnGuardar_Click" />
                         </div>

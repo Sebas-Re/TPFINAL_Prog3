@@ -238,6 +238,47 @@ namespace Negocio
         }
 
        
+        /* El usuario edita su propia cuenta. Cambiar nombre, e-mail o contraseña
+           exige la contraseña actual: si alguien usa una sesión ajena abierta, no
+           puede quedarse con la cuenta. Los errores cuentan para el mismo bloqueo
+           que el login. Tipo y estado se conservan (un cliente no puede cambiarlos).
+           "cambios.Contraseña1" vacía = no cambiarla. Devuelve null si se guardó, o
+           el motivo por el que no. */
+        public string ActualizarDatosPropios(Usuario cambios, string contraseñaActual)
+        {
+            Usuario actual = dao.ObtenerUsuario(new Usuario { IdUsuario1 = cambios.IdUsuario1 });
+            bool cambiaCredenciales = cambios.Nombre1 != actual.Nombre1
+                || !string.Equals(cambios.Email1, actual.Email1, StringComparison.OrdinalIgnoreCase)
+                || !string.IsNullOrEmpty(cambios.Contraseña1);
+
+            if (cambiaCredenciales)
+            {
+                if (LoginBloqueado(actual.Nombre1))
+                {
+                    return "Demasiados intentos fallidos. Esperá unos minutos y volvé a probar.";
+                }
+                if (string.IsNullOrEmpty(contraseñaActual) || !dao.VerificarContraseña(actual.IdUsuario1, contraseñaActual))
+                {
+                    RegistrarFallo(actual.Nombre1);
+                    return "Para cambiar el nombre, el e-mail o la contraseña, ingresá tu contraseña actual correcta.";
+                }
+                Intentos anteriores;
+                intentosFallidos.TryRemove(actual.Nombre1, out anteriores);
+            }
+
+            cambios.Tipo1 = actual.Tipo1;
+            cambios.Estado1 = actual.Estado1;
+            if (!VerificarNombreModificar(cambios) || !VerificarEmailModificar(cambios))
+            {
+                return "Ese nombre de usuario o e-mail ya lo usa otra cuenta.";
+            }
+            if (!string.IsNullOrEmpty(cambios.Contraseña1) && !ContraseñaValida(cambios.Contraseña1))
+            {
+                return string.Format("La contraseña tiene que tener entre {0} y {1} caracteres.", LargoMinimoContraseña, LargoMaximoContraseña);
+            }
+            return ActualizarUsuario(cambios) ? null : "No se pudieron guardar los cambios.";
+        }
+
         /* Contraseña1 vacía o null = conservar la actual. */
         public bool ActualizarUsuario(Usuario Usuario)
         {
