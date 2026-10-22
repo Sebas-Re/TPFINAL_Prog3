@@ -43,6 +43,20 @@ namespace Negocio
             }
         }
 
+        /* Devuelve el usuario con su id y tipo si las credenciales son válidas,
+           o null si no lo son. */
+        public Usuario Login(string nombre, string contraseña)
+        {
+            Usuario credenciales = new Usuario { Nombre1 = nombre, Contraseña1 = contraseña };
+            if (!VerificarLogin(credenciales))
+            {
+                return null;
+            }
+            credenciales.IdUsuario1 = DevolverIDusuario(credenciales);
+            credenciales.Tipo1 = VerificarTipoUsuario(credenciales);
+            return credenciales;
+        }
+
         public bool VerificarTipoUsuario(Usuario us)
         {            
             bool tipo = dao.TipoUsuarioLogin(us);

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Data;
 using Entidades;
 using Dao;
-using System.Windows.Forms;
 
 namespace Negocio
 {
@@ -126,14 +125,6 @@ namespace Negocio
             {
                 cantFilas = dao.agregarArticulo(art);
             }
-            else
-            {
-                MessageBox.Show("El articulo ya existe en la base de datos", "Error");
-            }
-
-
-
-
             if (cantFilas == 1)
             {
                 return true;
