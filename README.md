@@ -16,8 +16,9 @@ ASP.NET WebForms sobre .NET Framework 4.7.2, con interfaz en Bootstrap 5 y arqui
 2. Elegí `Vistas` como proyecto de inicio y presioná F5. Visual Studio restaura los paquetes NuGet.
 
 **No hace falta instalar ningún motor de base de datos.** La app usa SQLite embebido: la primera vez
-que arranca crea `Vistas/App_Data/PCbooster.db` con el schema y los datos de prueba. Para volver
-a empezar de cero, borrá ese archivo.
+que arranca crea `Vistas/App_Data/PCbooster.db` con el schema, los datos de prueba y un historial de
+demo (20 clientes y unas 180 ventas de los últimos 6 meses, con fechas relativas al día en que se crea),
+para que el panel y los reportes tengan qué mostrar. Para volver a empezar de cero, borrá ese archivo.
 
 ### Usuarios de prueba
 
@@ -25,6 +26,7 @@ a empezar de cero, borrá ese archivo.
 |-------------|------------|---------------|
 | `admAmador` | `admpsw2`  | Administrador |
 | `Nom1`      | `ctr1`     | Cliente       |
+| `lucia.g`   | `demo123`  | Cliente (historial de demo, igual que el resto de los `*.x`) |
 
 ## Tests
 
@@ -47,8 +49,10 @@ Explorador de pruebas de Visual Studio, o con `dotnet test Tests/Vistas.E2E`.
 
 ## Base de datos
 
-- Schema y datos de prueba: [`Dao/Sql/schema.sql`](Dao/Sql/schema.sql) y [`Dao/Sql/seed.sql`](Dao/Sql/seed.sql),
-  embebidos en `Dao.dll`.
+- Schema y datos: [`Dao/Sql/schema.sql`](Dao/Sql/schema.sql), [`seed.sql`](Dao/Sql/seed.sql) (datos de prueba)
+  y [`demo.sql`](Dao/Sql/demo.sql) (historial), embebidos en `Dao.dll`.
+- La versión del schema se guarda en `PRAGMA user_version`. Si la app encuentra una base anterior, le aplica
+  los `migracion_N.sql` pendientes sin tocar los datos existentes (el historial de demo solo se carga en bases nuevas).
 - El proyecto se desarrolló originalmente sobre SQL Server, con stored procedures y triggers, y después
   se portó a MySQL. Esos scripts, junto con páginas viejas del sitio, quedan como referencia en [`Legacy`](Legacy). En la
   versión actual, el SQL de cada stored procedure vive en su DAO y los triggers están en el schema de SQLite.

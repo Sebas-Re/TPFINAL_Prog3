@@ -105,7 +105,7 @@ namespace Dao
             ArmarParametroUsuariosAgregar(ref comando,us);
             // ex sp_AgregarUsuario
             return ds.EjecutarComando(comando,
-                "insert into Usuarios(Nombre_us,Contraseña_us,Email_us,Telefono_us,Tipo_us,Estado_us) values (@NOMBRE_US,@CONTRASENA_US,@EMAIL_US,@TELEFONO_US,@TIPO_US,1)");
+                "insert into Usuarios(Nombre_us,Contraseña_us,Email_us,Telefono_us,Tipo_us,Estado_us,FechaAlta_us) values (@NOMBRE_US,@CONTRASENA_US,@EMAIL_US,@TELEFONO_US,@TIPO_US,1,datetime('now','localtime'))");
         }
 
         public int actualizarUsuario(Usuario us)

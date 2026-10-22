@@ -56,6 +56,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Sql\schema.sql" />
     <EmbeddedResource Include="Sql\seed.sql" />
+    <EmbeddedResource Include="Sql\demo.sql" />
+    <EmbeddedResource Include="Sql\migracion_1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

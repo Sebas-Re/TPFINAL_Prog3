@@ -22,6 +22,7 @@ namespace Dao.Tests
         public BaseDatosTests()
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "App_Data", "PCbooster.db");
+            AccesoDatos.CargarDatosDemo = false;
         }
 
         public void Dispose()

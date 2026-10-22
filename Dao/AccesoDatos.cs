@@ -48,8 +48,18 @@ namespace Dao
             return cn;
         }
 
+        /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
+           en esta versión; una existente se actualiza con Sql/migracion_N.sql. */
+        public const int VersionSchema = 1;
+
+        /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:
+           clientes y ventas de los últimos 6 meses). Los tests de las capas lo
+           apagan para trabajar con datos chicos y predecibles. */
+        public static bool CargarDatosDemo { get; set; } = true;
+
         /* La primera vez que se usa la base, si el archivo no existe se crea con
-           el schema y los datos de prueba embebidos en el assembly. */
+           el schema y los datos de prueba embebidos en el assembly; si existe, se
+           le aplican las migraciones pendientes. */
         private static void InicializarBaseDatos()
         {
             String ruta = RutaBaseDatos;
@@ -61,7 +71,29 @@ namespace Dao
                 {
                     CrearBaseDatos(ruta);
                 }
+                else
+                {
+                    Migrar(ruta);
+                }
                 rutaInicializada = ruta;
+            }
+        }
+
+        private static void Migrar(String ruta)
+        {
+            using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + ruta + ";Foreign Keys=True"))
+            {
+                cn.Open();
+                int version = Convert.ToInt32(EjecutarEscalar(cn, "pragma user_version"));
+                for (int siguiente = version + 1; siguiente <= VersionSchema; siguiente++)
+                {
+                    using (SQLiteTransaction tx = cn.BeginTransaction())
+                    {
+                        EjecutarScript(cn, "migracion_" + siguiente + ".sql");
+                        EjecutarEscalar(cn, "pragma user_version = " + siguiente);
+                        tx.Commit();
+                    }
+                }
             }
         }
 
@@ -79,11 +111,25 @@ namespace Dao
                 {
                     EjecutarScript(cn, "schema.sql");
                     EjecutarScript(cn, "seed.sql");
+                    if (CargarDatosDemo)
+                    {
+                        EjecutarScript(cn, "demo.sql");
+                    }
+                    EjecutarEscalar(cn, "pragma user_version = " + VersionSchema);
                     tx.Commit();
                 }
             }
             SQLiteConnection.ClearAllPools();
             File.Move(temporal, ruta);
+        }
+
+        /* Los comandos se cierran siempre: uno abierto deja el archivo bloqueado. */
+        private static object EjecutarEscalar(SQLiteConnection cn, String sql)
+        {
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, cn))
+            {
+                return cmd.ExecuteScalar();
+            }
         }
 
         private static void EjecutarScript(SQLiteConnection cn, String nombre)

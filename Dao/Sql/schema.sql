@@ -12,7 +12,8 @@ create table Usuarios(
 	Email_us varchar(30) not null unique collate nocase,
 	Telefono_us varchar(15) null default 'Sin telefono',
 	Tipo_us bit not null default 0, -- 1 = admin, 0 = usuario
-	Estado_us bit not null default 1
+	Estado_us bit not null default 1,
+	FechaAlta_us datetime null default (datetime('now', 'localtime'))
 );
 
 create table Categorias(

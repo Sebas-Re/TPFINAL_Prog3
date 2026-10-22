@@ -3,16 +3,16 @@
 -- el identity; acá los IDs van explícitos en ese mismo orden para que los
 -- artículos sigan apuntando a la misma categoría.
 
-insert into Usuarios (IdUsuario_us, Nombre_us, Contraseña_us, Email_us, Telefono_us, Tipo_us) values
-	(1, 'admAmador','admpsw2','Amador@adm.com','777444111','1'),
-	(2, 'admDiamela','admpsw1','Diamela@adm.com','111222333','1'),
-	(3, 'admNicolas','admpsw2','Nicolas@adm.com','777888999','1'),
-	(4, 'admSebasti','admpsw2','Sebastian@adm.com','444555666','1'),
-	(5, 'Nom1','ctr1','ema1','12345','0'),
-	(6, 'Nom2','ctr2','ema2','23456','0'),
-	(7, 'Nom3','ctr3','ema3','67891','0'),
-	(8, 'Nom4','ctr4','ema4','23456','0'),
-	(9, 'Nom5','ctr5','ema5','67849','0');
+insert into Usuarios (IdUsuario_us, Nombre_us, Contraseña_us, Email_us, Telefono_us, Tipo_us, FechaAlta_us) values
+	(1, 'admAmador','admpsw2','Amador@adm.com','777444111','1', datetime('now','localtime','start of day','-210 days')),
+	(2, 'admDiamela','admpsw1','Diamela@adm.com','111222333','1', datetime('now','localtime','start of day','-210 days')),
+	(3, 'admNicolas','admpsw2','Nicolas@adm.com','777888999','1', datetime('now','localtime','start of day','-210 days')),
+	(4, 'admSebasti','admpsw2','Sebastian@adm.com','444555666','1', datetime('now','localtime','start of day','-210 days')),
+	(5, 'Nom1','ctr1','ema1','12345','0', datetime('now','localtime','start of day','-210 days')),
+	(6, 'Nom2','ctr2','ema2','23456','0', datetime('now','localtime','start of day','-210 days')),
+	(7, 'Nom3','ctr3','ema3','67891','0', datetime('now','localtime','start of day','-210 days')),
+	(8, 'Nom4','ctr4','ema4','23456','0', datetime('now','localtime','start of day','-210 days')),
+	(9, 'Nom5','ctr5','ema5','67849','0', datetime('now','localtime','start of day','-210 days'));
 
 insert into Categorias (IdCategoria_ca, Descripcion_ca) values
 	(1, 'Fuente'),
@@ -32,7 +32,7 @@ insert into Articulos (CodArticulo_ar, Categoria_ar, Descripcion_ar, Stock_ar, P
 	('fnt5','1','Fuente ASUS 750W','100','27970','~/Imagenes_ar/Fuente/fnt5.png'),
 	('fnt6','1','Fuente ASUSF 550W','65','10690','~/Imagenes_ar/Fuente/fnt6.png'),
 	('fnt7','1','Fuente Gigabyte 550W','90','6660','~/Imagenes_ar/Fuente/fnt7.png'),
-	('fnt8','1','Fuente Be Quiet! 600W','150','8590','~/Imagenes_ar/Fuente/fnt8png'),
+	('fnt8','1','Fuente Be Quiet! 600W','150','8590','~/Imagenes_ar/Fuente/fnt8.png'),
 	('fnt9','1','Fuente Redragon 800W','105','13790','~/Imagenes_ar/Fuente/fnt9.png');
 
 insert into Articulos (CodArticulo_ar, Categoria_ar, Descripcion_ar, Stock_ar, PrecioUnitario_ar, Imagen) values
