@@ -53,6 +53,7 @@
     <Compile Include="DaoVentas.cs" />
     <Compile Include="DaoDetalleVentas.cs" />
     <Compile Include="DaoMetricas.cs" />
+    <Compile Include="StockInsuficienteException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

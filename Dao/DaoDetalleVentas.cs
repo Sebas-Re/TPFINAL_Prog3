@@ -48,13 +48,26 @@ namespace Dao
             return ds.existe(consulta, new SQLiteParameter("@IdDetVenta", dv.IdDetVenta1), new SQLiteParameter("@CodArticulo", dv.CodArticulo1));
         }
 
+        const string InsertarDetalle =
+            "insert into Detalle_Ventas(IdDetVenta_dv,IdUsuario_dv,CodArticulo_dv,Cantidad_dv,Precio_Unitario_dv,Direccion_de_Entrega,Contacto) values (@IDDETVENTA_DV,@IDUSUARIO_DV,@CODARTICULO_DV,@CANTIDAD_DV,@PRECIOUNITARIO_DV,@DIRECCIONENTREGA_DV,@CONTACTO)";
+
         public int agregarDetalleVenta(DetalleVentas dv)
         {
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroDetalleVentaAgregar(ref comando, dv);
             // ex sp_AgregarDetalleVenta. Los triggers tr_SumaTotal y tr_ControlStock siguen en la base.
-            return ds.EjecutarComando(comando,
-                "insert into Detalle_Ventas(IdDetVenta_dv,IdUsuario_dv,CodArticulo_dv,Cantidad_dv,Precio_Unitario_dv,Direccion_de_Entrega,Contacto) values (@IDDETVENTA_DV,@IDUSUARIO_DV,@CODARTICULO_DV,@CANTIDAD_DV,@PRECIOUNITARIO_DV,@DIRECCIONENTREGA_DV,@CONTACTO)");
+            return ds.EjecutarComando(comando, InsertarDetalle);
+        }
+
+        /* Dentro de una transacción abierta en "cn" (ver DaoVentas.RegistrarCompra). */
+        internal int agregarDetalleVenta(DetalleVentas dv, SQLiteConnection cn)
+        {
+            SQLiteCommand comando = new SQLiteCommand(InsertarDetalle, cn);
+            ArmarParametroDetalleVentaAgregar(ref comando, dv);
+            using (comando)
+            {
+                return comando.ExecuteNonQuery();
+            }
         }
 
         public DataTable GetTablaIdVenta(DetalleVentas dven)

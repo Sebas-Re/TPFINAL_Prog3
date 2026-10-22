@@ -87,28 +87,32 @@ namespace Negocio
             }
 
             Ventas venta = new Ventas { Usuario1 = us, Metodo_Pago1 = tarjeta.Tipo_Tarjeta1, Cod_Seguridad1 = tarjeta.Codigo_Seguridad1 };
-            if (!agregarVenta(venta))
-            {
-                error = "No se pudo registrar la compra. Intentá nuevamente.";
-                return 0;
-            }
-            int idVenta = daov.IDultimaventa(venta).IdVenta1;
-
+            List<DetalleVentas> detalles = new List<DetalleVentas>();
             foreach (ItemCarrito item in carrito.Items)
             {
-                DetalleVentas detalle = new DetalleVentas
+                detalles.Add(new DetalleVentas
                 {
-                    IdDetVenta1 = idVenta,
                     IdUsuario1 = us.IdUsuario1,
                     CodArticulo1 = item.CodArticulo,
                     Cantidad = item.Cantidad,
                     Precio1 = (float)item.PrecioUnitario,
                     DireccionEntrega1 = direccion,
                     Contacto1 = contacto
-                };
-                daoDetalle.agregarDetalleVenta(detalle);
+                });
             }
-            return idVenta;
+
+            // Venta y detalles van juntos: si algo falla no queda una compra a medias.
+            try
+            {
+                return daov.RegistrarCompra(venta, detalles);
+            }
+            catch (StockInsuficienteException ex)
+            {
+                error = ex.Disponible == 0
+                    ? "\"" + ex.Descripcion + "\" ya no está disponible. Quitalo del carrito para continuar."
+                    : "Solo quedan " + ex.Disponible + " unidades de \"" + ex.Descripcion + "\". Ajustá el carrito para continuar.";
+                return 0;
+            }
         }
     }
 }

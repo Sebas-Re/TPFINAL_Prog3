@@ -213,6 +213,20 @@ namespace Dao
             }
         }
 
+        /* Ejecuta "trabajo" en una sola conexión y transacción: se confirma todo o
+           nada. System.Data.SQLite abre la transacción con BEGIN IMMEDIATE, así que
+           otra escritura concurrente espera hasta que esta termine. */
+        public T EnTransaccion<T>(Func<SQLiteConnection, T> trabajo)
+        {
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteTransaction tx = Conexion.BeginTransaction())
+            {
+                T resultado = trabajo(Conexion);
+                tx.Commit();
+                return resultado; // si "trabajo" lanza una excepción, el Dispose hace rollback
+            }
+        }
+
         public Boolean existe(String consulta, params SQLiteParameter[] parametros)
         {
             using (SQLiteConnection Conexion = ObtenerConexion())

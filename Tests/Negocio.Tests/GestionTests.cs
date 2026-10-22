@@ -245,6 +245,60 @@ namespace Negocio.Tests
             Assert.Equal(4750m, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["TotalVenta_ve"]);
         }
 
+        static long Stock(string codigo)
+        {
+            return Convert.ToInt64(new GestionArticulos().getArticuloCOD(new Articulo { CodArticulo1 = codigo }).Rows[0]["Stock_ar"]);
+        }
+
+        [Fact]
+        public void SiFaltaStockDeUnArticuloNoSeRegistraNadaDeLaCompra()
+        {
+            var gestion = new GestionVentas();
+            long stockFuente = Stock("fnt1"), stockGabinete = Stock("gb1");
+            // El carrito se armó cuando había más stock (otro cliente compró después).
+            var carrito = new Carrito();
+            carrito.Agregar("fnt1", "Fuente Deepcool 700W", 7300m, 1000);
+            for (int i = 0; i <= stockGabinete; i++)
+            {
+                carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 1000);
+            }
+
+            int idVenta = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error);
+
+            Assert.Equal(0, idVenta);
+            Assert.Contains("Solo quedan " + stockGabinete + " unidades", error);
+            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+            Assert.Equal(stockFuente, Stock("fnt1")); // el detalle de la fuente también se deshizo
+            Assert.Equal(stockGabinete, Stock("gb1"));
+        }
+
+        [Fact]
+        public void NoSePuedeComprarUnArticuloDadoDeBaja()
+        {
+            var gestion = new GestionVentas();
+            var carrito = CarritoConDosArticulos();
+            new GestionArticulos().eliminarArticulo(new Articulo { CodArticulo1 = "fnt1" });
+
+            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error));
+            Assert.Contains("ya no está disponible", error);
+            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+        }
+
+        [Fact]
+        public void ConfirmarCompraDevuelveElIdDeSuPropiaVenta()
+        {
+            var gestion = new GestionVentas();
+            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out string error);
+            var otroCliente = new Usuario { IdUsuario1 = 6 };
+            var carrito = new Carrito();
+            carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
+            int segunda = gestion.ConfirmarCompra(otroCliente, carrito, "Calle 9", "22", Datos.TarjetaDe(6), out error);
+
+            Assert.Equal(primera + 1, segunda);
+            Assert.Equal(6L, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["IdUsuario_ve"]);
+            Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = segunda }).Rows);
+        }
+
         [Fact]
         public void ConfirmarCompraSoloAceptaUnaTarjetaDelUsuario()
         {
