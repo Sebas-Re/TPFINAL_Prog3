@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Dao;
 using System.Data;
-using System.Data.SqlClient;
 using Entidades;
 
 namespace Negocio

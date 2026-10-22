@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using System.Data.SqlClient;
 using Entidades;
 using Dao;
 
@@ -148,31 +147,10 @@ namespace Negocio
             }
         }
 
-        private void ArmarParametroUsuarios(ref SqlCommand comando, Usuario us)
-        {
-            SqlParameter SqlParametros = new SqlParameter();
-            SqlParametros = comando.Parameters.Add("@Id_Usuario_us", SqlDbType.BigInt);
-            SqlParametros.Value = us.IdUsuario1;
-            SqlParametros = comando.Parameters.Add("@NOMBRE_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Nombre1;
-            SqlParametros = comando.Parameters.Add("@CONTRASEÑA_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Contraseña1;
-            SqlParametros = comando.Parameters.Add("@EMAIL_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Email1;
-            SqlParametros = comando.Parameters.Add("@TELEFONO_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Telefono1;
-            SqlParametros = comando.Parameters.Add("@TIPO_US", SqlDbType.Bit);
-            SqlParametros.Value = us.Tipo1;
-            SqlParametros = comando.Parameters.Add("@Estado_us", SqlDbType.Bit);
-            SqlParametros.Value = us.Estado1;
-        }
        
         public bool ActualizarUsuario(Usuario Usuario)
         {
-            SqlCommand Comando = new SqlCommand();
-            ArmarParametroUsuarios(ref Comando, Usuario);
-            AccesoDatos ad = new AccesoDatos();
-            int FilasInsertadas = ad.EjecutarProcedimientoAlmacenado(Comando, "sp_ModificarUsuario");
+            int FilasInsertadas = dao.actualizarUsuario(Usuario);
             if (FilasInsertadas == 1)
             {
                 return true;

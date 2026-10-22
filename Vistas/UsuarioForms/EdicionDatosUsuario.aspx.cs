@@ -7,7 +7,6 @@ using System.Web.UI.WebControls;
 using Negocio;
 using Entidades;
 using System.Data;
-using System.Data.SqlClient;
 using System.Windows.Forms;
 using TextBox = System.Web.UI.WebControls.TextBox;
 using Label = System.Web.UI.WebControls.Label;

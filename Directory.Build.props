@@ -1,0 +1,14 @@
+<Project>
+  <!--
+    Permite compilar los proyectos .NET Framework clásicos con `dotnet build` / `dotnet test`
+    sin tener Visual Studio ni el Developer Pack de 4.7.2 instalados: usa los reference
+    assemblies que restaura el proyecto Tests (paquete Microsoft.NETFramework.ReferenceAssemblies).
+    Dentro de Visual Studio (MSBuild "Full") no tiene ningún efecto.
+  -->
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)' == 'Core' And '$(TargetFrameworkRootPath)' == ''">
+    <_RaizPaquetesNuGet Condition="'$(NUGET_PACKAGES)' != ''">$([MSBuild]::EnsureTrailingSlash('$(NUGET_PACKAGES)'))</_RaizPaquetesNuGet>
+    <_RaizPaquetesNuGet Condition="'$(NUGET_PACKAGES)' == ''">$(UserProfile)\.nuget\packages\</_RaizPaquetesNuGet>
+    <_RefAssembliesNet472>$(_RaizPaquetesNuGet)microsoft.netframework.referenceassemblies.net472\1.0.3\build\</_RefAssembliesNet472>
+    <TargetFrameworkRootPath Condition="Exists('$(_RefAssembliesNet472)')">$(_RefAssembliesNet472)</TargetFrameworkRootPath>
+  </PropertyGroup>
+</Project>

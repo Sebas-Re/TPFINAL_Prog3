@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Dao;
 using Entidades;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace Negocio
 {
@@ -81,24 +80,5 @@ namespace Negocio
             daoven.IDultimaventa(ven);
             return ven;
         }
-        
-        private void ArmarParametroDetalleVenta(ref SqlCommand comando, DetalleVentas dv)
-        {
-            SqlParameter SqlParametros = new SqlParameter();
-            SqlParametros = comando.Parameters.Add("@IDDETVENTA_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.IdDetVenta1;
-            SqlParametros = comando.Parameters.Add("@IDUSUARIO_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.IdUsuario1;
-            SqlParametros = comando.Parameters.Add("@CODARTICULO_DV", SqlDbType.Char);
-            SqlParametros.Value = dv.CodArticulo1;
-            SqlParametros = comando.Parameters.Add("@CANTIDAD_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.Cantidad;
-            SqlParametros = comando.Parameters.Add("@PRECIOUNITARIO_DV", SqlDbType.Money);
-            SqlParametros.Value = dv.Precio1;
-            SqlParametros = comando.Parameters.Add("@DIRECCIONENTREGA_DV", SqlDbType.Text);
-            SqlParametros.Value = dv.DireccionEntrega1;
-            SqlParametros = comando.Parameters.Add("@CONTACTO", SqlDbType.VarChar);
-            SqlParametros.Value = dv.Contacto1;
-        }        
     }
 }

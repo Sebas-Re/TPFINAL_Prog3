@@ -3,114 +3,144 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SQLite;
+using System.IO;
 using Entidades;
 
 namespace Dao
 {
     public class AccesoDatos
     {
-        String BD_PCbooster = "Data Source=LocalHost\\sqlexpress;Initial Catalog=BD_Pcbooster_store;Integrated Security=True";
-        /*Data Source=LocalHost\\sqlexpress;Initial Catalog=BD_Pcbooster_store;Integrated Security=True*/     
-      
-       
+        const String NombreArchivo = "PCbooster.db";
+        static readonly object bloqueoInicializacion = new object();
+        static String rutaInicializada;
+
+        /* Ruta del archivo SQLite. Por defecto App_Data (ASP.NET define "DataDirectory")
+           o, fuera de ASP.NET, la carpeta del ejecutable. Los tests la redirigen. */
+        public static String RutaBaseDatos { get; set; } = Path.Combine(
+            AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
+            NombreArchivo);
+
         public AccesoDatos()
         {
-            // TODO: Agregar aquí la lógica del constructor
         }
 
-        private SqlConnection ObtenerConexion()
+        private SQLiteConnection ObtenerConexion()
         {
-            SqlConnection cn = new SqlConnection(BD_PCbooster);
-            try
+            InicializarBaseDatos();
+            SQLiteConnection cn = new SQLiteConnection("Data Source=" + RutaBaseDatos + ";Foreign Keys=True");
+            cn.Open();
+            return cn;
+        }
+
+        /* La primera vez que se usa la base, si el archivo no existe se crea con
+           el schema y los datos de prueba embebidos en el assembly. */
+        private static void InicializarBaseDatos()
+        {
+            String ruta = RutaBaseDatos;
+            if (ruta == rutaInicializada) return;
+            lock (bloqueoInicializacion)
+            {
+                if (ruta == rutaInicializada) return;
+                if (!File.Exists(ruta))
+                {
+                    CrearBaseDatos(ruta);
+                }
+                rutaInicializada = ruta;
+            }
+        }
+
+        private static void CrearBaseDatos(String ruta)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(ruta));
+            /* Se arma en un archivo temporal y se mueve al final, para no dejar
+               una base a medio crear si algo falla. */
+            String temporal = ruta + ".tmp";
+            File.Delete(temporal);
+            using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + temporal + ";Foreign Keys=True"))
             {
                 cn.Open();
-                return cn;
+                using (SQLiteTransaction tx = cn.BeginTransaction())
+                {
+                    EjecutarScript(cn, "schema.sql");
+                    EjecutarScript(cn, "seed.sql");
+                    tx.Commit();
+                }
             }
-            catch (Exception ex)
-            {
-                return null;
-            }
+            SQLiteConnection.ClearAllPools();
+            File.Move(temporal, ruta);
         }
 
-        private SqlDataAdapter ObtenerAdaptador(String consultaSql, SqlConnection cn)
+        private static void EjecutarScript(SQLiteConnection cn, String nombre)
         {
-            SqlDataAdapter adaptador;
-            try
+            using (Stream recurso = typeof(AccesoDatos).Assembly.GetManifestResourceStream("Dao.Sql." + nombre))
+            using (StreamReader lector = new StreamReader(recurso, Encoding.UTF8))
+            using (SQLiteCommand cmd = new SQLiteCommand(lector.ReadToEnd(), cn))
             {
-                adaptador = new SqlDataAdapter(consultaSql, cn);
-                return adaptador;
-            }
-            catch (Exception ex)
-            {
-                return null;
+                cmd.ExecuteNonQuery();
             }
         }
 
-        public DataTable ObtenerTabla(String NombreTabla, String Sql)
+        private static SQLiteCommand ArmarComando(String consultaSql, SQLiteConnection cn, SQLiteParameter[] parametros)
+        {
+            SQLiteCommand cmd = new SQLiteCommand(consultaSql, cn);
+            cmd.Parameters.AddRange(parametros);
+            return cmd;
+        }
+
+        public DataTable ObtenerTabla(String NombreTabla, String Sql, params SQLiteParameter[] parametros)
         {
             DataSet ds = new DataSet();
-            SqlConnection Conexion = ObtenerConexion();
-            SqlDataAdapter adp = ObtenerAdaptador(Sql, Conexion);
-            adp.Fill(ds, NombreTabla);
-            Conexion.Close();
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteDataAdapter adp = new SQLiteDataAdapter(ArmarComando(Sql, Conexion, parametros)))
+            {
+                adp.Fill(ds, NombreTabla);
+            }
             return ds.Tables[NombreTabla];
         }
 
-        public int EjecutarProcedimientoAlmacenado(SqlCommand Comando, String NombreSP)
+        /* Reemplaza a EjecutarProcedimientoAlmacenado: SQLite no tiene stored
+           procedures, así que cada DAO manda el SQL que antes vivía en el SP. */
+        public int EjecutarComando(SQLiteCommand Comando, String Sql)
         {
-            int FilasCambiadas;
-            SqlConnection Conexion = ObtenerConexion();
-            SqlCommand cmd = new SqlCommand();
-            cmd = Comando;
-            cmd.Connection = Conexion;
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = NombreSP;
-            FilasCambiadas = cmd.ExecuteNonQuery();
-            Conexion.Close();
-            return FilasCambiadas;
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            {
+                Comando.Connection = Conexion;
+                Comando.CommandType = CommandType.Text;
+                Comando.CommandText = Sql;
+                return Comando.ExecuteNonQuery();
+            }
         }
 
-        public Boolean existe(String consulta)
+        public Boolean existe(String consulta, params SQLiteParameter[] parametros)
         {
-            Boolean estado = false;
-            SqlConnection Conexion = ObtenerConexion();
-            SqlCommand cmd = new SqlCommand(consulta, Conexion);
-            SqlDataReader datos = cmd.ExecuteReader();
-            if (datos.Read())
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
+            using (SQLiteDataReader datos = cmd.ExecuteReader())
             {
-                estado = true;
+                return datos.Read();
             }
-            return estado;
         }
 
-        
-        public Boolean existeLogin(String consulta)
+        public Boolean existeLogin(String consulta, params SQLiteParameter[] parametros)
         {
-            
-            Boolean estado = false;
-            SqlConnection Conexion = ObtenerConexion();
-            SqlCommand cmd = new SqlCommand(consulta, Conexion);
-            SqlDataReader datos = cmd.ExecuteReader();
-            if (datos.Read())
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
+            using (SQLiteDataReader datos = cmd.ExecuteReader())
             {
-                estado = datos.GetBoolean(0);
+                return datos.Read() && datos.GetBoolean(0);
             }
-            return estado;
         }
 
-        public int ObtenerMaximo(String consulta)
+        public int ObtenerMaximo(String consulta, params SQLiteParameter[] parametros)
         {
-            int max = 0;
-            SqlConnection Conexion = ObtenerConexion();
-            SqlCommand cmd = new SqlCommand(consulta, Conexion);
-            SqlDataReader datos = cmd.ExecuteReader();
-            if (datos.Read())
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
+            using (SQLiteDataReader datos = cmd.ExecuteReader())
             {
-                max = Convert.ToInt32(datos[0].ToString());
+                return datos.Read() ? Convert.ToInt32(datos[0].ToString()) : 0;
             }
-            return max;
         }
 
     }

@@ -50,3 +50,12 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# --- TP_Integrador (.NET) ---
+# Base SQLite que la app crea sola la primera vez que arranca
+Vistas/App_Data/
+# Paquetes NuGet: Visual Studio los restaura desde packages.config
+packages/
+# Salida del proyecto de tests
+Tests/**/bin/
+Tests/**/obj/

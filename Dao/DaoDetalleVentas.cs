@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entidades;
 using System.Data;
-using System.Data.SqlClient;
-
+using System.Data.SQLite;
 
 namespace Dao
 {
@@ -17,7 +16,8 @@ namespace Dao
 
         public DetalleVentas ObtenerDetalleVenta(DetalleVentas dven)
         {
-            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas",TodoDetalleVenta + "where IdDetVenta_dv = '" + dven.IdDetVenta1+ "' and CodArticulo_dv = '"+dven.CodArticulo1+"'");
+            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", TodoDetalleVenta + "where IdDetVenta_dv = @IdDetVenta and CodArticulo_dv = @CodArticulo",
+                new SQLiteParameter("@IdDetVenta", dven.IdDetVenta1), new SQLiteParameter("@CodArticulo", dven.CodArticulo1));
             dven.IdDetVenta1 = Convert.ToInt32(tabla.Rows[0][0].ToString());
             dven.IdUsuario1 =Convert.ToInt32(tabla.Rows[0][1].ToString());
             dven.CodArticulo1 = tabla.Rows[0][2].ToString();
@@ -25,13 +25,14 @@ namespace Dao
             dven.Precio1 =Convert.ToInt32(tabla.Rows[0][4].ToString());
             dven.DireccionEntrega1 = tabla.Rows[0][5].ToString();
             dven.Contacto1 = tabla.Rows[0][6].ToString();
-            return dven;          
+            return dven;
         }
 
         public DataTable GetTablaDetalleVenta(DetalleVentas dven)
         {
-            String NuevaConsul = TodoDetalleVenta + "where IdDetVenta_dv = '"+ dven.IdDetVenta1 +"' and CodArticulo_dv = '"+dven.CodArticulo1+"'";
-            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", NuevaConsul);
+            String NuevaConsul = TodoDetalleVenta + "where IdDetVenta_dv = @IdDetVenta and CodArticulo_dv = @CodArticulo";
+            DataTable tabla = ds.ObtenerTabla("Detalle_Ventas", NuevaConsul,
+                new SQLiteParameter("@IdDetVenta", dven.IdDetVenta1), new SQLiteParameter("@CodArticulo", dven.CodArticulo1));
             return tabla;
         }
 
@@ -43,36 +44,37 @@ namespace Dao
 
         public Boolean ExisteDetalleVenta(DetalleVentas dv)
         {
-            string consulta = TodoDetalleVenta + "where IdDetVenta_dv = '" + dv.IdDetVenta1  + "' and CodArticulo_dv = '" + dv.CodArticulo1 + "'";
-            return ds.existe(consulta);
+            string consulta = TodoDetalleVenta + "where IdDetVenta_dv = @IdDetVenta and CodArticulo_dv = @CodArticulo";
+            return ds.existe(consulta, new SQLiteParameter("@IdDetVenta", dv.IdDetVenta1), new SQLiteParameter("@CodArticulo", dv.CodArticulo1));
         }
-
 
         public int agregarDetalleVenta(DetalleVentas dv)
         {
-            SqlCommand comando = new SqlCommand();
+            SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroDetalleVentaAgregar(ref comando, dv);
-            return ds.EjecutarProcedimientoAlmacenado(comando, "sp_AgregarDetalleVenta");
+            // ex sp_AgregarDetalleVenta. Los triggers tr_SumaTotal y tr_ControlStock siguen en la base.
+            return ds.EjecutarComando(comando,
+                "insert into Detalle_Ventas(IdDetVenta_dv,IdUsuario_dv,CodArticulo_dv,Cantidad_dv,Precio_Unitario_dv,Direccion_de_Entrega,Contacto) values (@IDDETVENTA_DV,@IDUSUARIO_DV,@CODARTICULO_DV,@CANTIDAD_DV,@PRECIOUNITARIO_DV,@DIRECCIONENTREGA_DV,@CONTACTO)");
         }
 
         public DataTable GetTablaIdVenta(DetalleVentas dven)
         {
-            String NuevaConsul = TodoDetalleVenta + "where idDetVenta_dv = '" + dven.IdDetVenta1 + "'";
-            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul);
+            String NuevaConsul = TodoDetalleVenta + "where idDetVenta_dv = @IdDetVenta";
+            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdDetVenta", dven.IdDetVenta1));
             return tabla;
         }
 
         public DataTable GetTablaIdVentaUsuario(Ventas ven)
         {
-            String NuevaConsul = "select Descripcion_ar, CodArticulo_dv, Cantidad_dv, Precio_Unitario_dv, Direccion_de_Entrega, Contacto from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv where idDetVenta_dv = '" + ven.IdVenta1 + "'";
-            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul);
+            String NuevaConsul = "select Descripcion_ar, CodArticulo_dv, Cantidad_dv, Precio_Unitario_dv, Direccion_de_Entrega, Contacto from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv where idDetVenta_dv = @IdVenta";
+            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdVenta", ven.IdVenta1));
             return tabla;
         }
 
         public DataTable GetTablaIdUsuario(Usuario us)
         {
-            String NuevaConsul = TodoDetalleVenta + "where IdUsuario_dv = '" + us.IdUsuario1 + "'";
-            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul);
+            String NuevaConsul = TodoDetalleVenta + "where IdUsuario_dv = @IdUsuario";
+            DataTable tabla = ds.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdUsuario", us.IdUsuario1));
             return tabla;
         }
 
@@ -88,24 +90,23 @@ namespace Dao
             return tabla;
         }
 
-
-        private void ArmarParametroDetalleVentaAgregar(ref SqlCommand comando, DetalleVentas dv)
+        private void ArmarParametroDetalleVentaAgregar(ref SQLiteCommand comando, DetalleVentas dv)
         {
-            SqlParameter SqlParametros = new SqlParameter();
-            SqlParametros = comando.Parameters.Add("@IDDETVENTA_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.IdDetVenta1;
-            SqlParametros = comando.Parameters.Add("@IDUSUARIO_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.IdUsuario1;
-            SqlParametros = comando.Parameters.Add("@CODARTICULO_DV", SqlDbType.Char);
-            SqlParametros.Value = dv.CodArticulo1;
-            SqlParametros = comando.Parameters.Add("@CANTIDAD_DV", SqlDbType.BigInt);
-            SqlParametros.Value = dv.Cantidad;
-            SqlParametros = comando.Parameters.Add("@PRECIOUNITARIO_DV", SqlDbType.Money);
-            SqlParametros.Value = dv.Precio1;
-            SqlParametros = comando.Parameters.Add("@DIRECCIONENTREGA_DV", SqlDbType.Text);
-            SqlParametros.Value = dv.DireccionEntrega1;
-            SqlParametros = comando.Parameters.Add("@CONTACTO", SqlDbType.VarChar);
-             SqlParametros.Value = dv.Contacto1;
+            SQLiteParameter Parametros = new SQLiteParameter();
+            Parametros = comando.Parameters.Add("@IDDETVENTA_DV", DbType.Int64);
+            Parametros.Value = dv.IdDetVenta1;
+            Parametros = comando.Parameters.Add("@IDUSUARIO_DV", DbType.Int64);
+            Parametros.Value = dv.IdUsuario1;
+            Parametros = comando.Parameters.Add("@CODARTICULO_DV", DbType.String);
+            Parametros.Value = dv.CodArticulo1;
+            Parametros = comando.Parameters.Add("@CANTIDAD_DV", DbType.Int64);
+            Parametros.Value = dv.Cantidad;
+            Parametros = comando.Parameters.Add("@PRECIOUNITARIO_DV", DbType.Decimal);
+            Parametros.Value = dv.Precio1;
+            Parametros = comando.Parameters.Add("@DIRECCIONENTREGA_DV", DbType.String);
+            Parametros.Value = dv.DireccionEntrega1;
+            Parametros = comando.Parameters.Add("@CONTACTO", DbType.String);
+            Parametros.Value = dv.Contacto1;
         }
     }
 }

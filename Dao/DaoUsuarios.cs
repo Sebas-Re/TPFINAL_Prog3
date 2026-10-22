@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
-using System.Data.SqlClient;
+using System.Data.SQLite;
 using Entidades;
-
 
 namespace Dao
 {
@@ -17,7 +16,7 @@ namespace Dao
 
         public Usuario ObtenerUsuario(Usuario us)
         {
-            DataTable tabla = ds.ObtenerTabla("Usuarios", TodoUsuarios + " where IdUsuario_us = '" + us.IdUsuario1 + "'");
+            DataTable tabla = ds.ObtenerTabla("Usuarios", TodoUsuarios + " where IdUsuario_us = @IdUsuario", new SQLiteParameter("@IdUsuario", us.IdUsuario1));
             us.IdUsuario1 = Convert.ToInt32(tabla.Rows[0][0].ToString());
             us.Nombre1 = tabla.Rows[0][1].ToString();
             us.Contraseña1 = tabla.Rows[0][2].ToString();
@@ -30,16 +29,16 @@ namespace Dao
 
         public DataTable GetTablaUsuario (Usuario us)
         {
-            String NuevaConsul = TodoUsuarios + " where IdUsuario_us = '" + us.IdUsuario1 + "'";
-            DataTable tabla = ds.ObtenerTabla("Usuarios", NuevaConsul);
+            String NuevaConsul = TodoUsuarios + " where IdUsuario_us = @IdUsuario";
+            DataTable tabla = ds.ObtenerTabla("Usuarios", NuevaConsul, new SQLiteParameter("@IdUsuario", us.IdUsuario1));
             return tabla;
         }
 
         public int DevolverIDusuario(Usuario us)
-        {            
-            String NuevaConsul = "select IdUsuario_us from Usuarios where Nombre_us = '" + us.Nombre1 + "'";
-            DataTable tabla = ds.ObtenerTabla("Usuarios", NuevaConsul);
-            int ID = (int)Convert.ToInt64(tabla.Rows[0][0]);           
+        {
+            String NuevaConsul = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre";
+            DataTable tabla = ds.ObtenerTabla("Usuarios", NuevaConsul, new SQLiteParameter("@Nombre", us.Nombre1));
+            int ID = (int)Convert.ToInt64(tabla.Rows[0][0]);
             return ID;
         }
 
@@ -51,84 +50,103 @@ namespace Dao
 
         public DataTable getTablaUsuariosActualizar(Usuario us) //lo estaba usando para el griw para que los usuarios actualizen sus datos
         {
-            DataTable tabla = ds.ObtenerTabla("Usuarios", "select IdUsuario_us,Nombre_us,Contraseña_us,Email_us,Telefono_us from Usuarios where Nombre_us = '"+us.Nombre1+"'");
+            DataTable tabla = ds.ObtenerTabla("Usuarios", "select IdUsuario_us,Nombre_us,Contraseña_us,Email_us,Telefono_us from Usuarios where Nombre_us = @Nombre",
+                new SQLiteParameter("@Nombre", us.Nombre1));
             return tabla;
         }
 
         public Boolean ExisteUsuario(Usuario us)
         {
-            string consulta = TodoUsuarios + " where Nombre_us = '" + us.Nombre1 +"'";
-            return ds.existe(consulta);
+            string consulta = TodoUsuarios + " where Nombre_us = @Nombre";
+            return ds.existe(consulta, new SQLiteParameter("@Nombre", us.Nombre1));
         }
 
         public Boolean ExisteUsuarioModificar(Usuario us)
         {
-            string consulta = TodoUsuarios + " where Nombre_us = '" + us.Nombre1 + "' and IdUsuario_us <> " +us.IdUsuario1;
-            return ds.existe(consulta);
+            string consulta = TodoUsuarios + " where Nombre_us = @Nombre and IdUsuario_us <> @IdUsuario";
+            return ds.existe(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@IdUsuario", us.IdUsuario1));
         }
 
         public Boolean ExisteEmailUsuario(Usuario us)
         {
-            string consulta = TodoUsuarios + " where Email_us = '" + us.Email1 + "'";
-            return ds.existe(consulta);
+            string consulta = TodoUsuarios + " where Email_us = @Email";
+            return ds.existe(consulta, new SQLiteParameter("@Email", us.Email1));
         }
 
         public Boolean ExisteEmailUsuarioModificar(Usuario us)
         {
-            string consulta = TodoUsuarios + " where Email_us = '" + us.Email1 + "' and IdUsuario_us <> "+us.IdUsuario1;
-            return ds.existe(consulta);
+            string consulta = TodoUsuarios + " where Email_us = @Email and IdUsuario_us <> @IdUsuario";
+            return ds.existe(consulta, new SQLiteParameter("@Email", us.Email1), new SQLiteParameter("@IdUsuario", us.IdUsuario1));
         }
 
         public Boolean ExisteUsuarioLogin(Usuario us)
         {
-            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = '" + us.Nombre1 +"' and Contraseña_us = '"+ us.Contraseña1 +"'";
-            return ds.existe(consulta);
+            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena";
+            return ds.existe(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
         }
 
         public bool TipoUsuarioLogin(Usuario us)
         {
-            string consulta = "select Tipo_us from Usuarios where Nombre_us = '" + us.Nombre1 + "' and Contraseña_us = '" + us.Contraseña1 + "'"; ;
-            return ds.existeLogin(consulta);
+            string consulta = "select Tipo_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena";
+            return ds.existeLogin(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
         }
+
         public int eliminarUsuario(ref Usuario us)
         {
-            SqlCommand comando = new SqlCommand();
+            SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroUsuariosEliminar(ref comando,ref us);
-            return ds.EjecutarProcedimientoAlmacenado(comando, "sp_EliminarUsuariosAdmin");
+            // ex sp_EliminarUsuariosAdmin
+            return ds.EjecutarComando(comando, "update Usuarios set Estado_us = 0 where IdUsuario_us = @IdUsuario_us");
         }
 
         public int agregarUsuario(Usuario us)
         {
-            SqlCommand comando = new SqlCommand();
+            SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroUsuariosAgregar(ref comando,us);
-            return ds.EjecutarProcedimientoAlmacenado(comando, "sp_AgregarUsuario");
+            // ex sp_AgregarUsuario
+            return ds.EjecutarComando(comando,
+                "insert into Usuarios(Nombre_us,Contraseña_us,Email_us,Telefono_us,Tipo_us,Estado_us) values (@NOMBRE_US,@CONTRASENA_US,@EMAIL_US,@TELEFONO_US,@TIPO_US,1)");
         }
 
-        private void ArmarParametroUsuariosEliminar(ref SqlCommand comando, ref Usuario us)
+        public int actualizarUsuario(Usuario us)
         {
-            SqlParameter SqlParametros = new SqlParameter();
-            SqlParametros = comando.Parameters.Add("@IdUsuario_us", SqlDbType.BigInt);
-            SqlParametros.Value = us.IdUsuario1;
+            SQLiteCommand comando = new SQLiteCommand();
+            ArmarParametroUsuariosAgregar(ref comando, us);
+            ArmarParametroUsuariosModificar(ref comando, us);
+            // ex sp_ModificarUsuario
+            return ds.EjecutarComando(comando,
+                "update Usuarios set Nombre_us = @NOMBRE_US, Contraseña_us = @CONTRASENA_US, Email_us = @EMAIL_US, Telefono_us = @TELEFONO_US, Tipo_us = @TIPO_US, Estado_us = @Estado_us where IdUsuario_us = @Id_Usuario_us");
         }
 
-        private void ArmarParametroUsuariosAgregar(ref SqlCommand comando, Usuario us)
+        private void ArmarParametroUsuariosEliminar(ref SQLiteCommand comando, ref Usuario us)
         {
-            SqlParameter SqlParametros = new SqlParameter();
-            /*SqlParametros = comando.Parameters.Add("@Id_Usuario_us", SqlDbType.BigInt);
-            SqlParametros.Value = us.IdUsuario1;*/
-            SqlParametros = comando.Parameters.Add("@NOMBRE_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Nombre1;
-            SqlParametros = comando.Parameters.Add("@CONTRASEÑA_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Contraseña1;
-            SqlParametros = comando.Parameters.Add("@EMAIL_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Email1;
-            SqlParametros = comando.Parameters.Add("@TELEFONO_US", SqlDbType.VarChar);
-            SqlParametros.Value = us.Telefono1;
-            SqlParametros = comando.Parameters.Add("@TIPO_US", SqlDbType.Bit);
-            SqlParametros.Value = us.Tipo1;
-           /* SqlParametros = comando.Parameters.Add("@Estado", SqlDbType.Bit);
-            SqlParametros.Value = us.Contraseña1;*/
-        }        
+            SQLiteParameter Parametros = new SQLiteParameter();
+            Parametros = comando.Parameters.Add("@IdUsuario_us", DbType.Int64);
+            Parametros.Value = us.IdUsuario1;
+        }
+
+        private void ArmarParametroUsuariosAgregar(ref SQLiteCommand comando, Usuario us)
+        {
+            SQLiteParameter Parametros = new SQLiteParameter();
+            Parametros = comando.Parameters.Add("@NOMBRE_US", DbType.String);
+            Parametros.Value = us.Nombre1;
+            Parametros = comando.Parameters.Add("@CONTRASENA_US", DbType.String);
+            Parametros.Value = us.Contraseña1;
+            Parametros = comando.Parameters.Add("@EMAIL_US", DbType.String);
+            Parametros.Value = us.Email1;
+            Parametros = comando.Parameters.Add("@TELEFONO_US", DbType.String);
+            Parametros.Value = us.Telefono1;
+            Parametros = comando.Parameters.Add("@TIPO_US", DbType.Boolean);
+            Parametros.Value = us.Tipo1;
+        }
+
+        private void ArmarParametroUsuariosModificar(ref SQLiteCommand comando, Usuario us)
+        {
+            SQLiteParameter Parametros = new SQLiteParameter();
+            Parametros = comando.Parameters.Add("@Id_Usuario_us", DbType.Int64);
+            Parametros.Value = us.IdUsuario1;
+            Parametros = comando.Parameters.Add("@Estado_us", DbType.Boolean);
+            Parametros.Value = us.Estado1;
+        }
     }
 }
-
