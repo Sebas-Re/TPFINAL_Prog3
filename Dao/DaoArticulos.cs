@@ -17,15 +17,15 @@ namespace Dao
 
         public Articulo ObtenerArticulo(Articulo art) //Devuelve un objeto articulo
         {
-            DataTable tabla = ds.ObtenerTabla("Articulos","select CodArticulo_ar,Categoria_r,Descripcion_ar,Stock_ar,PrecioUnitario_ar,Imagen_ar from Articulos where CodArticulo = @CodArticulo",
+            DataTable tabla = ds.ObtenerTabla("Articulos","select CodArticulo_ar,Categoria_ar,Descripcion_ar,Stock_ar,PrecioUnitario_ar,Imagen,Estado_ar from Articulos where CodArticulo_ar = @CodArticulo",
                 new SQLiteParameter("@CodArticulo", art.CodArticulo1));
             art.CodArticulo1 = tabla.Rows[0][0].ToString();
-            art.Categoria1.IdCategoria1 = Convert.ToInt32(tabla.Rows[0][1].ToString());
+            art.Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(tabla.Rows[0][1]) };
             art.Descripcion1 = tabla.Rows[0][2].ToString();
-            art.Stock1 = Convert.ToInt32(tabla.Rows[0][3].ToString());
-            art.Precio_Unitario1 = Convert.ToInt32(tabla.Rows[0][4].ToString());
+            art.Stock1 = Convert.ToInt32(tabla.Rows[0][3]);
+            art.Precio_Unitario1 = Convert.ToSingle(tabla.Rows[0][4]);
             art.ImagenURL1 = tabla.Rows[0][5].ToString();
-            art.Estado1 = Convert.ToBoolean(tabla.Rows[0][6].ToString());
+            art.Estado1 = (bool)tabla.Rows[0][6];
             return art;
         }
 

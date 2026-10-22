@@ -19,11 +19,12 @@ namespace Dao
         public Ventas ObtenerVenta(Ventas ve) //devuelve un objeto cargado con la data q coincida con el id
         {
             DataTable tabla = ds.ObtenerTabla("Ventas", TodoVentas + " where IdVentas_ve = @IdVenta", new SQLiteParameter("@IdVenta", ve.IdVenta1));
-            ve.IdVenta1 = Convert.ToInt32(tabla.Rows[0][0].ToString());
-            ve.Usuario1.IdUsuario1 =Convert.ToInt32(tabla.Rows[0][1].ToString());
-            ve.TotalVenta1 =Convert.ToInt32(tabla.Rows[0][2].ToString());
-            ve.Metodo_Pago1 = (bool)tabla.Rows[0][3];
-            ve.Cod_Seguridad1 = Convert.ToInt32(tabla.Rows[0][4]);
+            DataRow fila = tabla.Rows[0];
+            ve.IdVenta1 = Convert.ToInt32(fila["IdVentas_ve"]);
+            ve.Usuario1 = new Usuario { IdUsuario1 = Convert.ToInt32(fila["IdUsuario_ve"]) };
+            ve.TotalVenta1 = Convert.ToSingle(fila["TotalVenta_ve"]);
+            ve.Metodo_Pago1 = (bool)fila["Metodo_de_Pago_ve"];
+            ve.Cod_Seguridad1 = Convert.ToInt32(fila["Codigo_Seguridad_ve"]);
             return ve;
         }
 

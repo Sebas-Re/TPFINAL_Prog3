@@ -207,6 +207,43 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void ObtenerArticuloCargaTodosLosCampos()
+        {
+            var art = new DaoArticulos().ObtenerArticulo(new Articulo { CodArticulo1 = "gb1" });
+
+            Assert.Equal(2, art.Categoria1.IdCategoria1);
+            Assert.Equal("Gabinete Gamemax", art.Descripcion1);
+            Assert.Equal(10, art.Stock1);
+            Assert.Equal(3500f, art.Precio_Unitario1);
+            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", art.ImagenURL1);
+            Assert.True(art.Estado1);
+        }
+
+        [Fact]
+        public void ObtenerCategoriaCargaTodosLosCampos()
+        {
+            var cat = new DaoCategorias().ObtenerCategoria(new Categoria { IdCategoria1 = 8 });
+
+            Assert.Equal("Ssd", cat.Decripcion1);
+            Assert.True(cat.Estado1);
+        }
+
+        [Fact]
+        public void ObtenerVentaCargaTodosLosCampos()
+        {
+            var dao = new DaoVentas();
+            dao.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 456 });
+            int id = dao.IDultimaventa(new Ventas()).IdVenta1;
+
+            var venta = dao.ObtenerVenta(new Ventas { IdVenta1 = id });
+
+            Assert.Equal(5, venta.Usuario1.IdUsuario1);
+            Assert.Equal(0f, venta.TotalVenta1);
+            Assert.True(venta.Metodo_Pago1);
+            Assert.Equal(456, venta.Cod_Seguridad1);
+        }
+
+        [Fact]
         public void ActualizarArticuloPermiteReactivarlo()
         {
             var dao = new DaoArticulos();
