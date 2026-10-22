@@ -59,3 +59,25 @@ Explorador de pruebas de Visual Studio, o con `dotnet test Tests/Vistas.E2E`.
 - El proyecto se desarrolló originalmente sobre SQL Server, con stored procedures y triggers, y después
   se portó a MySQL. Esos scripts, junto con páginas viejas del sitio, quedan como referencia en [`Legacy`](Legacy). En la
   versión actual, el SQL de cada stored procedure vive en su DAO y los triggers están en el schema de SQLite.
+
+## Seguridad
+
+- **SQL injection:** todas las consultas usan parámetros (`SQLiteParameter`), nunca texto del usuario concatenado.
+- **XSS:** la salida se encodea (`<%#: %>`, `HtmlEncode`). Las URLs de imagen que carga el admin solo pueden
+  ser rutas del sitio o `http(s)`. La `Content-Security-Policy` limita scripts, estilos y fuentes al propio sitio.
+- **Contraseñas:** hash PBKDF2-SHA256 con salt. El login se bloquea 5 minutos después de 5 intentos fallidos.
+- **Sesión y CSRF:** el login genera un token en una cookie `HttpOnly`/`SameSite=Lax` (contra session fixation),
+  y el ViewState queda atado a ese token (`ViewStateUserKey`), así que no se aceptan formularios de otra sesión.
+- **Tarjetas:** las páginas solo ven los últimos 4 dígitos y un id. El código de seguridad no sale del servidor,
+  y al pagar se valida que la tarjeta sea del usuario y esté vigente.
+- **Headers:** `X-Frame-Options`, `X-Content-Type-Options` y `Referrer-Policy`, sin headers que anuncien
+  versiones del servidor.
+
+Límites conocidos (es un proyecto de demostración):
+
+- El número completo y el código de seguridad de las tarjetas se guardan en la base, porque el schema original
+  usa el código como parte de la clave. Una tienda real no los guardaría: delegaría el pago en una pasarela
+  que devuelve un token.
+- El sitio corre en HTTP con IIS Express. En un servidor con HTTPS conviene sumar `requireSSL="true"` a las
+  cookies y el header `Strict-Transport-Security`.
+- El bloqueo por intentos fallidos vive en memoria: se reinicia con la app y no se comparte entre servidores.
