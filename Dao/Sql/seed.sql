@@ -1,4 +1,4 @@
--- Datos de prueba. Port de Scripts/legacy/sqlserver/Carga de datos.sql.
+-- Datos de prueba. Port de Legacy/Scripts/sqlserver/Carga de datos.sql.
 -- En SQL Server, 'insert ... select ... union' ordenaba las filas antes de asignar
 -- el identity; acá los IDs van explícitos en ese mismo orden para que los
 -- artículos sigan apuntando a la misma categoría.

@@ -50,5 +50,5 @@ Explorador de pruebas de Visual Studio, o con `dotnet test Tests/Vistas.E2E`.
 - Schema y datos de prueba: [`Dao/Sql/schema.sql`](Dao/Sql/schema.sql) y [`Dao/Sql/seed.sql`](Dao/Sql/seed.sql),
   embebidos en `Dao.dll`.
 - El proyecto se desarrolló originalmente sobre SQL Server, con stored procedures y triggers, y después
-  se portó a MySQL. Esos scripts quedan como referencia en [`Scripts/legacy`](Scripts/legacy). En la
+  se portó a MySQL. Esos scripts, junto con páginas viejas del sitio, quedan como referencia en [`Legacy`](Legacy). En la
   versión actual, el SQL de cada stored procedure vive en su DAO y los triggers están en el schema de SQLite.

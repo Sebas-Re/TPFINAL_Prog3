@@ -1,5 +1,5 @@
 -- Schema SQLite de BD_Pcbooster_store.
--- Port de Scripts/legacy/sqlserver/Script DB_PCbooster_Store.sql.
+-- Port de Legacy/Scripts/sqlserver/Script DB_PCbooster_Store.sql.
 -- Los tipos bit/money/date se declaran así a propósito: System.Data.SQLite los
 -- mapea a Boolean/Decimal/DateTime, igual que SqlClient con SQL Server.
 -- COLLATE NOCASE replica la collation case-insensitive de SQL Server en las
