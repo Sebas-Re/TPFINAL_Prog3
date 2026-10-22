@@ -38,30 +38,6 @@ namespace Negocio
         }
 
 
-        public DataTable CrearTablaArticulos()
-        {
-            DataTable dt = new DataTable();
-            DataColumn Columna = new DataColumn("DESCRIPCION", Type.GetType("System.String"));
-            dt.Columns.Add(Columna);
-
-            Columna = new DataColumn("PRECIO UNITARIO", Type.GetType("System.Decimal"));
-            dt.Columns.Add(Columna);
-
-            Columna = new DataColumn("CANTIDAD", Type.GetType("System.String"));
-            dt.Columns.Add(Columna);
-
-            return dt;
-        }
-
-        public void AgregarFila(ref DataTable tabla, Articulo art)
-        {
-            DataRow dr = tabla.NewRow();
-            dr["DESCRIPCION"] = art.Descripcion1;
-            dr["PRECIO UNITARIO"] = art.Precio_Unitario1;
-            dr["CANTIDAD"] = "1";
-
-            tabla.Rows.Add(dr);
-        }
 
         public DataTable getArticuloCOD(Articulo art) //Devuelve un Articulo
         {

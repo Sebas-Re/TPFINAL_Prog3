@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Data;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Entidades;
@@ -9,35 +7,90 @@ using Negocio;
 
 namespace Vistas.AdminForms
 {
-    public partial class AdminHome : System.Web.UI.Page
+    public partial class AdminGestionArticulos : PaginaBase
     {
         GestionArticulos gestart = new GestionArticulos();
-        Articulo art = new Articulo();
         GestionCategorias gcat = new GestionCategorias();
-        Categoria cat = new Categoria();
+        DataTable categorias;
+
+        protected override NivelAcceso Acceso
+        {
+            get { return NivelAcceso.Admin; }
+        }
+
+        /* Código buscado; vacío = todos los artículos. Se conserva entre postbacks. */
+        string FiltroCodigo
+        {
+            get { return (string)ViewState["FiltroCodigo"] ?? ""; }
+            set { ViewState["FiltroCodigo"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            categorias = gcat.getCategorias();
             if (!IsPostBack)
             {
-                lblNombreadm.Text = Session["NombreUsuario"].ToString();
+                ddlCategoria.DataSource = CategoriasActivas();
+                ddlCategoria.DataBind();
                 CargarGvArticulos();
                 CargarGvCategorias();
             }
         }
 
-        //-------------------------------------------------------------------------
-        //GESTION ARTICULOS
-        //-------------------------------------------------------------------------
-        public void CargarGvArticulos()
+        private DataView CategoriasActivas()
         {
-            gvArticulos.DataSource = gestart.getArticulos();
+            DataView activas = new DataView(categorias) { RowFilter = "Estado_ca = true", Sort = "Descripcion_ca" };
+            return activas;
+        }
+
+        protected string NombreCategoria(object idCategoria)
+        {
+            DataRow[] fila = categorias.Select("IdCategoria_ca = " + Convert.ToInt64(idCategoria));
+            return fila.Length > 0 ? fila[0]["Descripcion_ca"].ToString() : "—";
+        }
+
+        //-------------------------------------------------------------------------
+        // ARTÍCULOS
+        //-------------------------------------------------------------------------
+        private void CargarGvArticulos()
+        {
+            gvArticulos.DataSource = FiltroCodigo == ""
+                ? gestart.getArticulos()
+                : gestart.getArticuloCOD(new Articulo { CodArticulo1 = FiltroCodigo });
             gvArticulos.DataBind();
+        }
+
+        protected void btnBuscarporCodigo_Click(object sender, EventArgs e)
+        {
+            FiltroCodigo = txtIdArticulo.Text.Trim();
+            gvArticulos.EditIndex = -1;
+            gvArticulos.PageIndex = 0;
+            CargarGvArticulos();
         }
 
         protected void btnCargarArticulos_Click(object sender, EventArgs e)
         {
-            CargarGvArticulos();
+            FiltroCodigo = "";
             txtIdArticulo.Text = "";
+            gvArticulos.EditIndex = -1;
+            CargarGvArticulos();
+        }
+
+        protected void gvArticulos_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow && (e.Row.RowState & DataControlRowState.Edit) != 0)
+            {
+                DropDownList ddl = (DropDownList)e.Row.FindControl("ddl_et_Categoria");
+                ddl.DataSource = CategoriasActivas();
+                ddl.DataBind();
+                string actual = DataBinder.Eval(e.Row.DataItem, "Categoria_ar").ToString();
+                if (ddl.Items.FindByValue(actual) == null)
+                {
+                    // Categoría desactivada: se ofrece igual para no cambiarla sin querer.
+                    ddl.Items.Insert(0, new ListItem(NombreCategoria(actual) + " (inactiva)", actual));
+                }
+                ddl.SelectedValue = actual;
+            }
         }
 
         protected void gvArticulos_RowEditing(object sender, GridViewEditEventArgs e)
@@ -54,36 +107,41 @@ namespace Vistas.AdminForms
 
         protected void gvArticulos_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            art.CodArticulo1 = ((Label)gvArticulos.Rows[e.RowIndex].FindControl("lbl_et_Codigo")).Text;
-            art.Categoria1.IdCategoria1 = Convert.ToInt32(((Label)gvArticulos.Rows[e.RowIndex].FindControl("lbl_et_Categoria")).Text);
-            art.Descripcion1 = ((TextBox)gvArticulos.Rows[e.RowIndex].FindControl("txt_et_Descripcion")).Text;
-            art.Stock1 = Convert.ToInt32(((TextBox)gvArticulos.Rows[e.RowIndex].FindControl("txt_et_Stock")).Text);
-            art.Precio_Unitario1 = (float)Convert.ToDouble(((TextBox)gvArticulos.Rows[e.RowIndex].FindControl("txt_et_PrecioUnitario")).Text);
-            art.ImagenURL1 = ((TextBox)gvArticulos.Rows[e.RowIndex].FindControl("txt_et_Imagen")).Text;
-            art.Estado1 = Convert.ToBoolean(((DropDownList)gvArticulos.Rows[e.RowIndex].FindControl("ddlEditEstado")).Text);
-
-            if(gestart.ExisteDescripcionArticuloModificar(art) == true)
+            GridViewRow fila = gvArticulos.Rows[e.RowIndex];
+            Articulo art = new Articulo
             {
-                gestart.ActualizarArticulo(art);
-                gvArticulos.EditIndex = -1;
-                CargarGvArticulos();
-                lblMensajeArticulo.Text = "ARTICULO MODIFICADO";
+                CodArticulo1 = gvArticulos.DataKeys[e.RowIndex].Value.ToString(),
+                Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(((DropDownList)fila.FindControl("ddl_et_Categoria")).SelectedValue) },
+                Descripcion1 = ((TextBox)fila.FindControl("txt_et_Descripcion")).Text.Trim(),
+                Stock1 = Convert.ToInt32(((TextBox)fila.FindControl("txt_et_Stock")).Text),
+                Precio_Unitario1 = (float)Convert.ToDouble(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
+                ImagenURL1 = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim()
+            };
+
+            if (gestart.ExisteDescripcionArticuloModificar(art))
+            {
+                MostrarMensaje("Ya existe otro artículo con esa descripción.", TipoMensaje.Error);
+                return;
+            }
+            if (gestart.ActualizarArticulo(art))
+            {
+                MostrarMensaje("Artículo " + art.CodArticulo1 + " modificado.", TipoMensaje.Exito);
             }
             else
             {
-                gvArticulos.EditIndex = -1;
-                CargarGvArticulos();
-                lblMensajeArticulo.Text = "LA DESCRIPCION DEL ARTICULO CONINCIDE CON OTRO";
+                MostrarMensaje("No se pudo modificar el artículo.", TipoMensaje.Error);
             }
-
-            
+            gvArticulos.EditIndex = -1;
+            CargarGvArticulos();
         }
 
         protected void gvArticulos_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            art.CodArticulo1 = ((Label)gvArticulos.Rows[e.RowIndex].FindControl("lbl_it_Codart")).Text;
-
-            gestart.eliminarArticulo(art);
+            Articulo art = new Articulo { CodArticulo1 = gvArticulos.DataKeys[e.RowIndex].Value.ToString() };
+            if (gestart.eliminarArticulo(art))
+            {
+                MostrarMensaje("Artículo " + art.CodArticulo1 + " dado de baja.", TipoMensaje.Exito);
+            }
             gvArticulos.EditIndex = -1;
             CargarGvArticulos();
         }
@@ -91,66 +149,46 @@ namespace Vistas.AdminForms
         protected void gvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvArticulos.PageIndex = e.NewPageIndex;
+            gvArticulos.EditIndex = -1;
             CargarGvArticulos();
-        }
-
-        protected void btnBuscarporCodigo_Click(object sender, EventArgs e)
-        {
-
-            if (txtIdArticulo.Text != "")
-            {
-                //lo puse aca porque por fuera guardaba la el txt vacio el objeto
-                art.CodArticulo1 = txtIdArticulo.Text;
-                /*----------------------------------------*/
-                gvArticulos.DataSource = gestart.getArticuloCOD(art);
-                gvArticulos.DataBind();
-                txtIdArticulo.Text = "";
-            }
-            else
-            {
-                CargarGvArticulos();
-                txtIdArticulo.Text = "";
-            }
         }
 
         protected void btnAgregarArticulo_Click(object sender, EventArgs e)
         {
-            art.CodArticulo1 = txtCodArticulo.Text;
-            art.Descripcion1 = txtDescripcion.Text;
-            cat.IdCategoria1 = Convert.ToInt32(txtCategoria.Text);
-            /*Esta decisiones la hice porque si ingresabas un nombre ya existente, una categoria inexistente y una descripcion igual
-             *  a otra, tiraba error. Y la ultima es para no ingregar una categoria inactiva */
-            if (gestart.ExisteArticulo(art) == false && gcat.ExisteCategoria (cat) == true && gestart.ExisteDescripcionArticulo(art)==false && gcat.VerificarEstadoCat(cat)==true)
+            Articulo art = new Articulo
             {
-                lblMensajeA.Text = "ARTICULO AGREGADO";
-                art.CodArticulo1 = txtCodArticulo.Text;
-                art.Categoria1 = cat;
-                art.Descripcion1 = txtDescripcion.Text;
-                art.Stock1 = Convert.ToInt32(txtStock.Text);
-                art.Precio_Unitario1 = (float)Convert.ToDouble(txtPrecio_Unitario.Text);
-                art.ImagenURL1 = txtImagen.Text;
-                art.Estado1 = true;
+                CodArticulo1 = txtCodArticulo.Text.Trim(),
+                Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(ddlCategoria.SelectedValue) },
+                Descripcion1 = txtDescripcion.Text.Trim(),
+                Stock1 = Convert.ToInt32(txtStock.Text),
+                Precio_Unitario1 = (float)Convert.ToDouble(txtPrecio_Unitario.Text),
+                ImagenURL1 = txtImagen.Text.Trim(),
+                Estado1 = true
+            };
 
-               
-                LimpiarCampoArticulo();
-                gestart.agregarArticulo(art);
-                CargarGvArticulos();
-                
-            }
-            else
+            if (gestart.ExisteArticulo(art))
             {
-                LimpiarCampoArticulo();
-                lblMensajeA.Text = "DATOS INVALIDOS";
+                MostrarMensaje("Ya existe un artículo con el código " + art.CodArticulo1 + ".", TipoMensaje.Error);
+                return;
             }
-            
-
-            
+            if (gestart.ExisteDescripcionArticulo(art))
+            {
+                MostrarMensaje("Ya existe un artículo con esa descripción.", TipoMensaje.Error);
+                return;
+            }
+            if (!gestart.agregarArticulo(art))
+            {
+                MostrarMensaje("No se pudo agregar el artículo.", TipoMensaje.Error);
+                return;
+            }
+            MostrarMensaje("Artículo " + art.CodArticulo1 + " agregado.", TipoMensaje.Exito);
+            LimpiarCampoArticulo();
+            CargarGvArticulos();
         }
 
-        public void LimpiarCampoArticulo()
+        private void LimpiarCampoArticulo()
         {
             txtCodArticulo.Text = "";
-            txtCategoria.Text = "";
             txtDescripcion.Text = "";
             txtStock.Text = "";
             txtPrecio_Unitario.Text = "";
@@ -158,61 +196,38 @@ namespace Vistas.AdminForms
         }
 
         //-------------------------------------------------------------------------
-        //GESTION CATEGORIAS
+        // CATEGORÍAS
         //-------------------------------------------------------------------------
-        public void CargarGvCategorias()
+        private void CargarGvCategorias()
         {
-            gvCategorias.DataSource = gcat.getCategorias();
+            gvCategorias.DataSource = categorias;
             gvCategorias.DataBind();
         }
-        
-        protected void btnBuscarCategoria_Click(object sender, EventArgs e)//Funciona OK
-        {            
-            
-            if(txtBuscarCatid.Text != "")
-            {
-                /*Por el motivo anterior*/
-                cat.IdCategoria1 = Convert.ToInt32(txtBuscarCatid.Text);
-                gvCategorias.DataSource = gcat.getCategoriaId(cat);
-                gvCategorias.DataBind();
-                txtBuscarCatid.Text = "";
-            }
-            else
-            {
-                CargarGvCategorias();
-                txtBuscarCatid.Text = "";
-            }
 
-        }
-
-        protected void gvCategorias_RowDeleting(object sender, GridViewDeleteEventArgs e)//Funciona OK
+        /* Después de modificar categorías se recargan también los desplegables de artículos. */
+        private void RecargarCategorias()
         {
-            cat.IdCategoria1 = Convert.ToInt32(((Label)gvCategorias.Rows[e.RowIndex].FindControl("lbl_it_IdCategoria")).Text);
-            gcat.eliminarCategoria(cat);
+            categorias = gcat.getCategorias();
             CargarGvCategorias();
+            ddlCategoria.DataSource = CategoriasActivas();
+            ddlCategoria.DataBind();
+            CargarGvArticulos();
         }
 
-        protected void btnAgregarCategoria_Click(object sender, EventArgs e)//Funciona OK
+        protected void btnAgregarCategoria_Click(object sender, EventArgs e)
         {
-            cat.Decripcion1 = txtDescripcioncat.Text;
-
-            /*Esta decision es para no ingresar una Descripcion existente, antes me tiraba error*/
-            if (gcat.VerificarCategoria(cat)==false)
+            Categoria cat = new Categoria { Decripcion1 = txtDescripcioncat.Text.Trim() };
+            if (gcat.VerificarCategoria(cat))
             {
-                if (gcat.agregarCategoria(cat))
-                {
-                    lblAgregarCategoria.Text = "AGREGADA CON EXITO!";
-                    CargarGvCategorias();
-                    txtDescripcioncat.Text = "";
-                }
-                
+                MostrarMensaje("Ya existe una categoría con ese nombre.", TipoMensaje.Error);
+                return;
             }
-            else
+            if (gcat.agregarCategoria(cat))
             {
-                lblAgregarCategoria.Text = "Nombre de categoría en uso, ingrese otro nombre";
-                CargarGvCategorias();
+                MostrarMensaje("Categoría \"" + cat.Decripcion1 + "\" agregada.", TipoMensaje.Exito);
                 txtDescripcioncat.Text = "";
-            }            
+                RecargarCategorias();
+            }
         }
 
         protected void gvCategorias_RowEditing(object sender, GridViewEditEventArgs e)
@@ -229,32 +244,32 @@ namespace Vistas.AdminForms
 
         protected void gvCategorias_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
-            cat.Decripcion1 = ((TextBox)gvCategorias.Rows[e.RowIndex].FindControl("txt_eit_Decripcion")).Text;
-            cat.IdCategoria1 = Convert.ToInt32(((Label)gvCategorias.Rows[e.RowIndex].FindControl("lbl_eit_IdCategoria")).Text);
-            cat.Estado1 = Convert.ToBoolean(((DropDownList)gvCategorias.Rows[e.RowIndex].FindControl("ddlEditEstadoCat")).SelectedValue);
+            GridViewRow fila = gvCategorias.Rows[e.RowIndex];
+            Categoria cat = new Categoria
+            {
+                IdCategoria1 = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value),
+                Decripcion1 = ((TextBox)fila.FindControl("txt_eit_Decripcion")).Text.Trim(),
+                Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstadoCat")).SelectedValue)
+            };
 
-            if (gcat.ExisteCategoriaModificar(cat) == false)
+            if (gcat.ExisteCategoriaModificar(cat))
             {
-                gcat.ActualizarCategoria(cat);
-                gvCategorias.EditIndex = -1;
-                CargarGvCategorias();
-                lblMensajeCat.Text = "CATEGORIA MODIFICADA";
+                MostrarMensaje("Ya existe otra categoría con ese nombre.", TipoMensaje.Error);
+                return;
             }
-            else
-            {
-                gvCategorias.EditIndex = -1;
-                CargarGvCategorias();
-                lblMensajeCat.Text = "LA DESCRIPCION DE LA CATEGORIA YA FUE CARGADA";
-            }
-            
+            gcat.ActualizarCategoria(cat);
+            MostrarMensaje("Categoría modificada.", TipoMensaje.Exito);
+            gvCategorias.EditIndex = -1;
+            RecargarCategorias();
         }
 
-        protected void Button1_Click(object sender, EventArgs e)
+        protected void gvCategorias_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            CargarGvCategorias();
-            txtBuscarCatid.Text = "";
+            Categoria cat = new Categoria { IdCategoria1 = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value) };
+            gcat.eliminarCategoria(cat);
+            MostrarMensaje("Categoría desactivada.", TipoMensaje.Exito);
+            gvCategorias.EditIndex = -1;
+            RecargarCategorias();
         }
-
-       
     }
 }

@@ -1,53 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
 using Entidades;
 using Negocio;
 
 namespace Vistas
 {
-    public partial class RegistroUsuario : System.Web.UI.Page
+    public partial class RegistroUsuario : PaginaBase
     {
         GestionUsuarios us = new GestionUsuarios();
-        Usuario usuario = new Usuario();
+
+        protected override NivelAcceso Acceso
+        {
+            get { return NivelAcceso.Publico; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
 
         protected void btnRegistrarse_Click(object sender, EventArgs e)
         {
-            usuario.Nombre1 = txtUsuario.Text;
-            usuario.Contraseña1 = txtContra1.Text;
-            usuario.Email1 = txtEmail.Text;
-            usuario.Telefono1 = txtTelefono.Text;
-            usuario.Tipo1 = false;
-            if (us.VerificarNombre(usuario)==true && us.VerificarEmail(usuario)==true)
+            Usuario usuario = new Usuario
             {
-                us.agregarUsuario(usuario);
-                Session["NombreUsuario"] = null;
-                Session["ContraseñaUsuario"] = null;
-                Session["NombreUsuario"] = txtUsuario.Text;
-                Session["ContraseñaUsuario"] = txtContra1.Text;
-                Server.Transfer("~/UsuarioForms/Catalogo.aspx");
-            }
-            else
-            {
-                LimpiarLosCampos();
-                lblMsjRegistro.Text = "LO SIENTO, EL NOMBRE INGRESADO O EMAIL YA ESTAN CARGADOS, VUELVE A INTENTARLO";
-            }
-        }
+                Nombre1 = txtUsuario.Text.Trim(),
+                Contraseña1 = txtContra1.Text,
+                Email1 = txtEmail.Text.Trim(),
+                Telefono1 = string.IsNullOrWhiteSpace(txtTelefono.Text) ? "Sin telefono" : txtTelefono.Text.Trim(),
+                Tipo1 = false
+            };
 
-        private void LimpiarLosCampos()
-        {
-            txtUsuario.Text = "";
-            txtContra1.Text = "";
-            txtContra2.Text = "";
-            txtEmail.Text = "";
-            txtTelefono.Text = "";
+            if (!us.VerificarNombre(usuario))
+            {
+                MostrarMensaje("Ese nombre de usuario ya está en uso. Probá con otro.", TipoMensaje.Error);
+                return;
+            }
+            if (!us.VerificarEmail(usuario))
+            {
+                MostrarMensaje("Ya existe una cuenta con ese e-mail.", TipoMensaje.Error);
+                return;
+            }
+            if (!us.agregarUsuario(usuario))
+            {
+                MostrarMensaje("No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
+                return;
+            }
+
+            Sesion.Iniciar(us.Login(usuario.Nombre1, usuario.Contraseña1));
+            RedirigirConMensaje("~/UsuarioForms/Catalogo.aspx", "¡Bienvenido/a, " + usuario.Nombre1 + "! Tu cuenta ya está lista.", TipoMensaje.Exito);
         }
     }
 }

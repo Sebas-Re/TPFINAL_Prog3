@@ -1,193 +1,98 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Catalogo.aspx.cs" Inherits="Vistas.Catalogo" EnableEventValidation="false" ValidateRequest ="false" %>
+<%@ Page Title="Catálogo · PC Booster Store" Language="C#" MasterPageFile="~/Tienda.Master" AutoEventWireup="true" CodeBehind="Catalogo.aspx.cs" Inherits="Vistas.Catalogo" %>
 
-<!DOCTYPE html>
+<asp:Content ContentPlaceHolderID="Pagina" runat="server">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h3 mb-0">Catálogo</h1>
+            <p class="text-body-secondary mb-0">Elegí las piezas para potenciar tu PC</p>
+        </div>
+        <asp:Panel runat="server" DefaultButton="btnBuscar" CssClass="input-group buscador" style="max-width: 420px">
+            <asp:TextBox ID="txtArticuloBuscar" runat="server" CssClass="form-control" placeholder="Buscar productos..." aria-label="Buscar productos" />
+            <asp:LinkButton ID="btnBuscar" runat="server" CssClass="btn btn-primary" OnClick="btnBuscar_Click" ToolTip="Buscar"><i class="bi bi-search"></i></asp:LinkButton>
+        </asp:Panel>
+    </div>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>PC BOOSTER STORE - Selecciona tus productos</title>
-    <style type="text/css">
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style3 {
-            width: 195px;
-        }
-        .auto-style4 {
-            width: 183px;
-        }
-        .auto-style5 {
-            width: 183px;
-            text-align: right;
-        }
-        .auto-style7 {
-            text-align: right;
-            height: 20px;
-        }
-        .auto-style8 {
-            text-align: left;
-            height: 20px;
-        }
-        .auto-style9 {
-            height: 4px;
-            font-size: small;
-            text-align: center;
-        }
-        .auto-style10 {
-            height: 16px;
-            text-align: center;
-            font-size: xx-large;
-        }
-        .auto-style11 {
-            width: 183px;
-            text-align: left;
-        }
-        .auto-style12 {
-            text-align: right;
-        }
-        .auto-style16 {
-            text-align: right;
-            width: 42px;
-        }
-        .auto-style17 {
-            width: 42px;
-        }
-        .auto-style18 {
-            text-align: center;
-        }
-    </style>
-</head>
-<body  style = "background-color: lightcyan">
-    <form id="form1" runat="server">
-        <table class="auto-style1">
-            <tr>
-                <td class="auto-style10" colspan="3">PC - BOOSTER - STORE </td>
-            </tr>
-            <tr>
-                <td class="auto-style9" colspan="3">SELECCIONA LAS PIEZAS PARA POTENCIAR TU PC</td>
-            </tr>
-            <tr>
-                <td class="auto-style8" colspan="2">BINVENIDO:&nbsp; <asp:Label ID="lblNombreUsuario" runat="server" Font-Bold="True" Font-Size="XX-Large" Width="176px"></asp:Label>
-                </td>
-                <td class="auto-style7">IR A :&nbsp;
-                    <asp:DropDownList ID="ddlMenuNavegacion" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlMenuNavegacion_SelectedIndexChanged">
-                        <asp:ListItem Selected="True" Value="0">--Seleccionar--</asp:ListItem>
-                        <asp:ListItem Value="1">Mi cuenta</asp:ListItem>
-                        <asp:ListItem Value="2">Mis Compras</asp:ListItem>
-                        <asp:ListItem Value="3">Salir</asp:ListItem>
-                    </asp:DropDownList>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style16" style="background-color: #000066">&nbsp;</td>
-                <td class="auto-style12" colspan="2" style="background-color: #000066">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="auto-style18">
-                    <asp:TextBox ID="txtArticuloBuscar" runat="server" Width="179px"></asp:TextBox>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:Button ID="btnbuscar" runat="server" Text="Buscar" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" OnClick="btnbuscar_Click" />
-                    &nbsp;
-                    <asp:Button ID="btnMostrarTodo" runat="server" Text="Mostrar Todo" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" OnClick="btnMostrarTodo_Click" />
-                </td>
-                <td class="auto-style5">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <div class="auto-style18">
-&nbsp;
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;
-                    &nbsp;</div>
-                    <div class="auto-style18">
-                    <asp:DataList ID="dlCategorias" runat="server" CellSpacing="12" RepeatDirection="Horizontal" Width="488px">
-                        <ItemTemplate>
-                            <asp:Button ID="btnCategoria" runat="server" Text='<%# Bind("Descripcion_ca") %>' CommandArgument='<%# bind("IdCategoria_ca") %>' CommandName="SeleccionarCategoria" OnCommand="btnCategoria_Command" Width="150px" />
-                        </ItemTemplate>
-                    </asp:DataList>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style17" rowspan="8">
-                    &nbsp;</td>
-                <td class="auto-style3" rowspan="8">
-                    <asp:GridView ID="gvArticulos" runat="server" Height="167px" Width="228px" AutoGenerateSelectButton="True" style =" background-color:aliceblue" AutoGenerateColumns="False" OnSelectedIndexChanging="gvArticulos_SelectedIndexChanging" AllowPaging="True" OnPageIndexChanging="gvArticulos_PageIndexChanging" PageSize="5">
-                        <Columns>
-                            <asp:TemplateField HeaderText="DESCRIPCION">
+    <ul class="nav nav-pills flex-wrap gap-1 mb-4">
+        <li class="nav-item"><a class="<%: ClaseCategoria(null) %>" href="<%: ResolveUrl("~/UsuarioForms/Catalogo.aspx") %>">Todas</a></li>
+        <asp:Repeater ID="rptCategorias" runat="server">
+            <ItemTemplate>
+                <li class="nav-item">
+                    <a class='<%# ClaseCategoria(Eval("IdCategoria_ca")) %>' href='<%# UrlCategoria(Eval("IdCategoria_ca")) %>'><%#: Eval("Descripcion_ca") %></a>
+                </li>
+            </ItemTemplate>
+        </asp:Repeater>
+    </ul>
+
+    <div class="row g-4">
+        <div class="col-lg-9">
+            <asp:Label ID="lblResultado" runat="server" CssClass="d-block text-body-secondary small mb-2" />
+
+            <asp:Panel ID="pnlSinResultados" runat="server" Visible="false" CssClass="card text-center py-5">
+                <div class="card-body">
+                    <i class="bi bi-search display-6 text-body-tertiary"></i>
+                    <p class="mt-3 mb-3">No encontramos productos con ese criterio.</p>
+                    <a class="btn btn-outline-primary" href="<%: ResolveUrl("~/UsuarioForms/Catalogo.aspx") %>">Ver todo el catálogo</a>
+                </div>
+            </asp:Panel>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
+                <asp:Repeater ID="rptArticulos" runat="server" OnItemCommand="rptArticulos_ItemCommand">
+                    <ItemTemplate>
+                        <div class="col">
+                            <div class="card h-100 producto">
+                                <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                <div class="card-body d-flex flex-column">
+                                    <h2 class="h6 card-title descripcion"><%#: Eval("Descripcion_ar") %></h2>
+                                    <div class="d-flex align-items-baseline justify-content-between mt-auto">
+                                        <span class="fs-5 fw-semibold"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span>
+                                        <span class='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? "badge text-bg-light" : "badge text-bg-danger" %>'>
+                                            <%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? "Stock: " + Eval("Stock_ar") : "Sin stock" %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                                    <asp:LinkButton runat="server" CommandName="Agregar" CommandArgument='<%# Eval("CodArticulo_ar") %>'
+                                        CssClass="btn btn-primary w-100" Enabled='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 %>'>
+                                        <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+                        </div>
+                    </ItemTemplate>
+                </asp:Repeater>
+            </div>
+
+            <nav class="mt-4" aria-label="Páginas del catálogo">
+                <asp:Literal ID="litPaginacion" runat="server" />
+            </nav>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card sticky-lg-top resumen-carrito">
+                <div class="card-body">
+                    <h2 class="h6 mb-3"><i class="bi bi-cart3"></i> Tu carrito</h2>
+                    <asp:Panel ID="pnlCarritoVacio" runat="server" CssClass="text-body-secondary small">
+                        Todavía no agregaste productos.
+                    </asp:Panel>
+                    <asp:Panel ID="pnlCarrito" runat="server">
+                        <ul class="list-unstyled small mb-3">
+                            <asp:Repeater ID="rptCarrito" runat="server">
                                 <ItemTemplate>
-                                    <asp:Label ID="lblDescripcion" runat="server" Text='<%# Bind ("Descripcion_ar") %>'></asp:Label>
+                                    <li class="d-flex justify-content-between gap-2 py-1 border-bottom">
+                                        <span><%#: Eval("Cantidad") %> &times; <%#: Eval("Descripcion") %></span>
+                                        <span class="text-nowrap"><%#: Eval("Subtotal", "{0:C0}") %></span>
+                                    </li>
                                 </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="STOCK">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblStock" runat="server" Text='<%# Bind ("Stock_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="PRECIO UNITARIO">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblPrecioUnitario" runat="server" Text='<%# Bind ("PrecioUnitario_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="IMAGEN">
-                                <ItemTemplate>
-                                    <asp:Image ID="Image1" runat="server" Height="100px" ImageUrl='<%# Bind ("Imagen") %>' Width="100px" />
-                                    <br />
-                                    <asp:Label ID="lblImagen" runat="server" Text='<%# Bind ("Imagen") %>' Visible="False"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
-                </td>
-                <td class="auto-style11">&nbsp;Productos en tu carrito</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">
-                    <asp:GridView ID="gvCarrito" runat="server" BackColor="White" BorderColor="#3366CC" BorderStyle="None" BorderWidth="1px" CellPadding="4">
-                        <FooterStyle BackColor="#99CCCC" ForeColor="#003399" />
-                        <HeaderStyle BackColor="#003399" Font-Bold="True" ForeColor="#CCCCFF" />
-                        <PagerStyle BackColor="#99CCCC" ForeColor="#003399" HorizontalAlign="Left" />
-                        <RowStyle BackColor="White" ForeColor="#003399" />
-                        <SelectedRowStyle BackColor="#009999" Font-Bold="True" ForeColor="#CCFF99" />
-                        <SortedAscendingCellStyle BackColor="#EDF6F6" />
-                        <SortedAscendingHeaderStyle BackColor="#0D4AC4" />
-                        <SortedDescendingCellStyle BackColor="#D6DFDF" />
-                        <SortedDescendingHeaderStyle BackColor="#002876" />
-                    </asp:GridView>
-                    <asp:Label ID="lblTotalCompra" runat="server"></asp:Label>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style17">
-                    &nbsp;</td>
-                <td class="auto-style3">
-                    <asp:Button ID="btnIralCarrito" runat="server" OnClick="btnIralCarrito_Click" Text="Ir a Mi Carrito" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" />
-                </td>
-                <td class="auto-style4">
-                    &nbsp;</td>
-            </tr>
-            </table>
-    </form>
-</body>
-</html>
+                            </asp:Repeater>
+                        </ul>
+                        <div class="d-flex justify-content-between fw-semibold mb-3">
+                            <span>Total</span>
+                            <asp:Label ID="lblTotalCompra" runat="server" />
+                        </div>
+                        <a class="btn btn-success w-100" href="<%: ResolveUrl("~/UsuarioForms/Carrito.aspx") %>">Ir a pagar</a>
+                    </asp:Panel>
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>

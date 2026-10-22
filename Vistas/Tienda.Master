@@ -1,0 +1,37 @@
+<%@ Master Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Tienda.Master.cs" Inherits="Vistas.TiendaMaster" %>
+
+<asp:Content ContentPlaceHolderID="Navegacion" runat="server">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="<%: ResolveUrl("~/UsuarioForms/Catalogo.aspx") %>">
+                <i class="bi bi-cpu-fill text-primary"></i> PC Booster
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTienda"
+                aria-controls="menuTienda" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuTienda">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="<%: ClaseLink("Catalogo") %>" href="<%: ResolveUrl("~/UsuarioForms/Catalogo.aspx") %>"><i class="bi bi-grid"></i> Catálogo</a></li>
+                    <li class="nav-item"><a class="<%: ClaseLink("HistorialCompras") %>" href="<%: ResolveUrl("~/UsuarioForms/HistorialCompras.aspx") %>"><i class="bi bi-bag-check"></i> Mis compras</a></li>
+                    <li class="nav-item"><a class="<%: ClaseLink("EdicionDatosUsuario") %>" href="<%: ResolveUrl("~/UsuarioForms/EdicionDatosUsuario.aspx") %>"><i class="bi bi-person"></i> Mi cuenta</a></li>
+                    <% if (EsAdmin) { %>
+                    <li class="nav-item"><a class="nav-link" href="<%: ResolveUrl("~/AdminForms/AdminHome.aspx") %>"><i class="bi bi-speedometer2"></i> Administración</a></li>
+                    <% } %>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a class="btn btn-outline-light position-relative" href="<%: ResolveUrl("~/UsuarioForms/Carrito.aspx") %>" id="linkCarrito">
+                        <i class="bi bi-cart3"></i> Carrito
+                        <asp:Label ID="lblCantidadCarrito" runat="server" CssClass="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" />
+                    </a>
+                    <span class="navbar-text text-light d-none d-lg-inline"><i class="bi bi-person-circle"></i> <%: NombreUsuario %></span>
+                    <a class="btn btn-sm btn-outline-light" href="<%: ResolveUrl("~/Salir.ashx") %>" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="Contenido" runat="server">
+    <asp:ContentPlaceHolder ID="Pagina" runat="server" />
+</asp:Content>

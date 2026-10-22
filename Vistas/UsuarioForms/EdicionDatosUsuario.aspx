@@ -1,160 +1,67 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EdicionDatosUsuario.aspx.cs" Inherits="Vistas.EdicionDatosUsuario" %>
+﻿<%@ Page Title="Mi cuenta · PC Booster Store" Language="C#" MasterPageFile="~/Tienda.Master" AutoEventWireup="true" CodeBehind="EdicionDatosUsuario.aspx.cs" Inherits="Vistas.EdicionDatosUsuario" %>
 
-<!DOCTYPE html>
+<asp:Content ContentPlaceHolderID="Pagina" runat="server">
+    <h1 class="h3 mb-3">Mi cuenta</h1>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-    <style type="text/css">
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style2 {
-            text-align: center;
-            font-size: xx-large;
-        }
-        .auto-style3 {
-            font-size: x-large;
-        }
-        .auto-style4 {
-            color: #FFFFCC;
-        }
-        .auto-style7 {
-            color: #FFFFCC;
-            text-align: left;
-        }
-        .auto-style10 {
-            text-align: right;
-        }
-    </style>
-</head>
-<body style =" background-color:cornflowerblue">
-    <form id="form1" runat="server">
-        <table class="auto-style1">
-            <tr>
-                <td class="auto-style2" colspan="2">PC - BOOSTER - STORE</td>
-            </tr>
-            <tr>
-                <td colspan="2" class="auto-style10">IR A :&nbsp;&nbsp;
-                    <asp:DropDownList ID="ddlMenuNavegacion" runat="server" AutoPostBack="True" OnSelectedIndexChanged="ddlMenuNavegacion_SelectedIndexChanged">
-                        <asp:ListItem Selected="True" Value="0">--Seleccionar--</asp:ListItem>
-                        <asp:ListItem Value="1">Catalogo</asp:ListItem>
-                        <asp:ListItem Value="2">Mis Compras</asp:ListItem>
-                        <asp:ListItem Value="3">Mi Carrito</asp:ListItem>
-                        <asp:ListItem Value="4">Salir</asp:ListItem>
-                    </asp:DropDownList>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style3" colspan="2">MI PERFIL:<asp:Label ID="lblNombreUsuario" runat="server" Font-Bold="True" Font-Size="XX-Large" Width="176px"></asp:Label>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style4" colspan="2" style="background-color: #008080">ESTOS SON LOS DATOS QUE BRINDASTE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:Label ID="lblMensajeUsuario" runat="server"></asp:Label>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style7" style="background-color: #008080">
-                    <asp:GridView ID="gvDatoUsuario" runat="server" AutoGenerateColumns="False" AutoGenerateEditButton="True" OnRowCancelingEdit="gvDatoUsuario_RowCancelingEdit" OnRowEditing="gvDatoUsuario_RowEditing" OnRowUpdating="gvDatoUsuario_RowUpdating">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6 mb-3"><i class="bi bi-person"></i> Mis datos</h2>
+                    <asp:Panel runat="server" DefaultButton="btnGuardar" CssClass="row g-3">
+                        <div class="col-sm-6">
+                            <asp:Label runat="server" AssociatedControlID="txtNombre" CssClass="form-label" Text="Nombre de usuario" />
+                            <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" MaxLength="10" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNombre" ValidationGroup="Datos" Display="Dynamic" CssClass="validador" ErrorMessage="Ingresá un nombre." />
+                        </div>
+                        <div class="col-sm-6">
+                            <asp:Label runat="server" AssociatedControlID="txtEmail" CssClass="form-label" Text="E-mail" />
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" MaxLength="30" TextMode="Email" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" ValidationGroup="Datos" Display="Dynamic" CssClass="validador" ErrorMessage="Ingresá un e-mail." />
+                        </div>
+                        <div class="col-sm-6">
+                            <asp:Label runat="server" AssociatedControlID="txtTelefono" CssClass="form-label" Text="Teléfono" />
+                            <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" MaxLength="15" />
+                        </div>
+                        <div class="col-sm-6">
+                            <asp:Label runat="server" AssociatedControlID="txtContraseña" CssClass="form-label" Text="Nueva contraseña" />
+                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <div class="form-text">Dejala vacía para mantener la actual.</div>
+                        </div>
+                        <div class="col-12">
+                            <asp:Button ID="btnGuardar" runat="server" Text="Guardar cambios" CssClass="btn btn-primary" ValidationGroup="Datos" OnClick="btnGuardar_Click" />
+                        </div>
+                    </asp:Panel>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h6 mb-3"><i class="bi bi-credit-card"></i> Mis tarjetas</h2>
+                    <asp:Label ID="lblSinTarjetas" runat="server" CssClass="text-body-secondary" Text="No tenés tarjetas guardadas. Podés agregar una desde el carrito." />
+                    <asp:GridView ID="gvTarjetas" runat="server" AutoGenerateColumns="false" CssClass="table mb-0" GridLines="None"
+                        DataKeyNames="Num_Tarjeta_t,Codigo_Seguridad_t,Titular_Tarjeta_t" OnRowDeleting="gvTarjetas_RowDeleting">
                         <Columns>
-                            <asp:TemplateField HeaderText="ID usuario">
-                                <EditItemTemplate>
-                                    <asp:Label ID="lblEditId" runat="server" Text='<%# Bind("IdUsuario_us") %>'></asp:Label>
-                                </EditItemTemplate>
+                            <asp:TemplateField HeaderText="Tarjeta">
                                 <ItemTemplate>
-                                    <asp:Label ID="Label1" runat="server" Text='<%# Bind("IdUsuario_us") %>'></asp:Label>
+                                    <div class="fw-semibold"><%#: Eval("Nombre_Tarjeta_t") %> &bull;&bull;&bull;&bull; <%#: Eval("Num_Tarjeta_t") %></div>
+                                    <div class="small text-body-secondary"><%#: Eval("Titular_Tarjeta_t") %></div>
                                 </ItemTemplate>
                             </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Nombre">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txtEditNombre" runat="server" MaxLength="20" Text='<%# Bind("Nombre_us") %>'></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtEditNombre">Ingrese un nombre</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
+                            <asp:BoundField DataField="Tipo_Tarjeta_t" HeaderText="Tipo" />
+                            <asp:BoundField DataField="Fecha_Vencimiento_t" HeaderText="Vence" DataFormatString="{0:MM/yyyy}" />
+                            <asp:TemplateField ItemStyle-CssClass="text-end">
                                 <ItemTemplate>
-                                    <asp:Label ID="Label2" runat="server" Text='<%# Bind("Nombre_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Contraseña">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txtEditContraseña" runat="server" MaxLength="7" Text='<%# Bind("Contraseña_us") %>' TextMode="Password"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtEditContraseña">Ingrese un contraseña</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="Label3" runat="server" Text='<%# Bind("Contraseña_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Email">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txtEditEmail" runat="server" MaxLength="30" Text='<%# Bind("Email_us") %>' TextMode="Email"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ControlToValidate="txtEditEmail">Ingrese un email</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="Label4" runat="server" Text='<%# Bind("Email_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Telefono">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txtEditTelefono" runat="server" MaxLength="15" Text='<%# Bind("Telefono_us") %>' TextMode="Number"></asp:TextBox>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="Label5" runat="server" Text='<%# Bind("Telefono_us") %>'></asp:Label>
+                                    <asp:LinkButton runat="server" CommandName="Delete" CssClass="btn btn-sm btn-outline-danger" ToolTip="Eliminar tarjeta"
+                                        OnClientClick="return confirm('¿Eliminar esta tarjeta?');"><i class="bi bi-trash"></i></asp:LinkButton>
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
                     </asp:GridView>
-                    <br />
-                    <br />
-                    ESTAS SON LAS TARJETAS QUE TENÉS GUARDADAS</td>
-                <td class="auto-style4" style="background-color: #008080">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4" colspan="2" style="background-color: #008080">
-                    
-                    <asp:GridView ID="gvTarjetas" runat="server" AutoGenerateColumns="False" OnRowDeleting="gvTarjetas_RowDeleting" AutoGenerateDeleteButton="True">
-                        <Columns>
-                            <asp:TemplateField HeaderText="">
-                                <ItemTemplate>
-                                    <asp:Button runat="server" ForeColor="LightGoldenrodYellow" BackColor="#007575"
-                                        CommandName="Delete" OnClientClick="return confirm('Are you sure you want to delete this event?');"
-                                        AlternateText="Delete" Text="Eliminar"/>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Titular de la tarjeta">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblTitularTarjeta" runat="server" Text='<%# Bind("Titular_Tarjeta_t") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Nombre Tarjeta">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblNombreTarjeta" runat="server" Text='<%# Bind("Nombre_Tarjeta_t") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Tipo tarjeta">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblTipoTarjeta" runat="server" Text='<%# Bind("Tipo_Tarjeta_t") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Numero de tarjeta">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblNumTarjeta" runat="server" Text='<%# Bind("Num_Tarjeta_t") %>'></asp:Label>
-                                    <br />
-                                    <asp:Label ID="lblCodSeguridad" runat="server" Text='<%# Bind("Codigo_Seguridad_t") %>' Visible="False"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="Fecha vencimiento">
-                                <ItemTemplate>
-                                    <asp:Label ID="lblFechaVencimiento" runat="server" Text='<%# Bind("Fecha_Vencimiento_t") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                    </asp:GridView>
-                </td>
-            </tr>
-            </table>
-    </form>
-    <p>
-        &nbsp;</p>
-</body>
-</html>
+                </div>
+            </div>
+        </div>
+    </div>
+</asp:Content>

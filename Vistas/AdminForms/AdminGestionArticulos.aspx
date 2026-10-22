@@ -1,344 +1,178 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminGestionArticulos.aspx.cs" Inherits="Vistas.AdminForms.AdminHome" %>
+<%@ Page Title="Artículos y categorías · Administración" Language="C#" MasterPageFile="~/Admin.Master" AutoEventWireup="true" CodeBehind="AdminGestionArticulos.aspx.cs" Inherits="Vistas.AdminForms.AdminGestionArticulos" %>
 
-<!DOCTYPE html>
+<asp:Content ContentPlaceHolderID="Pagina" runat="server">
+    <h1 class="h3 mb-3">Artículos y categorías</h1>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-    <style type="text/css">
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style8 {
-            background-color: midnightblue;
-        }
-        .auto-style11 {
-            height: 23px;
-            width: 484px;
-        }
-        .auto-style12 {
-            font-size: x-large;
-        }
-        .auto-style13 {
-            text-align: left;
-        }
-        .auto-style16 {
-            text-align: left;
-            width: 179px;
-        }
-        .auto-style17 {
-            width: 179px;
-        }
-        .auto-style18 {
-            height: 23px;
-            width: 179px;
-        }
-        .auto-style19 {
-            height: 26px;
-            width: 179px;
-        }
-        .auto-style20 {
-            text-align: left;
-            width: 484px;
-        }
-        .auto-style21 {
-            width: 484px;
-        }
-        .auto-style22 {
-            height: 26px;
-            width: 484px;
-        }
-    </style>
-</head>
-<body style = "background-color: lightcyan">
-    <form id="form1" runat="server">
-        <table class="auto-style1">
-            <tr>
-                <td class="auto-style20">BIENVENIDO<strong>&nbsp; <asp:Label ID="lblNombreadm" runat="server" CssClass="auto-style12"></asp:Label>
-                &nbsp;</strong></td>
-                <td class="auto-style16">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8" colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    GESTIONAR ARTICULOS</td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    <asp:TextBox ID="txtIdArticulo" runat="server"></asp:TextBox>
-&nbsp;&nbsp;
-                    <asp:Button ID="btnBuscarporCodigo" runat="server" Text="Buscar por Codigo" OnClick="btnBuscarporCodigo_Click" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" />
-                    <asp:Button ID="btnCargarArticulos" runat="server" OnClick="btnCargarArticulos_Click" Text="Cargar articulos" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove"/>
-                    <asp:Label ID="lblMensajeArticulo" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    <asp:GridView ID="gvArticulos" runat="server" AutoGenerateColumns="False" CellPadding="3" OnRowCancelingEdit="gvArticulos_RowCancelingEdit" OnRowEditing="gvArticulos_RowEditing" OnRowUpdating="gvArticulos_RowUpdating" AllowPaging="True" AutoGenerateEditButton="True" OnPageIndexChanging="gvArticulos_PageIndexChanging" PageSize="5" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" OnRowDeleting="gvArticulos_RowDeleting">
-                        <Columns>
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <asp:Button runat="server" ForeColor="DarkBlue" BackColor="LightBlue"
-                                        CommandName="Delete" OnClientClick="return confirm('Esta seguro que desea eliminar este articulo?');"
-                                        AlternateText="Delete" Text="Eliminar"/>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="CODIGO">
-                                <EditItemTemplate>
-                                    <asp:Label ID="lbl_et_Codigo" runat="server" Text='<%# Bind("CodArticulo_ar") %>'></asp:Label>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Codart" runat="server" Text='<%# Bind("CodArticulo_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="CATEGORIA">
-                                <EditItemTemplate>
-                                    <asp:Label ID="lbl_et_Categoria" runat="server" Text='<%# Bind("Categoria_ar") %>'></asp:Label>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Categoria" runat="server" Text='<%# Bind("Categoria_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="DESCRIPCION">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_et_Descripcion" runat="server" Text='<%# Bind("Descripcion_ar") %>' MaxLength="300"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ControlToValidate="txt_et_Descripcion">Ingrese una descripcion</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_descripcion" runat="server" Text='<%# Bind("Descripcion_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="STOCK">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_et_Stock" runat="server" Text='<%# Bind("Stock_ar") %>' TextMode="Number"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ControlToValidate="txt_et_Stock">Ingrese el stock</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Stock" runat="server" Text='<%# Bind("Stock_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="PRECIO UNITARIO">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_et_PrecioUnitario" runat="server" Text='<%# Bind("Preciounitario_ar") %>' TextMode="Number"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator9" runat="server" ControlToValidate="txt_et_PrecioUnitario">Ingrese el precio</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_PrecioU" runat="server" Text='<%# Bind("PrecioUnitario_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="URL IMAGEN">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_et_Imagen" runat="server" Text='<%# Bind("Imagen") %>'></asp:TextBox>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Imagen" runat="server" Text='<%# Bind("Imagen") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="DISPONIBLE">
-                                <EditItemTemplate>
-                                    <asp:DropDownList ID="ddlEditEstado" runat="server">
-                                        <asp:ListItem Value="true">Activo</asp:ListItem>
-                                        <asp:ListItem Value="false">Inactivo</asp:ListItem>
-                                    </asp:DropDownList>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Estado" runat="server" Text='<%# Bind("Estado_ar") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                        <FooterStyle BackColor="White" ForeColor="#000066" />
-                        <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-                        <RowStyle ForeColor="#000066" />
-                        <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
-                        <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                        <SortedAscendingHeaderStyle BackColor="#007DBB" />
-                        <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                        <SortedDescendingHeaderStyle BackColor="#00547E" />
-                    </asp:GridView>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8" colspan="2" style="background-color: #000066">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">AGREGAR ARTICULOS</td>
-                <td class="auto-style17">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    Codigo&nbsp; Articulo
-                    <asp:TextBox ID="txtCodArticulo" runat="server" ValidationGroup="1" MaxLength="4"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtCodArticulo" ErrorMessage="Por favor ingresar un codigo de articulo" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                </td>
-                <td class="auto-style17">
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style11">
-                    &nbsp;Categoria&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:TextBox ID="txtCategoria" runat="server" ValidationGroup="1" MaxLength="2"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ControlToValidate="txtCategoria" ErrorMessage="Por favor ingresar una categoria" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="txtCategoria" ErrorMessage="Solo ingrese numero en Categoria" ValidationExpression="^\d+$" ValidationGroup="1">*</asp:RegularExpressionValidator>
-                </td>
-                <td class="auto-style18">
-                    <asp:ValidationSummary ID="ValidationSummary1" runat="server" ShowMessageBox="True" ShowSummary="False" ValidationGroup="1" />
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    &nbsp;Descripcion&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:TextBox ID="txtDescripcion" runat="server" ValidationGroup="1" MaxLength="300"></asp:TextBox>
-                &nbsp;<asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtDescripcion" ErrorMessage="Por favor ingresar una descripcion" ValidationGroup="1">*</asp:RequiredFieldValidator>
-&nbsp;<asp:Button ID="btnAgregarArticulo" runat="server" Text="Agregar Articulo" OnClick="btnAgregarArticulo_Click" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" ValidationGroup="1" />
-                    <asp:Label ID="lblMensajeA" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style11">
-                    Stock&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <asp:TextBox ID="txtStock" runat="server" ValidationGroup="1"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ControlToValidate="txtStock" ErrorMessage="Por favor ingresar stock" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ControlToValidate="txtStock" ErrorMessage="Solo ingrese numero en Stock" ValidationExpression="^\d+$" ValidationGroup="1">*</asp:RegularExpressionValidator>
-                </td>
-                <td class="auto-style18">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style22">
-                    Precio Unitario&nbsp;&nbsp;
-                    <asp:TextBox ID="txtPrecio_Unitario" runat="server" ValidationGroup="1"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ControlToValidate="txtPrecio_Unitario" ErrorMessage="Por favor ingresar precio unitario" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator3" runat="server" ControlToValidate="txtPrecio_Unitario" ErrorMessage="Solo ingrese numero en Precio unitario" ValidationExpression="^\d+$" ValidationGroup="1">*</asp:RegularExpressionValidator>
-                </td>
-                <td class="auto-style19">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    Imagen (Solo url)<asp:TextBox ID="txtImagen" runat="server" ValidationGroup="1"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ControlToValidate="txtImagen" ErrorMessage="Por favor ingresar link de la imagen" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="2" style="background-color: #000066">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    GESTIONAR CATEGORIAS</td>
-                <td class="auto-style13">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    <asp:TextBox ID="txtBuscarCatid" runat="server"></asp:TextBox>
-&nbsp;
-                    <asp:Button ID="btnBuscarCategoria" runat="server" Text="Buscar por Categoria " OnClick="btnBuscarCategoria_Click" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" />
-                    <asp:Button ID="Button1" runat="server" Text="Cargar categorias" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" OnClick="Button1_Click"/>
-                    <asp:Label ID="lblMensajeCat" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    <asp:GridView ID="gvCategorias" runat="server" AutoGenerateColumns="False" BackColor="White" BorderColor="#CCCCCC" BorderStyle="None" BorderWidth="1px" CellPadding="3" AutoGenerateEditButton="True" OnRowCancelingEdit="gvCategorias_RowCancelingEdit" OnRowDeleting="gvCategorias_RowDeleting" OnRowEditing="gvCategorias_RowEditing" OnRowUpdating="gvCategorias_RowUpdating">
-                        <Columns>
-                            <asp:TemplateField HeaderText="">
-                                <ItemTemplate>
-                                    <asp:Button runat="server" BackColor="#0052a4" ForeColor="White"
-                                        CommandName="Delete" OnClientClick="return confirm('Esta seguro que desea eliminar la categoria?');"
-                                        AlternateText="Delete" Text="Eliminar"/>               
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="ID">
-                                <EditItemTemplate>
-                                    <asp:Label ID="lbl_eit_IdCategoria" runat="server" Text='<%# Bind("IdCategoria_ca") %>'></asp:Label>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_IdCategoria" runat="server" Text='<%# Bind("IdCategoria_ca") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="DESCRIPCION">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_eit_Decripcion" runat="server" Text='<%# Bind("Descripcion_ca") %>'></asp:TextBox>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Descripcion" runat="server" Text='<%# Bind("Descripcion_ca") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="DISPONIBLE">
-                                <EditItemTemplate>
-                                    <asp:DropDownList ID="ddlEditEstadoCat" runat="server">
-                                        <asp:ListItem Value="true">Activo</asp:ListItem>
-                                        <asp:ListItem Value="false">Inactivo</asp:ListItem>
-                                    </asp:DropDownList>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_Estado" runat="server" Text='<%# Bind("Estado_ca") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                        <FooterStyle BackColor="White" ForeColor="#000066" />
-                        <HeaderStyle BackColor="#006699" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="White" ForeColor="#000066" HorizontalAlign="Left" />
-                        <RowStyle ForeColor="#000066" />
-                        <SelectedRowStyle BackColor="#669999" Font-Bold="True" ForeColor="White" />
-                        <SortedAscendingCellStyle BackColor="#F1F1F1" />
-                        <SortedAscendingHeaderStyle BackColor="#007DBB" />
-                        <SortedDescendingCellStyle BackColor="#CAC9C9" />
-                        <SortedDescendingHeaderStyle BackColor="#00547E" />
-                    </asp:GridView>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="2" style="background-color: #000066">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    AGREGAR CATEGORIAS</td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    Descripcion&nbsp;&nbsp;
-                    <asp:TextBox ID="txtDescripcioncat" runat="server"></asp:TextBox>
-&nbsp;&nbsp;&nbsp;&nbsp;
-                    <asp:Button ID="btnAgregarCategoria" runat="server" Text="Agregar Categoria" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" BorderStyle="Groove" OnClick="btnAgregarCategoria_Click" />
-                &nbsp;<asp:Label ID="lblAgregarCategoria" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    &nbsp;</td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style21">
-                    &nbsp;</td>
-                <td class="auto-style17">
-                    &nbsp;</td>
-            </tr>
-        </table>
-    </form>
-</body>
-</html>
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0"><i class="bi bi-box-seam"></i> Artículos</h2>
+                <div class="d-flex flex-wrap gap-2">
+                    <asp:Panel runat="server" DefaultButton="btnBuscarporCodigo" CssClass="input-group" style="width: 260px">
+                        <asp:TextBox ID="txtIdArticulo" runat="server" CssClass="form-control" placeholder="Código (ej: gb1)" MaxLength="4" />
+                        <asp:LinkButton ID="btnBuscarporCodigo" runat="server" CssClass="btn btn-outline-primary" OnClick="btnBuscarporCodigo_Click" ToolTip="Buscar por código"><i class="bi bi-search"></i></asp:LinkButton>
+                    </asp:Panel>
+                    <asp:Button ID="btnCargarArticulos" runat="server" Text="Ver todos" CssClass="btn btn-outline-secondary" OnClick="btnCargarArticulos_Click" CausesValidation="false" />
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#nuevoArticulo" aria-expanded="false" aria-controls="nuevoArticulo">
+                        <i class="bi bi-plus-lg"></i> Nuevo artículo
+                    </button>
+                </div>
+            </div>
+
+            <div class="collapse" id="nuevoArticulo">
+                <asp:Panel runat="server" DefaultButton="btnAgregarArticulo" CssClass="border rounded-3 p-3 mb-3 bg-body-tertiary">
+                    <div class="row g-3">
+                        <div class="col-sm-3 col-lg-2">
+                            <asp:Label runat="server" AssociatedControlID="txtCodArticulo" CssClass="form-label" Text="Código" />
+                            <asp:TextBox ID="txtCodArticulo" runat="server" CssClass="form-control" MaxLength="4" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCodArticulo" ValidationGroup="NuevoArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-sm-9 col-lg-4">
+                            <asp:Label runat="server" AssociatedControlID="txtDescripcion" CssClass="form-label" Text="Descripción" />
+                            <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" MaxLength="300" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescripcion" ValidationGroup="NuevoArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="ddlCategoria" CssClass="form-label" Text="Categoría" />
+                            <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="form-select" DataTextField="Descripcion_ca" DataValueField="IdCategoria_ca" />
+                        </div>
+                        <div class="col-6 col-sm-3 col-lg-1">
+                            <asp:Label runat="server" AssociatedControlID="txtStock" CssClass="form-label" Text="Stock" />
+                            <asp:TextBox ID="txtStock" runat="server" CssClass="form-control" inputmode="numeric" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtStock" ValidationGroup="NuevoArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtStock" ValidationGroup="NuevoArticulo" ValidationExpression="^\d+$" Display="Dynamic" CssClass="validador" ErrorMessage="Solo números." />
+                        </div>
+                        <div class="col-6 col-sm-3 col-lg-2">
+                            <asp:Label runat="server" AssociatedControlID="txtPrecio_Unitario" CssClass="form-label" Text="Precio ($)" />
+                            <asp:TextBox ID="txtPrecio_Unitario" runat="server" CssClass="form-control" inputmode="numeric" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPrecio_Unitario" ValidationGroup="NuevoArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtPrecio_Unitario" ValidationGroup="NuevoArticulo" ValidationExpression="^[1-9]\d*$" Display="Dynamic" CssClass="validador" ErrorMessage="Número mayor a 0." />
+                        </div>
+                        <div class="col-lg-9">
+                            <asp:Label runat="server" AssociatedControlID="txtImagen" CssClass="form-label" Text="URL de la imagen" />
+                            <asp:TextBox ID="txtImagen" runat="server" CssClass="form-control" placeholder="~/Imagenes_ar/Gabinete/gb1.png" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtImagen" ValidationGroup="NuevoArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-lg-3 d-flex align-items-end">
+                            <asp:Button ID="btnAgregarArticulo" runat="server" Text="Agregar artículo" CssClass="btn btn-primary w-100" ValidationGroup="NuevoArticulo" OnClick="btnAgregarArticulo_Click" />
+                        </div>
+                    </div>
+                </asp:Panel>
+            </div>
+
+            <div class="table-responsive">
+                <asp:GridView ID="gvArticulos" runat="server" AutoGenerateColumns="false" DataKeyNames="CodArticulo_ar"
+                    CssClass="table table-hover mb-0" GridLines="None" AllowPaging="true" PageSize="10" PagerStyle-CssClass="pager-gv"
+                    OnRowEditing="gvArticulos_RowEditing" OnRowCancelingEdit="gvArticulos_RowCancelingEdit" OnRowUpdating="gvArticulos_RowUpdating"
+                    OnRowDeleting="gvArticulos_RowDeleting" OnPageIndexChanging="gvArticulos_PageIndexChanging" OnRowDataBound="gvArticulos_RowDataBound"
+                    EmptyDataText="No hay artículos para mostrar.">
+                    <Columns>
+                        <asp:TemplateField>
+                            <ItemTemplate>
+                                <img src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt="" width="48" height="48" style="object-fit: contain" loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="CodArticulo_ar" HeaderText="Código" ReadOnly="true" />
+                        <asp:TemplateField HeaderText="Descripción">
+                            <ItemTemplate><%#: Eval("Descripcion_ar") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_et_Descripcion" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Descripcion_ar") %>' MaxLength="300" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_et_Descripcion" ValidationGroup="EditarArticulo" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                                <asp:TextBox ID="txt_et_Imagen" runat="server" CssClass="form-control form-control-sm mt-1" Text='<%# Bind("Imagen") %>' placeholder="URL de la imagen" />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Categoría">
+                            <ItemTemplate><%#: NombreCategoria(Eval("Categoria_ar")) %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddl_et_Categoria" runat="server" CssClass="form-select form-select-sm" DataTextField="Descripcion_ca" DataValueField="IdCategoria_ca" />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Stock">
+                            <ItemTemplate><%#: Eval("Stock_ar") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_et_Stock" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Stock_ar") %>' style="width: 6rem" />
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txt_et_Stock" ValidationGroup="EditarArticulo" ValidationExpression="^\d+$" Display="Dynamic" CssClass="validador" ErrorMessage="Solo números." />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Precio">
+                            <ItemTemplate><span class="text-nowrap"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_et_PrecioUnitario" runat="server" CssClass="form-control form-control-sm" Text='<%# Eval("PrecioUnitario_ar", "{0:0}") %>' style="width: 7rem" />
+                                <asp:RegularExpressionValidator runat="server" ControlToValidate="txt_et_PrecioUnitario" ValidationGroup="EditarArticulo" ValidationExpression="^[1-9]\d*$" Display="Dynamic" CssClass="validador" ErrorMessage="Número mayor a 0." />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Estado">
+                            <ItemTemplate>
+                                <span class='<%# (bool)Eval("Estado_ar") ? "badge text-bg-success" : "badge text-bg-secondary" %>'><%# (bool)Eval("Estado_ar") ? "Activo" : "Dado de baja" %></span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField ItemStyle-CssClass="text-end text-nowrap">
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Edit" CssClass="btn btn-sm btn-outline-primary" ToolTip="Editar" CausesValidation="false"><i class="bi bi-pencil"></i></asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Delete" CssClass="btn btn-sm btn-outline-danger" ToolTip="Dar de baja" CausesValidation="false"
+                                    Visible='<%# (bool)Eval("Estado_ar") %>' OnClientClick="return confirm('¿Dar de baja este artículo?');"><i class="bi bi-trash"></i></asp:LinkButton>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Update" CssClass="btn btn-sm btn-primary" ValidationGroup="EditarArticulo">Guardar</asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Cancel" CssClass="btn btn-sm btn-outline-secondary" CausesValidation="false">Cancelar</asp:LinkButton>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0"><i class="bi bi-tags"></i> Categorías</h2>
+                <asp:Panel runat="server" DefaultButton="btnAgregarCategoria" CssClass="input-group" style="width: 340px">
+                    <asp:TextBox ID="txtDescripcioncat" runat="server" CssClass="form-control" placeholder="Nueva categoría" MaxLength="30" />
+                    <asp:Button ID="btnAgregarCategoria" runat="server" Text="Agregar" CssClass="btn btn-primary" ValidationGroup="NuevaCategoria" OnClick="btnAgregarCategoria_Click" />
+                </asp:Panel>
+            </div>
+            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDescripcioncat" ValidationGroup="NuevaCategoria" Display="Dynamic" CssClass="validador text-end mb-2" ErrorMessage="Ingresá el nombre de la categoría." />
+
+            <div class="table-responsive">
+                <asp:GridView ID="gvCategorias" runat="server" AutoGenerateColumns="false" DataKeyNames="IdCategoria_ca"
+                    CssClass="table table-hover mb-0" GridLines="None"
+                    OnRowEditing="gvCategorias_RowEditing" OnRowCancelingEdit="gvCategorias_RowCancelingEdit"
+                    OnRowUpdating="gvCategorias_RowUpdating" OnRowDeleting="gvCategorias_RowDeleting">
+                    <Columns>
+                        <asp:BoundField DataField="IdCategoria_ca" HeaderText="ID" ReadOnly="true" />
+                        <asp:TemplateField HeaderText="Descripción">
+                            <ItemTemplate><%#: Eval("Descripcion_ca") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_eit_Decripcion" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Descripcion_ca") %>' MaxLength="30" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_eit_Decripcion" ValidationGroup="EditarCategoria" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Estado">
+                            <ItemTemplate>
+                                <span class='<%# (bool)Eval("Estado_ca") ? "badge text-bg-success" : "badge text-bg-secondary" %>'><%# (bool)Eval("Estado_ca") ? "Activa" : "Inactiva" %></span>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddlEditEstadoCat" runat="server" CssClass="form-select form-select-sm" SelectedValue='<%# Eval("Estado_ca").ToString().ToLower() %>'>
+                                    <asp:ListItem Value="true">Activa</asp:ListItem>
+                                    <asp:ListItem Value="false">Inactiva</asp:ListItem>
+                                </asp:DropDownList>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField ItemStyle-CssClass="text-end text-nowrap">
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Edit" CssClass="btn btn-sm btn-outline-primary" ToolTip="Editar" CausesValidation="false"><i class="bi bi-pencil"></i></asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Delete" CssClass="btn btn-sm btn-outline-danger" ToolTip="Desactivar" CausesValidation="false"
+                                    Visible='<%# (bool)Eval("Estado_ca") %>' OnClientClick="return confirm('¿Desactivar esta categoría?');"><i class="bi bi-trash"></i></asp:LinkButton>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Update" CssClass="btn btn-sm btn-primary" ValidationGroup="EditarCategoria">Guardar</asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Cancel" CssClass="btn btn-sm btn-outline-secondary" CausesValidation="false">Cancelar</asp:LinkButton>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+    </div>
+</asp:Content>

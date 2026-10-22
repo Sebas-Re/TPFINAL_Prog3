@@ -1,281 +1,130 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminGestionUsuarios.aspx.cs" Inherits="Vistas.AdminForms.InicioAdmin" %>
+﻿<%@ Page Title="Usuarios · Administración" Language="C#" MasterPageFile="~/Admin.Master" AutoEventWireup="true" CodeBehind="AdminGestionUsuarios.aspx.cs" Inherits="Vistas.AdminForms.AdminGestionUsuarios" %>
 
-<!DOCTYPE html>
+<asp:Content ContentPlaceHolderID="Pagina" runat="server">
+    <h1 class="h3 mb-3">Usuarios</h1>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-    <style type="text/css">
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style3 {
-            width: 374px;
-        }
-        .auto-style5 {
-            width: 374px;
-            height: 23px;
-        }
-        .auto-style6 {
-            height: 23px;
-        }
-        .auto-style7 {
-            width: 204px;
-        }
-        .auto-style8 {
-            width: 204px;
-            height: 23px;
-        }
-        .auto-style9 {
-            background-color: #0000CC;
-        }
-        .auto-style10 {
-            width: 374px;
-            background-color: #0000CC;
-        }
-        .auto-style11 {
-            width: 204px;
-            background-color: #0000CC;
-        }
-        .auto-style12 {
-            width: 374px;
-            text-align: left;
-            height: 30px;
-        }
-        .auto-style13 {
-            text-align: right;
-        }
-        .auto-style14 {
-            width: 204px;
-            height: 26px;
-        }
-        .auto-style15 {
-            width: 374px;
-            height: 26px;
-        }
-        .auto-style16 {
-            height: 26px;
-        }
-        .auto-style17 {
-            margin-right: 3px;
-        }
-        .auto-style18 {
-            width: 204px;
-            height: 30px;
-        }
-        .auto-style19 {
-            height: 30px;
-        }
-    </style>
-</head>
-<body style = "background-color: lightcyan">
-    <form id="form1" runat="server">
-        <table class="auto-style1">
-            <tr>
-                <td class="auto-style7">BIENVENIDO</td>
-                <td class="auto-style3">
-                    <asp:Label ID="lblNombreadm" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style13">
-                    <asp:HyperLink ID="hlVolver" runat="server" NavigateUrl="~/AdminForms/AdminHome.aspx">Volver</asp:HyperLink>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style7">PC - BOOSTER - STORE</td>
-                <td class="auto-style3">&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style11">&nbsp;</td>
-                <td class="auto-style10">&nbsp;</td>
-                <td class="auto-style9">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8">GESTION USUARIOS</td>
-                <td class="auto-style5"></td>
-                <td class="auto-style6"></td>
-            </tr>
-            <tr>
-                <td class="auto-style18">lista de usuarios : </td>
-                <td class="auto-style12">
-                    <asp:TextBox ID="txtBuscarID" runat="server"></asp:TextBox>
-                    <asp:Button ID="btnBuscarId" runat="server" Text="Buscar ID" OnClick="btnBuscarId_Click" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" />
-                    <asp:Button ID="btnMostrarTodo" runat="server" Text="Mostrar Todo" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" OnClick="btnMostrarTodo_Click" />
-                    <asp:Label ID="lblMensajeUsuario" runat="server"></asp:Label>
-                </td>
-                <td class="auto-style19">
-                    </td>
-            </tr>
-            <tr>
-                <td class="auto-style7">&nbsp;</td>
-                <td class="auto-style3">
-                    <asp:GridView ID="gvUsuarios" runat="server" CellPadding="4" ForeColor="#333333" GridLines="None" AutoGenerateColumns="False" AutoGenerateEditButton="True" CssClass="auto-style17" OnRowCancelingEdit="gvUsuarios_RowCancelingEdit1" OnRowDeleting="gvUsuarios_RowDeleting1" OnRowEditing="gvUsuarios_RowEditing1" OnRowUpdating="gvUsuarios_RowUpdating1">
-                        <AlternatingRowStyle BackColor="White" />
-                        <Columns>
-                            <asp:TemplateField>
-                                <ItemTemplate>
-                                    <asp:Button runat="server" ForeColor="#000066" BackColor="#6699ff"
-                                        CommandName="Delete" OnClientClick="return confirm('Esta seguro que quiere eliminar el usuario?');"
-                                        AlternateText="Delete" Text="Eliminar"/>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="ID">
-                                <EditItemTemplate>
-                                    <asp:Label ID="lbl_eit_idUs" runat="server" Text='<%# Bind("IdUsuario_us") %>'></asp:Label>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_idUs" runat="server" Text='<%# Bind("IdUsuario_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="NOMBRE">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_eit_nombreUs" runat="server" Text='<%# Bind("Nombre_us") %>' MaxLength="20"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ControlToValidate="txt_eit_nombreUs">Ingrese un nombre</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_nombreUs" runat="server" Text='<%# Bind("Nombre_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="CONTRASEÑA">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_eit_passUs" runat="server" Text='<%# Bind("Contraseña_us") %>' MaxLength="7" TextMode="Password"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator9" runat="server" ControlToValidate="txt_eit_passUs">Ingrese una contraseña</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_passUs" runat="server" Text='<%# Bind("Contraseña_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="EMAIL">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_eit_emailUs" runat="server" Text='<%# Bind("Email_us") %>' MaxLength="30" TextMode="Email"></asp:TextBox>
-                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator10" runat="server" ControlToValidate="txt_eit_emailUs">Ingrese un email</asp:RequiredFieldValidator>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_emailUs" runat="server" Text='<%# Bind("Email_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="TELEFONO">
-                                <EditItemTemplate>
-                                    <asp:TextBox ID="txt_eit_telefonoUs" runat="server" Text='<%# Bind("Telefono_us") %>' MaxLength="15" TextMode="Number"></asp:TextBox>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_telefonoUs" runat="server" Text='<%# Bind("Telefono_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="TIPO">
-                                <EditItemTemplate>
-                                    <asp:DropDownList ID="ddlEditTipo" runat="server">
-                                        <asp:ListItem Value="true">Administrador</asp:ListItem>
-                                        <asp:ListItem Value="false">Cliente</asp:ListItem>
-                                    </asp:DropDownList>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_tipoUs" runat="server" Text='<%# Bind("Tipo_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                            <asp:TemplateField HeaderText="ESTADO">
-                                <EditItemTemplate>
-                                    <asp:DropDownList ID="ddlEditEstado" runat="server">
-                                        <asp:ListItem Value="true">Activo</asp:ListItem>
-                                        <asp:ListItem Value="false">Inactivo</asp:ListItem>
-                                    </asp:DropDownList>
-                                </EditItemTemplate>
-                                <ItemTemplate>
-                                    <asp:Label ID="lbl_it_estadoUs" runat="server" Text='<%# Bind("Estado_us") %>'></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateField>
-                        </Columns>
-                        <EditRowStyle BackColor="#2461BF" />
-                        <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
-                        <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
-                        <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
-                        <RowStyle BackColor="#EFF3FB" />
-                        <SelectedRowStyle BackColor="#D1DDF1" Font-Bold="True" ForeColor="#333333" />
-                        <SortedAscendingCellStyle BackColor="#F5F7FB" />
-                        <SortedAscendingHeaderStyle BackColor="#6D95E1" />
-                        <SortedDescendingCellStyle BackColor="#E9EBEF" />
-                        <SortedDescendingHeaderStyle BackColor="#4870BE" />
-                    </asp:GridView>
-                </td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style11">&nbsp;</td>
-                <td class="auto-style10">&nbsp;</td>
-                <td class="auto-style9">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style7">AGREGAR USUARIOS</td>
-                <td class="auto-style3">&nbsp;</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style7">Nombre</td>
-                <td class="auto-style3">
-                    <asp:TextBox ID="txtNombreUsuario" runat="server" MaxLength="20"></asp:TextBox>
-                     <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="txtNombreUsuario" ErrorMessage="Por favor ingresar un nombre" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                </td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style14">Contraseña</td>
-                <td class="auto-style15">
-                    <asp:TextBox ID="txtContraseña" runat="server" MaxLength="7" TextMode="Password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="txtRepContraseña" ErrorMessage="Por favor ingrese una contraseña" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                </td>
-                <td class="auto-style16"></td>
-            </tr>
-            <tr>
-                <td class="auto-style7">Repetir Contraseña</td>
-                <td class="auto-style3">
-                    <asp:TextBox ID="txtRepContraseña" runat="server" MaxLength="7" TextMode="Password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ControlToValidate="txtRepContraseña" ErrorMessage="Por favor repita la contraseña" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                    <asp:CompareValidator ID="CompareValidator1" runat="server" ControlToCompare="txtContraseña" ControlToValidate="txtRepContraseña" ErrorMessage="Las contraseñas no son iguales" ValidationGroup="1">*</asp:CompareValidator>
-                &nbsp;</td>
-                <td>
-                    <asp:Button ID="btnAgregarUsuario" runat="server" Text="Agregar Usuario" OnClick="btnAgregarUsuario_Click" ValidationGroup="1" BackColor="#0066CC" BorderColor="#666699" ForeColor="#CCFFFF" />
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style7">Email</td>
-                <td class="auto-style3">
-                    <asp:TextBox ID="txtEmail" runat="server" TextMode="Email" MaxLength="30"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ControlToValidate="txtEmail" ErrorMessage="Por favor ingresar ingrese un email" ValidationGroup="1">*</asp:RequiredFieldValidator>
-                </td>
-                <td>
-                    <asp:Label ID="lblMensaje" runat="server"></asp:Label>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style7">Telefono</td>
-                <td class="auto-style3">
-                    <asp:TextBox ID="txtTelefono" runat="server" MaxLength="15"></asp:TextBox>
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ControlToValidate="txtTelefono" ErrorMessage="Solo ingrese numeros en telefono" ValidationExpression="^\d+$" ValidationGroup="1">*</asp:RegularExpressionValidator>
-                </td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8">Tipo</td>
-                <td class="auto-style5">
-                     <asp:DropDownList ID="ddlTipoUs" runat="server">
-                        <asp:ListItem Value="seleccionar">--Selccionar tipo usuario--</asp:ListItem>
-                        <asp:ListItem Value="true">Administrador</asp:ListItem>
-                        <asp:ListItem Value="false">Cliente</asp:ListItem>
-                    </asp:DropDownList>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ControlToValidate="ddlTipoUs" ErrorMessage="Seleccione un tipo de usuario" InitialValue="seleccionar" ValidationGroup="1">*</asp:RequiredFieldValidator>&nbsp;</td>
-                <td class="auto-style6">
-                    <asp:ValidationSummary ID="ValidationSummary1" runat="server" ShowMessageBox="True" ShowSummary="False" ValidationGroup="1" />
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style11">&nbsp;</td>
-                <td class="auto-style10">&nbsp;</td>
-                <td class="auto-style9">&nbsp;</td>
-            </tr>
-            </table>
-        <div>
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0"><i class="bi bi-people"></i> Cuentas</h2>
+                <div class="d-flex flex-wrap gap-2">
+                    <asp:Panel runat="server" DefaultButton="btnBuscarId" CssClass="input-group" style="width: 220px">
+                        <asp:TextBox ID="txtBuscarID" runat="server" CssClass="form-control" placeholder="ID de usuario" inputmode="numeric" />
+                        <asp:LinkButton ID="btnBuscarId" runat="server" CssClass="btn btn-outline-primary" OnClick="btnBuscarId_Click" ToolTip="Buscar por ID" ValidationGroup="Buscar"><i class="bi bi-search"></i></asp:LinkButton>
+                    </asp:Panel>
+                    <asp:Button ID="btnMostrarTodo" runat="server" Text="Ver todos" CssClass="btn btn-outline-secondary" OnClick="btnMostrarTodo_Click" CausesValidation="false" />
+                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#nuevoUsuario" aria-expanded="false" aria-controls="nuevoUsuario">
+                        <i class="bi bi-person-plus"></i> Nuevo usuario
+                    </button>
+                </div>
+            </div>
+            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtBuscarID" ValidationGroup="Buscar" ValidationExpression="^\d+$" Display="Dynamic" CssClass="validador text-end mb-2" ErrorMessage="El ID es un número." />
+
+            <div class="collapse" id="nuevoUsuario">
+                <asp:Panel runat="server" DefaultButton="btnAgregarUsuario" CssClass="border rounded-3 p-3 mb-3 bg-body-tertiary">
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="txtNombreUsuario" CssClass="form-label" Text="Nombre de usuario" />
+                            <asp:TextBox ID="txtNombreUsuario" runat="server" CssClass="form-control" MaxLength="10" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNombreUsuario" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="txtEmail" CssClass="form-label" Text="E-mail" />
+                            <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" TextMode="Email" MaxLength="30" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtEmail" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="txtContraseña" CssClass="form-label" Text="Contraseña" />
+                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <asp:RequiredFieldValidator runat="server" ControlToValidate="txtContraseña" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="txtRepContraseña" CssClass="form-label" Text="Repetir contraseña" />
+                            <asp:TextBox ID="txtRepContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <asp:CompareValidator runat="server" ControlToValidate="txtRepContraseña" ControlToCompare="txtContraseña" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="No coincide." />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="txtTelefono" CssClass="form-label" Text="Teléfono" />
+                            <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" MaxLength="15" />
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <asp:Label runat="server" AssociatedControlID="ddlTipoUs" CssClass="form-label" Text="Tipo" />
+                            <asp:DropDownList ID="ddlTipoUs" runat="server" CssClass="form-select">
+                                <asp:ListItem Value="false" Selected="True">Cliente</asp:ListItem>
+                                <asp:ListItem Value="true">Administrador</asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-lg-3 offset-lg-3 d-flex align-items-end">
+                            <asp:Button ID="btnAgregarUsuario" runat="server" Text="Agregar usuario" CssClass="btn btn-primary w-100" ValidationGroup="NuevoUsuario" OnClick="btnAgregarUsuario_Click" />
+                        </div>
+                    </div>
+                </asp:Panel>
+            </div>
+
+            <div class="table-responsive">
+                <asp:GridView ID="gvUsuarios" runat="server" AutoGenerateColumns="false" DataKeyNames="IdUsuario_us"
+                    CssClass="table table-hover mb-0" GridLines="None" EmptyDataText="No hay usuarios para mostrar."
+                    OnRowEditing="gvUsuarios_RowEditing" OnRowCancelingEdit="gvUsuarios_RowCancelingEdit"
+                    OnRowUpdating="gvUsuarios_RowUpdating" OnRowDeleting="gvUsuarios_RowDeleting">
+                    <Columns>
+                        <asp:BoundField DataField="IdUsuario_us" HeaderText="ID" ReadOnly="true" />
+                        <asp:TemplateField HeaderText="Usuario">
+                            <ItemTemplate><%#: Eval("Nombre_us") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_eit_nombreUs" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Nombre_us") %>' MaxLength="10" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_eit_nombreUs" ValidationGroup="EditarUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                                <asp:TextBox ID="txt_eit_passUs" runat="server" CssClass="form-control form-control-sm mt-1" TextMode="Password" MaxLength="7" placeholder="Nueva contraseña (opcional)" autocomplete="new-password" />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="E-mail">
+                            <ItemTemplate><%#: Eval("Email_us") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_eit_emailUs" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Email_us") %>' MaxLength="30" />
+                                <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_eit_emailUs" ValidationGroup="EditarUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Teléfono">
+                            <ItemTemplate><%#: Eval("Telefono_us") %></ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:TextBox ID="txt_eit_telefonoUs" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Telefono_us") %>' MaxLength="15" />
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Tipo">
+                            <ItemTemplate>
+                                <span class='<%# (bool)Eval("Tipo_us") ? "badge text-bg-primary" : "badge text-bg-light" %>'><%# (bool)Eval("Tipo_us") ? "Administrador" : "Cliente" %></span>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddlEditTipo" runat="server" CssClass="form-select form-select-sm" SelectedValue='<%# Eval("Tipo_us").ToString().ToLower() %>'>
+                                    <asp:ListItem Value="true">Administrador</asp:ListItem>
+                                    <asp:ListItem Value="false">Cliente</asp:ListItem>
+                                </asp:DropDownList>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Estado">
+                            <ItemTemplate>
+                                <span class='<%# (bool)Eval("Estado_us") ? "badge text-bg-success" : "badge text-bg-secondary" %>'><%# (bool)Eval("Estado_us") ? "Activo" : "Inactivo" %></span>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:DropDownList ID="ddlEditEstado" runat="server" CssClass="form-select form-select-sm" SelectedValue='<%# Eval("Estado_us").ToString().ToLower() %>'>
+                                    <asp:ListItem Value="true">Activo</asp:ListItem>
+                                    <asp:ListItem Value="false">Inactivo</asp:ListItem>
+                                </asp:DropDownList>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField ItemStyle-CssClass="text-end text-nowrap">
+                            <ItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Edit" CssClass="btn btn-sm btn-outline-primary" ToolTip="Editar" CausesValidation="false"><i class="bi bi-pencil"></i></asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Delete" CssClass="btn btn-sm btn-outline-danger" ToolTip="Desactivar" CausesValidation="false"
+                                    Visible='<%# (bool)Eval("Estado_us") %>' OnClientClick="return confirm('¿Desactivar este usuario?');"><i class="bi bi-person-x"></i></asp:LinkButton>
+                            </ItemTemplate>
+                            <EditItemTemplate>
+                                <asp:LinkButton runat="server" CommandName="Update" CssClass="btn btn-sm btn-primary" ValidationGroup="EditarUsuario">Guardar</asp:LinkButton>
+                                <asp:LinkButton runat="server" CommandName="Cancel" CssClass="btn btn-sm btn-outline-secondary" CausesValidation="false">Cancelar</asp:LinkButton>
+                            </EditItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
         </div>
-    </form>
-</body>
-</html>
+    </div>
+</asp:Content>

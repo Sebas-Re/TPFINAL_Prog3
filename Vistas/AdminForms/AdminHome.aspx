@@ -1,138 +1,54 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AdminHome.aspx.cs" Inherits="Vistas.AdminForms.AdminHome1" %>
+﻿<%@ Page Title="Panel · Administración" Language="C#" MasterPageFile="~/Admin.Master" AutoEventWireup="true" CodeBehind="AdminHome.aspx.cs" Inherits="Vistas.AdminForms.AdminHome" %>
 
-<!DOCTYPE html>
+<asp:Content ContentPlaceHolderID="Pagina" runat="server">
+    <h1 class="h3 mb-1">Hola, <asp:Label ID="lblNombreAdm" runat="server" /></h1>
+    <p class="text-body-secondary mb-4">Resumen de la tienda</p>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-    <style type="text/css">
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style4 {
-            height: 23px;
-        }
-        .auto-style5 {
-            width: 382px;
-        }
-        .auto-style7 {
-            width: 382px;
-            text-align: center;
-        }
-        .auto-style8 {
-            height: 23px;
-            width: 382px;
-            text-align: center;
-        }
-        .auto-style9 {
-            font-size: x-large;
-            text-align: center;
-            height: 30px;
-        }
-        .auto-style10 {
-            text-align: center;
-            height: 23px;
-        }
-        .auto-style11 {
-            font-size: x-large;
-        }
-        .auto-style13 {
-            height: 22px;
-        }
-        .auto-style14 {
-            text-align: center;
-        }
-    </style>
-</head>
-<body style = "background-color: lightcyan">
-    <form id="form1" runat="server">
-        <table class="auto-style1">
-            <tr>
-                <td class="auto-style9" colspan="5"><strong>PC - BOOSTER -STORE</strong></td>
-            </tr>
-            <tr>
-                <td class="auto-style10" colspan="5">VISTA ADMINISTRADOR</td>
-            </tr>
-            <tr>
-                <td class="auto-style4" colspan="2">BIENVENIDO :
-                    <strong>
-                    <asp:Label ID="lblNombreAdm" runat="server" CssClass="auto-style11"></asp:Label>
-                    </strong>
-                </td>
-                <td class="auto-style4">&nbsp;</td>
-                <td class="auto-style4">&nbsp;</td>
-                <td class="auto-style4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style4" colspan="5" style="background-color: #0000FF"></td>
-            </tr>
-            <tr>
-                <td class="auto-style10" colspan="5">
-                    <asp:HyperLink ID="hlGestionArticulos" runat="server" NavigateUrl="~/AdminForms/AdminGestionArticulos.aspx">GESTION ARTICULOS</asp:HyperLink>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style13" colspan="5"></td>
-            </tr>
-            <tr>
-                <td class="auto-style4" colspan="5">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style10" colspan="5">
-                    <asp:HyperLink ID="hlGestionUsuarios" runat="server" NavigateUrl="~/AdminForms/AdminGestionUsuarios.aspx">GESTION USUARIOS</asp:HyperLink>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style14" colspan="5">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style14" colspan="5">
-                    <asp:HyperLink ID="hlReportesAdmin" runat="server" NavigateUrl="~/AdminForms/ReportesAdmin.aspx">REPORTES</asp:HyperLink>
-                </td>
-            </tr>
-            <tr>
-                <td class="auto-style14" colspan="5">&nbsp;</td>
-            </tr>
-            <tr>
-                <td colspan="5" style="background-color: #0000FF">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style5">&nbsp;</td>
-                <td class="auto-style5" colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style5">&nbsp;</td>
-                <td class="auto-style5" colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8">
-                    &nbsp;</td>
-                <td class="auto-style8" colspan="4">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style5">&nbsp;</td>
-                <td class="auto-style5" colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style8">
-                    &nbsp;</td>
-                <td class="auto-style8" colspan="4">
-                    &nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style5">&nbsp;</td>
-                <td class="auto-style5" colspan="4">&nbsp;</td>
-            </tr>
-            <tr>
-                <td class="auto-style7">
-                    &nbsp;</td>
-                <td class="auto-style7" colspan="4">
-                    &nbsp;</td>
-            </tr>
-        </table>
-    </form>
-</body>
-</html>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <div class="card h-100 indicador"><div class="card-body d-flex align-items-center gap-3">
+                <span class="icono rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle text-primary"><i class="bi bi-box-seam"></i></span>
+                <div><div class="text-body-secondary small">Artículos activos</div><asp:Label ID="lblArticulos" runat="server" CssClass="fs-4 fw-semibold" /></div>
+            </div></div>
+        </div>
+        <div class="col">
+            <div class="card h-100 indicador"><div class="card-body d-flex align-items-center gap-3">
+                <span class="icono rounded-3 d-flex align-items-center justify-content-center bg-info-subtle text-info"><i class="bi bi-people"></i></span>
+                <div><div class="text-body-secondary small">Clientes</div><asp:Label ID="lblClientes" runat="server" CssClass="fs-4 fw-semibold" /></div>
+            </div></div>
+        </div>
+        <div class="col">
+            <div class="card h-100 indicador"><div class="card-body d-flex align-items-center gap-3">
+                <span class="icono rounded-3 d-flex align-items-center justify-content-center bg-warning-subtle text-warning"><i class="bi bi-receipt"></i></span>
+                <div><div class="text-body-secondary small">Ventas</div><asp:Label ID="lblVentas" runat="server" CssClass="fs-4 fw-semibold" /></div>
+            </div></div>
+        </div>
+        <div class="col">
+            <div class="card h-100 indicador"><div class="card-body d-flex align-items-center gap-3">
+                <span class="icono rounded-3 d-flex align-items-center justify-content-center bg-success-subtle text-success"><i class="bi bi-cash-stack"></i></span>
+                <div><div class="text-body-secondary small">Recaudación</div><asp:Label ID="lblRecaudacion" runat="server" CssClass="fs-4 fw-semibold" /></div>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        <div class="col">
+            <a class="card h-100 text-decoration-none" href="<%: ResolveUrl("~/AdminForms/AdminGestionArticulos.aspx") %>"><div class="card-body">
+                <h2 class="h5"><i class="bi bi-box-seam text-primary"></i> Artículos y categorías</h2>
+                <p class="text-body-secondary mb-0">Alta, edición y baja de productos y categorías.</p>
+            </div></a>
+        </div>
+        <div class="col">
+            <a class="card h-100 text-decoration-none" href="<%: ResolveUrl("~/AdminForms/AdminGestionUsuarios.aspx") %>"><div class="card-body">
+                <h2 class="h5"><i class="bi bi-people text-primary"></i> Usuarios</h2>
+                <p class="text-body-secondary mb-0">Clientes y administradores de la tienda.</p>
+            </div></a>
+        </div>
+        <div class="col">
+            <a class="card h-100 text-decoration-none" href="<%: ResolveUrl("~/AdminForms/ReportesAdmin.aspx") %>"><div class="card-body">
+                <h2 class="h5"><i class="bi bi-graph-up text-primary"></i> Reportes</h2>
+                <p class="text-body-secondary mb-0">Ventas y artículos más vendidos.</p>
+            </div></a>
+        </div>
+    </div>
+</asp:Content>
