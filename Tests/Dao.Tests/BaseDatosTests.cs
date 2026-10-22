@@ -176,6 +176,20 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void ActualizarArticuloGuardaLaCategoria()
+        {
+            var dao = new DaoArticulos();
+            var art = new Articulo
+            {
+                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 3 }, Descripcion1 = "Gabinete Gamemax",
+                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png"
+            };
+
+            Assert.True(dao.ActualizarArticulo(art));
+            Assert.Equal(3L, dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Categoria_ar"]);
+        }
+
+        [Fact]
         public void UnaCompraDescuentaStockYSumaElTotal()
         {
             var ventas = new DaoVentas();

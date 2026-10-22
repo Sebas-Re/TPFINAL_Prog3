@@ -103,7 +103,7 @@ namespace Dao
             AccesoDatos ad = new AccesoDatos();
             // ex sp_ModificarArticulo
             int FilasInsertadas = ad.EjecutarComando(Comando,
-                "update Articulos set Categoria_ar = @CodArticulo, Descripcion_ar = @Descripcion, Stock_ar = @Stock, PrecioUnitario_ar = @PrecioUnitario, Imagen = @ImagenURL where CodArticulo_ar = @CodArticulo");
+                "update Articulos set Categoria_ar = @Categoria, Descripcion_ar = @Descripcion, Stock_ar = @Stock, PrecioUnitario_ar = @PrecioUnitario, Imagen = @ImagenURL where CodArticulo_ar = @CodArticulo");
             if (FilasInsertadas == 1)
             {
                 return true;
