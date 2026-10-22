@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Web.UI.WebControls;
 using Entidades;
 using Negocio;
@@ -8,16 +9,32 @@ namespace Vistas.AdminForms
 {
     public partial class ReportesAdmin : PaginaBase
     {
-        const int CantidadTop = 5;
+        static readonly int[] PeriodosDisponibles = { 7, 30, 90, 180 };
+        const int CantidadTopProductos = 10;
+        const int CantidadTopClientes = 8;
 
         GestionDetalleVenta gestDetVen = new GestionDetalleVenta();
         GestionVentas gestven = new GestionVentas();
         GestionArticulos gestart = new GestionArticulos();
-        long maximoTop;
+        GestionMetricas metricas = new GestionMetricas();
+
+        protected string GraficoDias { get; private set; }
+        protected string GraficoProductos { get; private set; }
+        protected string GraficoPagos { get; private set; }
 
         protected override NivelAcceso Acceso
         {
             get { return NivelAcceso.Admin; }
+        }
+
+        /* Período de análisis por querystring (?dias=30), así se puede compartir el link. */
+        protected int Dias
+        {
+            get
+            {
+                int dias;
+                return int.TryParse(Request.QueryString["dias"], out dias) && PeriodosDisponibles.Contains(dias) ? dias : 30;
+            }
         }
 
         /* Usuario filtrado en ventas; 0 = todas. Se conserva entre postbacks. */
@@ -29,12 +46,48 @@ namespace Vistas.AdminForms
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // Los gráficos se arman en cada request: viajan en atributos, no en el ViewState.
+            CargarMetricas();
             if (!IsPostBack)
             {
+                rptPeriodos.DataSource = PeriodosDisponibles;
+                rptPeriodos.DataBind();
                 CargarGvVentas();
                 CargarReporteArticulos();
-                CargarTop();
             }
+        }
+
+        //-------------------------------------------------------------------------
+        // MÉTRICAS DEL PERÍODO
+        //-------------------------------------------------------------------------
+        private void CargarMetricas()
+        {
+            string comparacion = "vs. " + Dias + " días anteriores";
+            Comparativa comparativa = metricas.Comparar(Dias);
+            litIndicadores.Text = Indicador.Resumen(comparativa, comparacion)
+                + Indicador.Html("Unidades vendidas", comparativa.Actual.Unidades.ToString("N0"),
+                    Comparativa.Variacion(comparativa.Actual.Unidades, comparativa.Anterior.Unidades), "bi-box-seam", "info", comparacion);
+            lblRecompra.Text = comparativa.Actual.TasaRecompra.ToString("0") + "%";
+
+            Serie dias = metricas.IngresosPorDia(Dias);
+            GraficoDias = new Grafico("line", dias.Etiquetas)
+                .Serie("Ingresos", dias.Valores, Grafico.Formato.Moneda)
+                .Serie("Pedidos", dias.Valores2, Grafico.Formato.Numero, "bar", ejeDerecho: true)
+                .Json();
+
+            Serie productos = metricas.TopProductos(Dias, CantidadTopProductos);
+            GraficoProductos = new Grafico("bar", productos.Etiquetas)
+                .Serie("Unidades", productos.Valores, Grafico.Formato.Numero)
+                .Horizontal()
+                .Json();
+
+            Serie pagos = metricas.MetodosDePago(Dias);
+            GraficoPagos = new Grafico("doughnut", pagos.Etiquetas)
+                .Serie("Pedidos", pagos.Valores, Grafico.Formato.Numero)
+                .Json();
+
+            gvTopClientes.DataSource = metricas.TopClientes(Dias, CantidadTopClientes);
+            gvTopClientes.DataBind();
         }
 
         //-------------------------------------------------------------------------
@@ -89,7 +142,7 @@ namespace Vistas.AdminForms
         }
 
         //-------------------------------------------------------------------------
-        // ARTÍCULOS VENDIDOS
+        // ARTÍCULOS VENDIDOS (HISTÓRICO)
         //-------------------------------------------------------------------------
         private void CargarReporteArticulos()
         {
@@ -106,32 +159,20 @@ namespace Vistas.AdminForms
 
         protected void btnEncontrarArt_Click(object sender, EventArgs e)
         {
+            gvReporteArticulos.PageIndex = 0;
             CargarReporteArticulos();
         }
 
         protected void ddlOrdenador_SelectedIndexChanged(object sender, EventArgs e)
         {
+            gvReporteArticulos.PageIndex = 0;
             CargarReporteArticulos();
         }
 
-        private void CargarTop()
+        protected void gvReporteArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            DataView top = gestart.getReporteArticulos().DefaultView;
-            top.Sort = "CantidadTotal DESC";
-            DataTable primeros = top.ToTable().Clone();
-            for (int i = 0; i < Math.Min(CantidadTop, top.Count); i++)
-            {
-                primeros.ImportRow(top[i].Row);
-            }
-            maximoTop = primeros.Rows.Count > 0 ? Convert.ToInt64(primeros.Rows[0]["CantidadTotal"]) : 0;
-            rptTop.DataSource = primeros;
-            rptTop.DataBind();
-            lblSinVentasTop.Visible = primeros.Rows.Count == 0;
-        }
-
-        protected int PorcentajeTop(object cantidad)
-        {
-            return maximoTop == 0 ? 0 : (int)(Convert.ToInt64(cantidad) * 100 / maximoTop);
+            gvReporteArticulos.PageIndex = e.NewPageIndex;
+            CargarReporteArticulos();
         }
     }
 }

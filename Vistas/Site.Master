@@ -24,5 +24,6 @@
         </footer>
     </form>
     <script src="<%: ResolveUrl("~/Content/lib/bootstrap/bootstrap.bundle.min.js") %>"></script>
+    <asp:ContentPlaceHolder ID="Scripts" runat="server" />
 </body>
 </html>

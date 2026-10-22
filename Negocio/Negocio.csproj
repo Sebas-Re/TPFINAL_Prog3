@@ -45,6 +45,7 @@
     <Compile Include="GestionArticulos.cs" />
     <Compile Include="GestionCategorias.cs" />
     <Compile Include="GestionDetalleVenta.cs" />
+    <Compile Include="GestionMetricas.cs" />
     <Compile Include="GestionUsuarios.cs" />
     <Compile Include="GestionVentas.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

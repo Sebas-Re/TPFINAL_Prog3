@@ -30,3 +30,8 @@
 <asp:Content ContentPlaceHolderID="Contenido" runat="server">
     <asp:ContentPlaceHolder ID="Pagina" runat="server" />
 </asp:Content>
+
+<asp:Content ContentPlaceHolderID="Scripts" runat="server">
+    <script src="<%: ResolveUrl("~/Content/lib/chartjs/chart.umd.js") %>"></script>
+    <script src="<%: ResolveUrl("~/Content/graficos.js") %>"></script>
+</asp:Content>

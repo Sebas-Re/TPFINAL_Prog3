@@ -15,6 +15,7 @@ namespace Dao.Tests
         public VersionadoTests()
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
+            AccesoDatos.CargarDatosDemo = false;
         }
 
         public void Dispose()

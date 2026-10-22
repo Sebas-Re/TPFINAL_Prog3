@@ -156,6 +156,8 @@
     <Content Include="Tienda.Master" />
     <Content Include="Salir.ashx" />
     <Content Include="Content\site.css" />
+    <Content Include="Content\graficos.js" />
+    <Content Include="Content\lib\chartjs\chart.umd.js" />
     <Content Include="Content\sin-imagen.svg" />
     <Content Include="Content\lib\bootstrap\bootstrap.min.css" />
     <Content Include="Content\lib\bootstrap\bootstrap.bundle.min.js" />
@@ -250,6 +252,8 @@
     <Compile Include="Tienda.Master.designer.cs">
       <DependentUpon>Tienda.Master</DependentUpon>
     </Compile>
+    <Compile Include="Grafico.cs" />
+    <Compile Include="Indicador.cs" />
     <Compile Include="PaginaBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

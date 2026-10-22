@@ -221,7 +221,27 @@ namespace Vistas.E2E
 
             Assert.Contains("admSebasti", usuarios.Texto);
             Assert.Contains("Artículos vendidos", reportes.Texto);
-            Assert.Contains("Recaudación", panel.Texto);
+            Assert.Contains("Ingresos y pedidos por mes", panel.Texto);
+        }
+
+        [Fact]
+        public async Task LosGraficosDelPanelYLosReportesTienenDatos()
+        {
+            await IniciarSesion("admAmador", "admpsw2");
+
+            Pagina panel = await navegador.Abrir("AdminForms/AdminHome.aspx");
+            Pagina reportes = await navegador.Abrir("AdminForms/ReportesAdmin.aspx?dias=7");
+
+            // El sitio de los E2E arranca con el historial de demo.
+            var graficosPanel = panel.Documento.QuerySelectorAll("canvas[data-grafico]").Select(c => c.GetAttribute("data-grafico")).ToList();
+            Assert.Equal(3, graficosPanel.Count);
+            Assert.All(graficosPanel, g => Assert.Contains("\"etiquetas\":[\"", g));
+            Assert.Contains(panel.Documento.QuerySelectorAll("script[src]"), s => s.GetAttribute("src").EndsWith("chart.umd.js"));
+
+            var porDia = reportes.Documento.QuerySelector("canvas[aria-label='Ingresos por día']").GetAttribute("data-grafico");
+            Assert.Equal(7, System.Text.RegularExpressions.Regex.Matches(porDia.Substring(0, porDia.IndexOf("]")), @"""\d\d/\d\d""").Count);
+            Assert.Equal("7 días", reportes.Documento.QuerySelector(".nav-pills .active").TextContent.Trim());
+            Assert.Contains("Mejores clientes", reportes.Texto);
         }
 
         [Fact]

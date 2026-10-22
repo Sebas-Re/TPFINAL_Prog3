@@ -1,9 +1,69 @@
 ﻿<%@ Page Title="Reportes · Administración" Language="C#" MasterPageFile="~/Admin.Master" AutoEventWireup="true" CodeBehind="ReportesAdmin.aspx.cs" Inherits="Vistas.AdminForms.ReportesAdmin" %>
 
 <asp:Content ContentPlaceHolderID="Pagina" runat="server">
-    <h1 class="h3 mb-3">Reportes</h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <h1 class="h3 mb-0">Reportes</h1>
+        <ul class="nav nav-pills">
+            <asp:Repeater ID="rptPeriodos" runat="server">
+                <ItemTemplate>
+                    <li class="nav-item"><a class='<%# (int)Container.DataItem == Dias ? "nav-link active" : "nav-link" %>'
+                        href='<%# ResolveUrl("~/AdminForms/ReportesAdmin.aspx?dias=" + Container.DataItem) %>'><%# Container.DataItem %> días</a></li>
+                </ItemTemplate>
+            </asp:Repeater>
+        </ul>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        <asp:Literal ID="litIndicadores" runat="server" />
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="h6 mb-3">Ingresos y pedidos por día <span class="text-body-secondary fw-normal">(últimos <%: Dias %> días)</span></h2>
+            <div class="grafico"><canvas aria-label="Ingresos por día" role="img" data-grafico="<%: GraficoDias %>"></canvas></div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 mb-3">Productos más vendidos <span class="text-body-secondary fw-normal">(unidades)</span></h2>
+                    <div class="grafico"><canvas aria-label="Productos más vendidos" role="img" data-grafico="<%: GraficoProductos %>"></canvas></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h6 mb-3">Medios de pago <span class="text-body-secondary fw-normal">(pedidos)</span></h2>
+                    <div class="grafico grafico-chico"><canvas aria-label="Medios de pago" role="img" data-grafico="<%: GraficoPagos %>"></canvas></div>
+                    <p class="small text-body-secondary mt-3 mb-0">
+                        Tasa de recompra: <strong><asp:Label ID="lblRecompra" runat="server" /></strong>
+                        de los clientes que compraron en el período lo hicieron más de una vez.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="row g-4">
+        <div class="col-xl-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3"><i class="bi bi-trophy"></i> Mejores clientes</h2>
+                    <asp:GridView ID="gvTopClientes" runat="server" AutoGenerateColumns="false" CssClass="table table-hover mb-0" GridLines="None"
+                        EmptyDataText="No hubo compras en el período.">
+                        <Columns>
+                            <asp:BoundField DataField="Nombre" HeaderText="Cliente" />
+                            <asp:BoundField DataField="Pedidos" HeaderText="Pedidos" ItemStyle-CssClass="text-end" HeaderStyle-CssClass="text-end" />
+                            <asp:BoundField DataField="Gasto" HeaderText="Gasto" DataFormatString="{0:C0}" ItemStyle-CssClass="text-end" HeaderStyle-CssClass="text-end" />
+                        </Columns>
+                    </asp:GridView>
+                </div>
+            </div>
+        </div>
+
         <div class="col-xl-7">
             <div class="card h-100">
                 <div class="card-body">
@@ -54,33 +114,11 @@
             </div>
         </div>
 
-        <div class="col-xl-5">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h2 class="h5 mb-3"><i class="bi bi-trophy"></i> Más vendidos</h2>
-                    <asp:Label ID="lblSinVentasTop" runat="server" CssClass="text-body-secondary" Text="Todavía no hay ventas." />
-                    <asp:Repeater ID="rptTop" runat="server">
-                        <ItemTemplate>
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between small mb-1">
-                                    <span><%#: Eval("Descripcion") %></span>
-                                    <span class="text-body-secondary text-nowrap"><%#: Eval("CantidadTotal") %> u.</span>
-                                </div>
-                                <div class="progress" role="progressbar" style="height: .5rem">
-                                    <div class="progress-bar" style='width: <%# PorcentajeTop(Eval("CantidadTotal")) %>%'></div>
-                                </div>
-                            </div>
-                        </ItemTemplate>
-                    </asp:Repeater>
-                </div>
-            </div>
-        </div>
-
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-                        <h2 class="h5 mb-0"><i class="bi bi-box-seam"></i> Artículos vendidos</h2>
+                        <h2 class="h5 mb-0"><i class="bi bi-box-seam"></i> Artículos vendidos <span class="text-body-secondary fw-normal fs-6">(histórico)</span></h2>
                         <div class="d-flex flex-wrap gap-2">
                             <asp:Panel runat="server" DefaultButton="btnEncontrarArt" CssClass="input-group" style="width: 240px">
                                 <asp:TextBox ID="txtCodArticulo" runat="server" CssClass="form-control" placeholder="Código de artículo" MaxLength="4" />
@@ -95,6 +133,7 @@
                     </div>
                     <div class="table-responsive">
                         <asp:GridView ID="gvReporteArticulos" runat="server" AutoGenerateColumns="false" CssClass="table table-hover mb-0" GridLines="None"
+                            AllowPaging="true" PageSize="10" PagerStyle-CssClass="pager-gv" OnPageIndexChanging="gvReporteArticulos_PageIndexChanging"
                             EmptyDataText="No hay ventas para ese criterio.">
                             <Columns>
                                 <asp:BoundField DataField="Codigo" HeaderText="Código" />
