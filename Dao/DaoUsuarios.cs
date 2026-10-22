@@ -79,16 +79,30 @@ namespace Dao
             return ds.existe(consulta, new SQLiteParameter("@Email", us.Email1), new SQLiteParameter("@IdUsuario", us.IdUsuario1));
         }
 
+        /* Credenciales de un usuario activo: id, hash de la contraseña y tipo. */
+        private DataRow ObtenerCredenciales(Usuario us)
+        {
+            DataTable tabla = ds.ObtenerTabla("Usuarios", "select IdUsuario_us, Contraseña_us, Tipo_us from Usuarios where Nombre_us = @Nombre and Estado_us = 1",
+                new SQLiteParameter("@Nombre", us.Nombre1));
+            return tabla.Rows.Count == 0 ? null : tabla.Rows[0];
+        }
+
+        /* Las contraseñas se guardan hasheadas: se compara en código, no en el where. */
         public Boolean ExisteUsuarioLogin(Usuario us)
         {
-            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena and Estado_us = 1";
-            return ds.existe(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
+            DataRow fila = ObtenerCredenciales(us);
+            if (fila == null)
+            {
+                Contrasenas.SimularVerificacion(us.Contraseña1);
+                return false;
+            }
+            return Contrasenas.Verificar(us.Contraseña1, fila["Contraseña_us"].ToString());
         }
 
         public bool TipoUsuarioLogin(Usuario us)
         {
-            string consulta = "select Tipo_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena and Estado_us = 1";
-            return ds.existeLogin(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
+            DataRow fila = ObtenerCredenciales(us);
+            return fila != null && Contrasenas.Verificar(us.Contraseña1, fila["Contraseña_us"].ToString()) && (bool)fila["Tipo_us"];
         }
 
         public int eliminarUsuario(ref Usuario us)
@@ -115,7 +129,7 @@ namespace Dao
             ArmarParametroUsuariosModificar(ref comando, us);
             // ex sp_ModificarUsuario
             return ds.EjecutarComando(comando,
-                "update Usuarios set Nombre_us = @NOMBRE_US, Contraseña_us = @CONTRASENA_US, Email_us = @EMAIL_US, Telefono_us = @TELEFONO_US, Tipo_us = @TIPO_US, Estado_us = @Estado_us where IdUsuario_us = @Id_Usuario_us");
+                "update Usuarios set Nombre_us = @NOMBRE_US, Contraseña_us = coalesce(@CONTRASENA_US, Contraseña_us), Email_us = @EMAIL_US, Telefono_us = @TELEFONO_US, Tipo_us = @TIPO_US, Estado_us = @Estado_us where IdUsuario_us = @Id_Usuario_us");
         }
 
         private void ArmarParametroUsuariosEliminar(ref SQLiteCommand comando, ref Usuario us)
@@ -130,8 +144,9 @@ namespace Dao
             SQLiteParameter Parametros = new SQLiteParameter();
             Parametros = comando.Parameters.Add("@NOMBRE_US", DbType.String);
             Parametros.Value = us.Nombre1;
+            // Vacía = no cambiarla (al modificar); se guarda solo el hash.
             Parametros = comando.Parameters.Add("@CONTRASENA_US", DbType.String);
-            Parametros.Value = us.Contraseña1;
+            Parametros.Value = string.IsNullOrEmpty(us.Contraseña1) ? (object)DBNull.Value : Contrasenas.Hashear(us.Contraseña1);
             Parametros = comando.Parameters.Add("@EMAIL_US", DbType.String);
             Parametros.Value = us.Email1;
             Parametros = comando.Parameters.Add("@TELEFONO_US", DbType.String);

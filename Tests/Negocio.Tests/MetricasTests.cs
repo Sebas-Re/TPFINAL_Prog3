@@ -17,6 +17,7 @@ namespace Negocio.Tests
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
+            Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
 
         public void Dispose()
@@ -43,7 +44,7 @@ namespace Negocio.Tests
         public void ResumenDelPeriodoContraElAnterior()
         {
             Comprar();
-            new GestionUsuarios().agregarUsuario(new Usuario { Nombre1 = "nuevo", Contraseña1 = "x", Email1 = "n@x.com", Telefono1 = "1" });
+            new GestionUsuarios().agregarUsuario(new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "n@x.com", Telefono1 = "1" });
 
             Comparativa c = metricas.Comparar(30);
 

@@ -8,7 +8,7 @@
 create table Usuarios(
 	IdUsuario_us integer primary key autoincrement,
 	Nombre_us varchar(10) not null unique collate nocase,
-	Contraseña_us varchar(7) not null,
+	Contraseña_us varchar(100) not null, -- hash PBKDF2 (ver Contrasenas.cs)
 	Email_us varchar(30) not null unique collate nocase,
 	Telefono_us varchar(15) null default 'Sin telefono',
 	Tipo_us bit not null default 0, -- 1 = admin, 0 = usuario

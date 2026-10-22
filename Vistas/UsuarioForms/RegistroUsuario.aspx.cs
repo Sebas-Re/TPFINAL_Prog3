@@ -40,7 +40,7 @@ namespace Vistas
             }
             if (!us.agregarUsuario(usuario))
             {
-                MostrarMensaje("No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
+                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
                 return;
             }
 

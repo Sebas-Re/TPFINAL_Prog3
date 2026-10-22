@@ -35,12 +35,12 @@
                         </div>
                         <div class="col-sm-6 col-lg-3">
                             <asp:Label runat="server" AssociatedControlID="txtContraseña" CssClass="form-label" Text="Contraseña" />
-                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtContraseña" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
                         </div>
                         <div class="col-sm-6 col-lg-3">
                             <asp:Label runat="server" AssociatedControlID="txtRepContraseña" CssClass="form-label" Text="Repetir contraseña" />
-                            <asp:TextBox ID="txtRepContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <asp:TextBox ID="txtRepContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
                             <asp:CompareValidator runat="server" ControlToValidate="txtRepContraseña" ControlToCompare="txtContraseña" ValidationGroup="NuevoUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="No coincide." />
                         </div>
                         <div class="col-sm-6 col-lg-3">
@@ -73,7 +73,7 @@
                             <EditItemTemplate>
                                 <asp:TextBox ID="txt_eit_nombreUs" runat="server" CssClass="form-control form-control-sm" Text='<%# Bind("Nombre_us") %>' MaxLength="10" />
                                 <asp:RequiredFieldValidator runat="server" ControlToValidate="txt_eit_nombreUs" ValidationGroup="EditarUsuario" Display="Dynamic" CssClass="validador" ErrorMessage="Requerido." />
-                                <asp:TextBox ID="txt_eit_passUs" runat="server" CssClass="form-control form-control-sm mt-1" TextMode="Password" MaxLength="7" placeholder="Nueva contraseña (opcional)" autocomplete="new-password" />
+                                <asp:TextBox ID="txt_eit_passUs" runat="server" CssClass="form-control form-control-sm mt-1" TextMode="Password" MaxLength="64" placeholder="Nueva contraseña (opcional)" autocomplete="new-password" />
                             </EditItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="E-mail">

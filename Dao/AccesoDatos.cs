@@ -50,14 +50,15 @@ namespace Dao
 
         /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
            en esta versión; una existente se actualiza con los scripts de Migraciones. */
-        public const int VersionSchema = 3;
+        public const int VersionSchema = 4;
 
         /* Scripts que llevan una base de la versión N-1 a la N (índice 0 = versión 1). */
         static readonly String[][] Migraciones =
         {
             new[] { "migracion_1.sql" },
             new[] { "migracion_2.sql", "articulos_detalle.sql" },
-            new[] { "migracion_3.sql" }
+            new[] { "migracion_3.sql" },
+            new String[0] // versión 4: hash de contraseñas (HashearContraseñas, no se puede hacer en SQL)
         };
 
         /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:
@@ -101,6 +102,10 @@ namespace Dao
                         {
                             EjecutarScript(cn, script);
                         }
+                        if (siguiente == 4)
+                        {
+                            HashearContraseñas(cn);
+                        }
                         EjecutarEscalar(cn, "pragma user_version = " + siguiente);
                         tx.Commit();
                     }
@@ -127,6 +132,7 @@ namespace Dao
                     {
                         EjecutarScript(cn, "demo.sql");
                     }
+                    HashearContraseñas(cn);
                     EjecutarEscalar(cn, "pragma user_version = " + VersionSchema);
                     tx.Commit();
                 }
@@ -141,6 +147,28 @@ namespace Dao
             using (SQLiteCommand cmd = new SQLiteCommand(sql, cn))
             {
                 return cmd.ExecuteScalar();
+            }
+        }
+
+        /* Los scripts de datos traen las contraseñas en texto plano (son legibles
+           para quien prueba el proyecto); acá se reemplazan por su hash. */
+        private static void HashearContraseñas(SQLiteConnection cn)
+        {
+            DataTable usuarios = new DataTable();
+            using (SQLiteDataAdapter adp = new SQLiteDataAdapter("select IdUsuario_us, Contraseña_us from Usuarios", cn))
+            {
+                adp.Fill(usuarios);
+            }
+            foreach (DataRow fila in usuarios.Rows)
+            {
+                String guardada = fila["Contraseña_us"].ToString();
+                if (Contrasenas.EstaHasheada(guardada)) continue;
+                using (SQLiteCommand cmd = new SQLiteCommand("update Usuarios set Contraseña_us = @Hash where IdUsuario_us = @Id", cn))
+                {
+                    cmd.Parameters.AddWithValue("@Hash", Contrasenas.Hashear(guardada));
+                    cmd.Parameters.AddWithValue("@Id", fila["IdUsuario_us"]);
+                    cmd.ExecuteNonQuery();
+                }
             }
         }
 

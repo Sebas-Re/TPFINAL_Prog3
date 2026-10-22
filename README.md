@@ -53,6 +53,9 @@ Explorador de pruebas de Visual Studio, o con `dotnet test Tests/Vistas.E2E`.
   y [`demo.sql`](Dao/Sql/demo.sql) (historial), embebidos en `Dao.dll`.
 - La versión del schema se guarda en `PRAGMA user_version`. Si la app encuentra una base anterior, le aplica
   los `migracion_N.sql` pendientes sin tocar los datos existentes (el historial de demo solo se carga en bases nuevas).
+- Las contraseñas se guardan como hash PBKDF2-SHA256 con salt ([`Contrasenas.cs`](Dao/Contrasenas.cs)). Los scripts
+  de datos las traen en texto plano para que se puedan leer, y se hashean al crear la base; la migración a la
+  versión 4 hashea las de una base existente.
 - El proyecto se desarrolló originalmente sobre SQL Server, con stored procedures y triggers, y después
   se portó a MySQL. Esos scripts, junto con páginas viejas del sitio, quedan como referencia en [`Legacy`](Legacy). En la
   versión actual, el SQL de cada stored procedure vive en su DAO y los triggers están en el schema de SQLite.

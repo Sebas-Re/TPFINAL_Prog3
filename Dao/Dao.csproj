@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccesoDatos.cs" />
+    <Compile Include="Contrasenas.cs" />
     <Compile Include="DaoArticulos.cs" />
     <Compile Include="DaoCategorias.cs" />
     <Compile Include="DaoTarjetas.cs" />

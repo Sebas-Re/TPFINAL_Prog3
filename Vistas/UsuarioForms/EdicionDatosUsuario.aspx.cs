@@ -48,7 +48,7 @@ namespace Vistas
             {
                 IdUsuario1 = actual.IdUsuario1,
                 Nombre1 = txtNombre.Text.Trim(),
-                Contraseña1 = txtContraseña.Text == "" ? actual.Contraseña1 : txtContraseña.Text,
+                Contraseña1 = txtContraseña.Text, // vacía = no cambiarla
                 Email1 = txtEmail.Text.Trim(),
                 Telefono1 = txtTelefono.Text.Trim(),
                 Tipo1 = actual.Tipo1,
@@ -62,7 +62,7 @@ namespace Vistas
             }
             if (!gestus.ActualizarUsuario(usuario))
             {
-                MostrarMensaje("No se pudieron guardar los cambios.", TipoMensaje.Error);
+                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudieron guardar los cambios.", TipoMensaje.Error);
                 return;
             }
             Sesion.Usuario.Nombre1 = usuario.Nombre1;

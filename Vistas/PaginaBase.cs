@@ -54,6 +54,17 @@ namespace Vistas
             base.RaisePostBackEvent(sourceControl, eventArgument);
         }
 
+        /* Mensaje si la contraseña ingresada no cumple el largo pedido; null si está bien o vacía. */
+        protected string ErrorContraseña(string contraseña)
+        {
+            if (string.IsNullOrEmpty(contraseña) || Negocio.GestionUsuarios.ContraseñaValida(contraseña))
+            {
+                return null;
+            }
+            return string.Format("La contraseña tiene que tener entre {0} y {1} caracteres.",
+                Negocio.GestionUsuarios.LargoMinimoContraseña, Negocio.GestionUsuarios.LargoMaximoContraseña);
+        }
+
         protected void MostrarMensaje(string texto, TipoMensaje tipo)
         {
             SiteMaster master = BuscarSiteMaster();

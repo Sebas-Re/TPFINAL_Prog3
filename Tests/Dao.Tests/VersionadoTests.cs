@@ -16,6 +16,7 @@ namespace Dao.Tests
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
+            Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
 
         public void Dispose()
@@ -147,6 +148,20 @@ namespace Dao.Tests
                 DireccionEntrega1 = "Calle 1", Contacto1 = "Yo"
             });
             return id;
+        }
+
+        [Fact]
+        public void LaMigracion4HasheaLasContraseñasEnTextoPlano()
+        {
+            new DaoCategorias().getTablaCategorias();
+            Ejecutar("update Usuarios set Contraseña_us = 'ctr1' where Nombre_us = 'Nom1'; pragma user_version = 3;");
+
+            ReiniciarApp();
+            new DaoCategorias().getTablaCategorias();
+
+            Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
+            Assert.Equal(0L, Escalar("select count(*) from Usuarios where Contraseña_us not like 'pbkdf2$%'"));
+            Assert.True(new DaoUsuarios().ExisteUsuarioLogin(new Usuario { Nombre1 = "Nom1", Contraseña1 = "ctr1" }));
         }
 
         [Fact]

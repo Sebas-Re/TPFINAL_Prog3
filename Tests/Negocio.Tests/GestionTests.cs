@@ -19,6 +19,7 @@ namespace Negocio.Tests
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
+            Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
 
         public void Dispose()
@@ -79,12 +80,29 @@ namespace Negocio.Tests
         public void NoPermiteRegistrarUnUsuarioRepetido()
         {
             var gestion = new GestionUsuarios();
-            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave", Email1 = "n@mail.com", Telefono1 = "1" };
+            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "n@mail.com", Telefono1 = "1" };
 
             Assert.True(gestion.agregarUsuario(nuevo));
             Assert.False(gestion.agregarUsuario(nuevo));
             Assert.False(gestion.VerificarNombre(new Usuario { Nombre1 = "NUEVO" }));
             Assert.False(gestion.VerificarEmail(new Usuario { Email1 = "n@mail.com" }));
+        }
+
+        [Fact]
+        public void ExigeUnLargoMinimoDeContraseña()
+        {
+            var gestion = new GestionUsuarios();
+            var corta = new Usuario { Nombre1 = "corta", Contraseña1 = "12345", Email1 = "c@mail.com", Telefono1 = "1" };
+
+            Assert.False(gestion.agregarUsuario(corta));
+            Assert.True(gestion.VerificarNombre(corta)); // no se creó
+
+            var cliente = new GestionUsuarios().get(Cliente);
+            cliente.Contraseña1 = "123";
+            Assert.False(gestion.ActualizarUsuario(cliente));
+            cliente.Contraseña1 = "";
+            Assert.True(gestion.ActualizarUsuario(cliente)); // vacía = conservar la actual
+            Assert.NotNull(gestion.Login("Nom1", "ctr1"));
         }
 
         [Fact]

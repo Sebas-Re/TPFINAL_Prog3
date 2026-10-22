@@ -26,14 +26,14 @@
                             </div>
                             <div class="col-sm-6">
                                 <asp:Label runat="server" AssociatedControlID="txtContra1" CssClass="form-label" Text="Contraseña" />
-                                <asp:TextBox ID="txtContra1" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
-                                <div class="form-text">Hasta 7 caracteres.</div>
+                                <asp:TextBox ID="txtContra1" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
+                                <div class="form-text">Al menos 6 caracteres.</div>
                                 <asp:RequiredFieldValidator ID="rfvContra1" runat="server" ControlToValidate="txtContra1" ValidationGroup="Registro"
                                     Display="Dynamic" CssClass="validador" ErrorMessage="Ingresá una contraseña." />
                             </div>
                             <div class="col-sm-6">
                                 <asp:Label runat="server" AssociatedControlID="txtContra2" CssClass="form-label" Text="Repetir contraseña" />
-                                <asp:TextBox ID="txtContra2" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                                <asp:TextBox ID="txtContra2" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
                                 <asp:RequiredFieldValidator ID="rfvContra2" runat="server" ControlToValidate="txtContra2" ValidationGroup="Registro"
                                     Display="Dynamic" CssClass="validador" ErrorMessage="Repetí la contraseña." />
                                 <asp:CompareValidator ID="cvContraseñas" runat="server" ControlToValidate="txtContra2" ControlToCompare="txtContra1" ValidationGroup="Registro"

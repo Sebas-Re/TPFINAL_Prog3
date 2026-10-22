@@ -23,6 +23,7 @@ namespace Dao.Tests
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "App_Data", "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
+            Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
 
         public void Dispose()
@@ -121,6 +122,34 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void LasContraseñasSeGuardanHasheadasYConSalt()
+        {
+            var tabla = new AccesoDatos().ObtenerTabla("Usuarios", "select Nombre_us, Contraseña_us from Usuarios");
+            string Guardada(string nombre) => tabla.Select("Nombre_us = '" + nombre + "'")[0]["Contraseña_us"].ToString();
+
+            Assert.All(tabla.Rows.Cast<DataRow>(), fila => Assert.StartsWith("pbkdf2$", fila["Contraseña_us"].ToString()));
+            Assert.DoesNotContain("ctr1", Guardada("Nom1"));
+            // admAmador y admNicolas tienen la misma contraseña, pero el salt hace distinto el hash.
+            Assert.NotEqual(Guardada("admAmador"), Guardada("admNicolas"));
+        }
+
+        [Fact]
+        public void ModificarUnUsuarioSinContraseñaConservaLaActual()
+        {
+            var dao = new DaoUsuarios();
+            var nom1 = dao.ObtenerUsuario(new Usuario { IdUsuario1 = 5 });
+
+            nom1.Contraseña1 = null;
+            Assert.Equal(1, dao.actualizarUsuario(nom1));
+            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+
+            nom1.Contraseña1 = "nueva123";
+            Assert.Equal(1, dao.actualizarUsuario(nom1));
+            Assert.False(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "nueva123")));
+        }
+
+        [Fact]
         public void NombreDeUsuarioEsCaseInsensitiveComoEnSqlServer()
         {
             Assert.True(new DaoUsuarios().ExisteUsuario(Usuario("ADMAMADOR", null)));
@@ -130,7 +159,7 @@ namespace Dao.Tests
         public void AgregaYActualizaUnUsuario()
         {
             var gestion = new GestionUsuarios();
-            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave", Email1 = "nuevo@mail.com", Telefono1 = "123", Tipo1 = false };
+            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "nuevo@mail.com", Telefono1 = "123", Tipo1 = false };
 
             Assert.True(gestion.agregarUsuario(nuevo));
             Assert.False(gestion.agregarUsuario(nuevo));

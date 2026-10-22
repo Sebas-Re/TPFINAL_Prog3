@@ -14,6 +14,14 @@ namespace Negocio
         DaoUsuarios dao = new DaoUsuarios();
         Usuario us = new Usuario();
 
+        public const int LargoMinimoContraseña = 6;
+        public const int LargoMaximoContraseña = 64;
+
+        public static bool ContraseñaValida(string contraseña)
+        {
+            return contraseña != null && contraseña.Length >= LargoMinimoContraseña && contraseña.Length <= LargoMaximoContraseña;
+        }
+
         public DataTable getUsuarios() //devuelve todos los usarios
         {            
             return dao.getTablaUsuarios();
@@ -89,7 +97,11 @@ namespace Negocio
 
         public bool agregarUsuario(Usuario us)
         {
-            int cantFilas = 0;       
+            int cantFilas = 0;
+            if (!ContraseñaValida(us.Contraseña1))
+            {
+                return false;
+            }
             if (dao.ExisteUsuario(us) == false)
             {
                 cantFilas = dao.agregarUsuario(us);
@@ -162,8 +174,13 @@ namespace Negocio
         }
 
        
+        /* Contraseña1 vacía o null = conservar la actual. */
         public bool ActualizarUsuario(Usuario Usuario)
         {
+            if (!string.IsNullOrEmpty(Usuario.Contraseña1) && !ContraseñaValida(Usuario.Contraseña1))
+            {
+                return false;
+            }
             int FilasInsertadas = dao.actualizarUsuario(Usuario);
             if (FilasInsertadas == 1)
             {

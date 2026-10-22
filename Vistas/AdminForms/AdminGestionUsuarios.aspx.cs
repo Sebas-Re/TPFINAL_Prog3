@@ -72,7 +72,7 @@ namespace Vistas.AdminForms
             {
                 IdUsuario1 = actual.IdUsuario1,
                 Nombre1 = ((TextBox)fila.FindControl("txt_eit_nombreUs")).Text.Trim(),
-                Contraseña1 = nuevaContraseña == "" ? actual.Contraseña1 : nuevaContraseña,
+                Contraseña1 = nuevaContraseña, // vacía = no cambiarla
                 Email1 = ((TextBox)fila.FindControl("txt_eit_emailUs")).Text.Trim(),
                 Telefono1 = ((TextBox)fila.FindControl("txt_eit_telefonoUs")).Text.Trim(),
                 Tipo1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditTipo")).SelectedValue),
@@ -84,7 +84,11 @@ namespace Vistas.AdminForms
                 MostrarMensaje("El nombre o el e-mail ya los usa otra cuenta.", TipoMensaje.Error);
                 return;
             }
-            us.ActualizarUsuario(usuario);
+            if (!us.ActualizarUsuario(usuario))
+            {
+                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo modificar el usuario.", TipoMensaje.Error);
+                return;
+            }
             MostrarMensaje("Usuario " + usuario.Nombre1 + " modificado.", TipoMensaje.Exito);
             gvUsuarios.EditIndex = -1;
             CargarGvUsuarios();
@@ -119,7 +123,11 @@ namespace Vistas.AdminForms
                 MostrarMensaje("No se pudo agregar: el nombre o el e-mail ya están en uso.", TipoMensaje.Error);
                 return;
             }
-            us.agregarUsuario(usuario);
+            if (!us.agregarUsuario(usuario))
+            {
+                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo agregar el usuario.", TipoMensaje.Error);
+                return;
+            }
             MostrarMensaje((usuario.Tipo1 ? "Administrador " : "Cliente ") + usuario.Nombre1 + " agregado.", TipoMensaje.Exito);
             txtNombreUsuario.Text = "";
             txtEmail.Text = "";

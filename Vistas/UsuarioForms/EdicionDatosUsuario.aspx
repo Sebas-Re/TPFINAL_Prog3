@@ -25,7 +25,7 @@
                         </div>
                         <div class="col-sm-6">
                             <asp:Label runat="server" AssociatedControlID="txtContraseña" CssClass="form-label" Text="Nueva contraseña" />
-                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="7" autocomplete="new-password" />
+                            <asp:TextBox ID="txtContraseña" runat="server" CssClass="form-control" TextMode="Password" MaxLength="64" autocomplete="new-password" />
                             <div class="form-text">Dejala vacía para mantener la actual.</div>
                         </div>
                         <div class="col-12">
