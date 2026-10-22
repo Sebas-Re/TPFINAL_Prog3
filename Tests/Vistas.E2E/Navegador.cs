@@ -33,9 +33,15 @@ namespace Vistas.E2E
             };
         }
 
-        public string Cookie(string nombre)
+        public Cookie Cookie(string nombre)
         {
-            return cookies.GetCookies(direccion)[nombre]?.Value;
+            return cookies.GetCookies(direccion)[nombre];
+        }
+
+        /* La respuesta sin procesar, para revisar headers. */
+        public Task<HttpResponseMessage> Pedir(string ruta)
+        {
+            return cliente.GetAsync(new Uri(direccion, ruta));
         }
 
         public void PonerCookie(string nombre, string valor)

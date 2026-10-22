@@ -94,15 +94,34 @@ namespace Vistas.E2E
             using (var atacante = new Navegador(sitio.Direccion))
             {
                 // Quien conoce (o fijó antes del login) el id de sesión de la víctima...
-                atacante.PonerCookie("ASP.NET_SessionId", navegador.Cookie("ASP.NET_SessionId"));
+                atacante.PonerCookie("ASP.NET_SessionId", navegador.Cookie("ASP.NET_SessionId").Value);
                 Pagina pagina = await atacante.Abrir("UsuarioForms/HistorialCompras.aspx");
                 Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
 
                 // ...necesita también el token que se generó en el login.
-                atacante.PonerCookie("PCBooster.Auth", navegador.Cookie("PCBooster.Auth"));
+                atacante.PonerCookie("PCBooster.Auth", navegador.Cookie("PCBooster.Auth").Value);
                 pagina = await atacante.Abrir("UsuarioForms/HistorialCompras.aspx");
                 Assert.EndsWith("/HistorialCompras.aspx", pagina.Ruta);
             }
+        }
+
+        [Fact]
+        public async Task LasRespuestasTraenLosHeadersDeSeguridad()
+        {
+            await IniciarSesion("Nom1", "ctr1");
+            using (var respuesta = await navegador.Pedir("UsuarioForms/Catalogo.aspx"))
+            {
+                string Header(string nombre) => respuesta.Headers.TryGetValues(nombre, out var valores) ? string.Join(",", valores) : null;
+
+                Assert.Equal("nosniff", Header("X-Content-Type-Options"));
+                Assert.Equal("DENY", Header("X-Frame-Options"));
+                Assert.Contains("frame-ancestors 'none'", Header("Content-Security-Policy"));
+                Assert.Null(Header("X-AspNet-Version"));
+                Assert.Null(Header("X-Powered-By"));
+                Assert.Null(Header("Server"));
+            }
+            Assert.True(navegador.Cookie("ASP.NET_SessionId").HttpOnly);
+            Assert.True(navegador.Cookie("PCBooster.Auth").HttpOnly);
         }
 
         [Fact]
