@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Carrito · PC Booster Store" Language="C#" MasterPageFile="~/Tienda.Master" AutoEventWireup="true" CodeBehind="Carrito.aspx.cs" Inherits="Vistas.Carrito" %>
+<%@ Page Title="Carrito · PC Booster Store" Language="C#" MasterPageFile="~/Tienda.Master" AutoEventWireup="true" CodeBehind="Carrito.aspx.cs" Inherits="Vistas.Carrito" %>
 
 <asp:Content ContentPlaceHolderID="Pagina" runat="server">
     <h1 class="h3 mb-3">Tu carrito</h1>
@@ -48,9 +48,9 @@
                     <asp:Panel runat="server" DefaultButton="btnGuardarTarjeta" CssClass="row g-3">
                         <div class="col-sm-6">
                             <asp:Label runat="server" AssociatedControlID="txtNumeroTarjeta" CssClass="form-label" Text="Número de tarjeta" />
-                            <asp:TextBox ID="txtNumeroTarjeta" runat="server" CssClass="form-control" MaxLength="16" inputmode="numeric" autocomplete="cc-number" />
+                            <asp:TextBox ID="txtNumeroTarjeta" runat="server" CssClass="form-control" MaxLength="16" inputmode="numeric" autocomplete="cc-number" placeholder="16 dígitos, sin espacios" />
                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtNumeroTarjeta" ValidationGroup="Tarjeta" Display="Dynamic" CssClass="validador" ErrorMessage="Ingresá el número." />
-                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtNumeroTarjeta" ValidationGroup="Tarjeta" ValidationExpression="^\d{4,16}$" Display="Dynamic" CssClass="validador" ErrorMessage="Solo números (4 a 16 dígitos)." />
+                            <asp:RegularExpressionValidator runat="server" ControlToValidate="txtNumeroTarjeta" ValidationGroup="Tarjeta" ValidationExpression="^\d{13,16}$" Display="Dynamic" CssClass="validador" ErrorMessage="Entre 13 y 16 dígitos, sin espacios." />
                         </div>
                         <div class="col-sm-6">
                             <asp:Label runat="server" AssociatedControlID="txtTarjetaTitular" CssClass="form-label" Text="Titular" />

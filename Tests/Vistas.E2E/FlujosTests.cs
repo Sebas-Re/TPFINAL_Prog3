@@ -137,9 +137,10 @@ namespace Vistas.E2E
             Assert.Contains("Gabinete Aerocool", carrito.Texto);
 
             carrito = await navegador.Enviar(carrito, "btnGuardarTarjeta", Campos(
-                "txtNumeroTarjeta", "45670012", "txtTarjetaTitular", "Cliente E2E", "txtNombreTarjeta", "Visa",
+                "txtNumeroTarjeta", "4567123412340012", "txtTarjetaTitular", "Cliente E2E", "txtNombreTarjeta", "Visa",
                 "rbDebitoCredito", "1", "txtTarjetames", "12", "txtTarjetaAño", "2035", "txtCodSeguridad", "321"));
             Assert.Contains(carrito.Alertas, a => a.StartsWith("Tarjeta guardada"));
+            Assert.Contains("Visa terminada en 0012 (Crédito)", carrito.Texto);
 
             Pagina compras = await navegador.Enviar(carrito, "btnConfirmarCompra", Campos(
                 "txtDireccionDeEntrega", "Av. Siempreviva 742", "txtContacto", "Homero"));

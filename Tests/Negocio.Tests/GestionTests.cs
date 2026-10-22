@@ -117,7 +117,7 @@ namespace Negocio.Tests
             Tarjeta Tarjeta(string vencimiento) => new Tarjeta
             {
                 Us = Cliente, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa", Tipo_Tarjeta1 = true,
-                Num_Tarjeta1 = 45670012, Fecha_Vencimiento1 = vencimiento, Codigo_Seguridad1 = 321
+                Num_Tarjeta1 = 4567123412340012, Fecha_Vencimiento1 = vencimiento, Codigo_Seguridad1 = 321
             };
 
             Assert.False(gestion.agregarTarjeta(Tarjeta("01/01/2020")));

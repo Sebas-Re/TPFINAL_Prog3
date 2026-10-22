@@ -74,7 +74,8 @@ namespace Vistas
             DataKey clave = gvTarjetas.DataKeys[e.RowIndex];
             Tarjeta tarjeta = new Tarjeta
             {
-                Num_Tarjeta1 = Convert.ToInt32(clave["Num_Tarjeta_t"]),
+                Us = Sesion.Usuario,
+                Num_Tarjeta1 = Convert.ToInt64(clave["Num_Tarjeta_t"]),
                 Codigo_Seguridad1 = Convert.ToInt32(clave["Codigo_Seguridad_t"]),
                 Titular_Tarjeta1 = clave["Titular_Tarjeta_t"].ToString()
             };

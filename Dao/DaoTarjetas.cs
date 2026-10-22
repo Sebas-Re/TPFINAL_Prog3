@@ -25,7 +25,7 @@ namespace Dao
             tarj.Titular_Tarjeta1 = tabla.Rows[0][1].ToString();
             tarj.Nombre_Tarjeta1 = tabla.Rows[0][2].ToString();
             tarj.Tipo_Tarjeta1 = (bool)tabla.Rows[0][3];
-            tarj.Num_Tarjeta1 = Convert.ToInt32(tabla.Rows[0][4]);
+            tarj.Num_Tarjeta1 = Convert.ToInt64(tabla.Rows[0][4]);
             tarj.Fecha_Vencimiento1 = tabla.Rows[0][5].ToString();
             tarj.Codigo_Seguridad1 = Convert.ToInt32(tabla.Rows[0][6]);
             return tarj;
@@ -45,22 +45,25 @@ namespace Dao
             return tabla;
         }
 
+        /* ¿El usuario ya tiene guardada esta tarjeta? Compara el número completo. */
         public bool ExisteTarjeta (Tarjeta tarj)
         {
-            string consulta = TodoTarjetas + "where " + UltimosDigitos + " = @NumTarjeta and Codigo_Seguridad_t = @CodSeguridad and Titular_Tarjeta_t = @Titular";
+            string consulta = TodoTarjetas + "where Id_TarjetaUsuario_t = @IdUsuario and Num_Tarjeta_t = @NumTarjeta";
             return ds.existe(consulta,
-                new SQLiteParameter("@NumTarjeta", tarj.Num_Tarjeta1),
-                new SQLiteParameter("@CodSeguridad", tarj.Codigo_Seguridad1),
-                new SQLiteParameter("@Titular", tarj.Titular_Tarjeta1));
+                new SQLiteParameter("@IdUsuario", tarj.Us.IdUsuario1),
+                new SQLiteParameter("@NumTarjeta", tarj.Num_Tarjeta1));
         }
 
+        /* La página solo conoce los últimos 4 dígitos (es lo que muestra), así que
+           se identifica la tarjeta por esos dígitos, el código y el titular,
+           siempre dentro de las tarjetas del usuario. */
         public int EliminarTarjeta (Tarjeta tarj)
         {
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroTarjetaEliminar(ref comando, tarj);
             // ex sp_EliminarTarjeta
             return ds.EjecutarComando(comando,
-                "delete from Tarjetas where " + UltimosDigitos + " = @NUMEROTARJETA_T and Codigo_Seguridad_t = @CODIGODESEGURIDAD_T and Titular_Tarjeta_t = @TITULARTARJETA_T");
+                "delete from Tarjetas where Id_TarjetaUsuario_t = @IDUSUARIO_T and " + UltimosDigitos + " = @NUMEROTARJETA_T and Codigo_Seguridad_t = @CODIGODESEGURIDAD_T and Titular_Tarjeta_t = @TITULARTARJETA_T");
         }
 
         public int AgregarTarjeta (Tarjeta tarj)
@@ -75,6 +78,8 @@ namespace Dao
         private void ArmarParametroTarjetaEliminar(ref SQLiteCommand comando, Tarjeta tarj)
         {
             SQLiteParameter Parametros = new SQLiteParameter();
+            Parametros = comando.Parameters.Add("@IDUSUARIO_T", DbType.Int64);
+            Parametros.Value = tarj.Us.IdUsuario1;
             Parametros = comando.Parameters.Add("@NUMEROTARJETA_T", DbType.Int64);
             Parametros.Value = tarj.Num_Tarjeta1;
             Parametros = comando.Parameters.Add("@CODIGODESEGURIDAD_T", DbType.Int32);

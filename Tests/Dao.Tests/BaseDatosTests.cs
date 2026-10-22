@@ -274,21 +274,26 @@ namespace Dao.Tests
             var tarjeta = new Tarjeta
             {
                 Us = new Usuario { IdUsuario1 = 5 }, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa",
-                Tipo_Tarjeta1 = true, Num_Tarjeta1 = 45670012, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
+                Tipo_Tarjeta1 = true, Num_Tarjeta1 = 4567123412340012, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
             };
 
+            Assert.False(dao.ExisteTarjeta(tarjeta));
             Assert.Equal(1, dao.AgregarTarjeta(tarjeta));
+            Assert.True(dao.ExisteTarjeta(tarjeta));
 
+            // Un número de 16 dígitos se guarda completo (antes se truncaba a int).
+            Assert.Equal(4567123412340012L, dao.getTablaTarjeta(tarjeta).Rows[0]["Num_Tarjeta_t"]);
             var tabla = dao.ObtenerTarjetasUsuario(new Usuario { IdUsuario1 = 5 });
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);
             Assert.Equal(new DateTime(2099, 12, 1), tabla.Rows[0]["Fecha_Vencimiento_t"]);
 
-            // La vista busca por los últimos 4 dígitos ingresados como número.
-            var porUltimos = new Tarjeta { Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
-            Assert.True(dao.ExisteTarjeta(porUltimos));
+            // La página elimina con los últimos 4 dígitos, que es lo que muestra.
+            var deOtroUsuario = new Tarjeta { Us = new Usuario { IdUsuario1 = 6 }, Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
+            var porUltimos = new Tarjeta { Us = new Usuario { IdUsuario1 = 5 }, Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
+            Assert.Equal(0, dao.EliminarTarjeta(deOtroUsuario));
             Assert.Equal(1, dao.EliminarTarjeta(porUltimos));
-            Assert.False(dao.ExisteTarjeta(porUltimos));
+            Assert.False(dao.ExisteTarjeta(tarjeta));
         }
 
         [Fact]

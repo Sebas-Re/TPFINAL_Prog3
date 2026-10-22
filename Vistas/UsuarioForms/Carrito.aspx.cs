@@ -72,7 +72,7 @@ namespace Vistas
             Tarjeta tarjeta = new Tarjeta
             {
                 Us = Sesion.Usuario,
-                Num_Tarjeta1 = (int)Convert.ToInt64(txtNumeroTarjeta.Text),
+                Num_Tarjeta1 = Convert.ToInt64(txtNumeroTarjeta.Text),
                 Titular_Tarjeta1 = txtTarjetaTitular.Text.Trim(),
                 Nombre_Tarjeta1 = txtNombreTarjeta.Text.Trim(),
                 Fecha_Vencimiento1 = "01/" + txtTarjetames.Text + "/" + txtTarjetaAño.Text,
@@ -89,7 +89,7 @@ namespace Vistas
             }
             else
             {
-                MostrarMensaje("No se pudo guardar la tarjeta: está vencida o ya tenés una con ese código de seguridad.", TipoMensaje.Error);
+                MostrarMensaje("No se pudo guardar la tarjeta: ya la tenías guardada, está vencida o tiene el mismo código de seguridad que otra tuya.", TipoMensaje.Error);
             }
         }
 
