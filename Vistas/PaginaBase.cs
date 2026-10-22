@@ -17,6 +17,12 @@ namespace Vistas
     {
         protected abstract NivelAcceso Acceso { get; }
 
+        /* Imagen de reemplazo para productos sin foto (se usa en onerror de los <img>). */
+        protected string UrlSinImagen
+        {
+            get { return ResolveUrl("~/Content/sin-imagen.svg"); }
+        }
+
         protected override void OnInit(EventArgs e)
         {
             if (Acceso != NivelAcceso.Publico && !Sesion.Logueado)

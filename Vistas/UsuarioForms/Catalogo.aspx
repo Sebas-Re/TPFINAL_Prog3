@@ -41,7 +41,7 @@
                         <div class="col">
                             <div class="card h-100 producto">
                                 <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>'>
-                                    <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                    <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
                                 </a>
                                 <div class="card-body d-flex flex-column">
                                     <div class="small text-body-secondary mb-1"><%#: Eval("Marca_ar") %></div>
@@ -79,7 +79,7 @@
                                         <div class="row g-4">
                                             <div class="col-md-5">
                                                 <div class="border rounded-3 p-3 bg-white text-center">
-                                                    <img class="img-fluid detalle-imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                                    <img class="img-fluid detalle-imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
                                                 </div>
                                                 <ul class="list-unstyled small text-body-secondary mt-3 mb-0">
                                                     <li class="mb-1"><i class="bi bi-shield-check text-success"></i> Garantía oficial: <%#: TextoGarantia(Eval("Garantia_ar")) %></li>
