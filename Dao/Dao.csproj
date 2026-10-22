@@ -45,17 +45,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccesoDatos.cs" />
+    <Compile Include="Contrasenas.cs" />
     <Compile Include="DaoArticulos.cs" />
     <Compile Include="DaoCategorias.cs" />
     <Compile Include="DaoTarjetas.cs" />
     <Compile Include="DaoUsuarios.cs" />
     <Compile Include="DaoVentas.cs" />
     <Compile Include="DaoDetalleVentas.cs" />
+    <Compile Include="DaoMetricas.cs" />
+    <Compile Include="StockInsuficienteException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\schema.sql" />
     <EmbeddedResource Include="Sql\seed.sql" />
+    <EmbeddedResource Include="Sql\demo.sql" />
+    <EmbeddedResource Include="Sql\migracion_1.sql" />
+    <EmbeddedResource Include="Sql\migracion_2.sql" />
+    <EmbeddedResource Include="Sql\migracion_3.sql" />
+    <EmbeddedResource Include="Sql\articulos_detalle.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

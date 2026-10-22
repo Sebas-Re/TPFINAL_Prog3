@@ -1,98 +1,178 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 using Entidades;
 using Negocio;
 
-
 namespace Vistas.AdminForms
 {
-    public partial class ReportesAdmin : System.Web.UI.Page
+    public partial class ReportesAdmin : PaginaBase
     {
+        static readonly int[] PeriodosDisponibles = { 7, 30, 90, 180 };
+        const int CantidadTopProductos = 10;
+        const int CantidadTopClientes = 8;
+
         GestionDetalleVenta gestDetVen = new GestionDetalleVenta();
-        DetalleVentas detven = new DetalleVentas();
         GestionVentas gestven = new GestionVentas();
-        Ventas venta = new Ventas();
         GestionArticulos gestart = new GestionArticulos();
-        Articulo art = new Articulo();
+        GestionMetricas metricas = new GestionMetricas();
+
+        protected string GraficoDias { get; private set; }
+        protected string GraficoProductos { get; private set; }
+        protected string GraficoPagos { get; private set; }
+
+        protected override NivelAcceso Acceso
+        {
+            get { return NivelAcceso.Admin; }
+        }
+
+        /* Período de análisis por querystring (?dias=30), así se puede compartir el link. */
+        protected int Dias
+        {
+            get
+            {
+                int dias;
+                return int.TryParse(Request.QueryString["dias"], out dias) && PeriodosDisponibles.Contains(dias) ? dias : 30;
+            }
+        }
+
+        /* Usuario filtrado en ventas; 0 = todas. Se conserva entre postbacks. */
+        int FiltroUsuario
+        {
+            get { return (int?)ViewState["FiltroUsuario"] ?? 0; }
+            set { ViewState["FiltroUsuario"] = value; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-           // lblNombreAdmin.Text = Session["NombreUsuario"].ToString();
-            CargarGvVentas();
-            CargargvReporteArticulos();
+            // Los gráficos se arman en cada request: viajan en atributos, no en el ViewState.
+            CargarMetricas();
+            if (!IsPostBack)
+            {
+                rptPeriodos.DataSource = PeriodosDisponibles;
+                rptPeriodos.DataBind();
+                CargarGvVentas();
+                CargarReporteArticulos();
+            }
         }
 
+        //-------------------------------------------------------------------------
+        // MÉTRICAS DEL PERÍODO
+        //-------------------------------------------------------------------------
+        private void CargarMetricas()
+        {
+            string comparacion = "vs. " + Dias + " días anteriores";
+            Comparativa comparativa = metricas.Comparar(Dias);
+            litIndicadores.Text = Indicador.Resumen(comparativa, comparacion)
+                + Indicador.Html("Unidades vendidas", comparativa.Actual.Unidades.ToString("N0"),
+                    Comparativa.Variacion(comparativa.Actual.Unidades, comparativa.Anterior.Unidades), "bi-box-seam", "info", comparacion);
+            lblRecompra.Text = comparativa.Actual.TasaRecompra.ToString("0") + "%";
+
+            Serie dias = metricas.IngresosPorDia(Dias);
+            GraficoDias = new Grafico("line", dias.Etiquetas)
+                .Serie("Ingresos", dias.Valores, Grafico.Formato.Moneda)
+                .Serie("Pedidos", dias.Valores2, Grafico.Formato.Numero, "bar", ejeDerecho: true)
+                .Json();
+
+            Serie productos = metricas.TopProductos(Dias, CantidadTopProductos);
+            GraficoProductos = new Grafico("bar", productos.Etiquetas)
+                .Serie("Unidades", productos.Valores, Grafico.Formato.Numero)
+                .Horizontal()
+                .Json();
+
+            Serie pagos = metricas.MetodosDePago(Dias);
+            GraficoPagos = new Grafico("doughnut", pagos.Etiquetas)
+                .Serie("Pedidos", pagos.Valores, Grafico.Formato.Numero)
+                .Json();
+
+            gvTopClientes.DataSource = metricas.TopClientes(Dias, CantidadTopClientes);
+            gvTopClientes.DataBind();
+        }
+
+        //-------------------------------------------------------------------------
+        // VENTAS
+        //-------------------------------------------------------------------------
         private void CargarGvVentas()
         {
-            gvVentas.DataSource = gestven.getVentas();
+            DataTable ventas = FiltroUsuario == 0
+                ? gestven.getVentas()
+                : gestven.filtrarIdUsuario(new Usuario { IdUsuario1 = FiltroUsuario });
+            DataView recientes = ventas.DefaultView;
+            recientes.Sort = "IdVentas_ve DESC";
+            gvVentas.DataSource = recientes;
             gvVentas.DataBind();
         }
 
-        protected void btnusuariobuscar_Click(object sender, EventArgs e)
-        {            
-            venta.Usuario1.IdUsuario1 = Convert.ToInt32(txtIdUsuarioBuscar.Text);           
-            gvVentas.DataSource = gestven.getVenta(venta);
-            gvVentas.DataBind();
+        protected void btnBuscarUsuario_Click(object sender, EventArgs e)
+        {
+            int id;
+            FiltroUsuario = int.TryParse(txtIdUsuarioBuscar.Text, out id) ? id : 0;
+            gvVentas.PageIndex = 0;
+            gvVentas.SelectedIndex = -1;
+            pnlDetalle.Visible = false;
+            CargarGvVentas();
+        }
+
+        protected void btnTodasLasVentas_Click(object sender, EventArgs e)
+        {
+            FiltroUsuario = 0;
+            txtIdUsuarioBuscar.Text = "";
+            gvVentas.SelectedIndex = -1;
+            pnlDetalle.Visible = false;
+            CargarGvVentas();
+        }
+
+        protected void gvVentas_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvVentas.PageIndex = e.NewPageIndex;
+            gvVentas.SelectedIndex = -1;
+            pnlDetalle.Visible = false;
+            CargarGvVentas();
         }
 
         protected void gvVentas_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
         {
-            venta.IdVenta1 = Convert.ToInt32(((Label)gvVentas.Rows[e.NewSelectedIndex].FindControl("lblidVenta")).Text);
-            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(venta);
+            int idVenta = Convert.ToInt32(gvVentas.DataKeys[e.NewSelectedIndex].Value);
+            gvVentas.SelectedIndex = e.NewSelectedIndex;
+            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = idVenta });
             gvDetallesVenta.DataBind();
+            lblTituloDetalle.Text = "Detalle de la venta N° " + idVenta;
+            pnlDetalle.Visible = true;
         }
 
-        protected void btnusuariobuscar_Click1(object sender, EventArgs e)
+        //-------------------------------------------------------------------------
+        // ARTÍCULOS VENDIDOS (HISTÓRICO)
+        //-------------------------------------------------------------------------
+        private void CargarReporteArticulos()
         {
-
-        }
-        protected void CargargvReporteArticulos()
-        {
-            gvReporteArticulos.DataSource = gestart.getReporteArticulos();
+            DataView reporte = gestart.getReporteArticulos().DefaultView;
+            reporte.Sort = ddlOrdenador.SelectedValue;
+            string codigo = txtCodArticulo.Text.Trim();
+            if (codigo != "")
+            {
+                reporte.RowFilter = "Codigo = '" + codigo.Replace("'", "''") + "'";
+            }
+            gvReporteArticulos.DataSource = reporte;
             gvReporteArticulos.DataBind();
         }
 
-        protected void btnencontrarArt_Click1(object sender, EventArgs e)
+        protected void btnEncontrarArt_Click(object sender, EventArgs e)
         {
-            if (txtCodArticulo.Text != "") 
-            {
-                art.CodArticulo1 = txtCodArticulo.Text;
-                gvReporteArticulos.DataSource = gestart.getReporteArticulo(art);
-                gvReporteArticulos.DataBind();
-            }
-            else
-            {
-                art.CodArticulo1 = txtCodArticulo.Text;
-                gvReporteArticulos.DataSource = gestart.getArticulos();
-                gvReporteArticulos.DataBind();
-            }
+            gvReporteArticulos.PageIndex = 0;
+            CargarReporteArticulos();
         }
 
-        protected void CargargvTopArticulos()
+        protected void ddlOrdenador_SelectedIndexChanged(object sender, EventArgs e)
         {
-            gvTopArticulos.DataSource = gestart.TopArticulos();
-            gvTopArticulos.DataBind();
+            gvReporteArticulos.PageIndex = 0;
+            CargarReporteArticulos();
         }
 
-        protected void dpOrdenador_SelectedIndexChanged(object sender, EventArgs e)
+        protected void gvReporteArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
-            int op = Convert.ToInt32(ddlOrdenador.SelectedValue);
-            switch (op)
-            {
-                case 0:
-                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(0);
-                    break;
-                case 1:
-                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(1);
-                    break;
-                case 2:
-                    gvReporteArticulos.DataSource = gestart.OrdenarArticulos(2);
-                    break;
-            }
+            gvReporteArticulos.PageIndex = e.NewPageIndex;
+            CargarReporteArticulos();
         }
     }
 }

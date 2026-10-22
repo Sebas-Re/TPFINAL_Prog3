@@ -16,7 +16,7 @@ namespace Dao
 
         public Categoria ObtenerCategoria(Categoria cat)
         {
-            DataTable tabla = ds.ObtenerTabla("Categorias", "select IdCategoria_ca,Descripcion_ca,Estado_ca from Categorias where Id_Categoria_ca = @IdCategoria",
+            DataTable tabla = ds.ObtenerTabla("Categorias", "select IdCategoria_ca,Descripcion_ca,Estado_ca from Categorias where IdCategoria_ca = @IdCategoria",
                 new SQLiteParameter("@IdCategoria", cat.IdCategoria1));
             cat.IdCategoria1 = Convert.ToInt32(tabla.Rows[0][0].ToString());
             cat.Decripcion1 = tabla.Rows[0][1].ToString();

@@ -1,0 +1,29 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="Vistas.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="es">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PC Booster Store</title>
+    <link href="~/Content/lib/bootstrap/bootstrap.min.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/lib/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet" runat="server" />
+    <link href="~/Content/site.css" rel="stylesheet" runat="server" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <form id="formPrincipal" runat="server" class="d-flex flex-column flex-grow-1">
+        <asp:ContentPlaceHolder ID="Navegacion" runat="server" />
+
+        <main class="container py-4 flex-grow-1">
+            <asp:PlaceHolder ID="phMensajes" runat="server" />
+            <asp:ContentPlaceHolder ID="Contenido" runat="server" />
+        </main>
+
+        <footer class="py-3 border-top bg-white text-center text-body-secondary small">
+            PC Booster Store &middot; Trabajo Práctico Integrador &middot; Programación III &middot; UTN
+        </footer>
+    </form>
+    <script src="<%: ResolveUrl("~/Content/lib/bootstrap/bootstrap.bundle.min.js") %>"></script>
+    <asp:ContentPlaceHolder ID="Scripts" runat="server" />
+</body>
+</html>

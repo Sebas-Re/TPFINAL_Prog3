@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 using Dao;
 using Entidades;
 using Negocio;
@@ -21,6 +22,8 @@ namespace Dao.Tests
         public BaseDatosTests()
         {
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "App_Data", "PCbooster.db");
+            AccesoDatos.CargarDatosDemo = false;
+            Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
 
         public void Dispose()
@@ -43,6 +46,22 @@ namespace Dao.Tests
             Assert.Equal(68, new DaoArticulos().getTablaArticulos().Rows.Count);
             Assert.True(File.Exists(AccesoDatos.RutaBaseDatos));
             Assert.False(File.Exists(AccesoDatos.RutaBaseDatos + ".tmp"));
+        }
+
+        [Fact]
+        public void LaRutaPorDefectoRespetaLaVariableDeEntorno()
+        {
+            string ruta = Path.Combine(carpeta, "desde-entorno.db");
+            Environment.SetEnvironmentVariable(AccesoDatos.VariableEntorno, ruta);
+            try
+            {
+                Assert.Equal(ruta, AccesoDatos.RutaPorDefecto());
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable(AccesoDatos.VariableEntorno, null);
+            }
+            Assert.EndsWith("PCbooster.db", AccesoDatos.RutaPorDefecto());
         }
 
         [Fact]
@@ -103,6 +122,34 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void LasContraseñasSeGuardanHasheadasYConSalt()
+        {
+            var tabla = new AccesoDatos().ObtenerTabla("Usuarios", "select Nombre_us, Contraseña_us from Usuarios");
+            string Guardada(string nombre) => tabla.Select("Nombre_us = '" + nombre + "'")[0]["Contraseña_us"].ToString();
+
+            Assert.All(tabla.Rows.Cast<DataRow>(), fila => Assert.StartsWith("pbkdf2$", fila["Contraseña_us"].ToString()));
+            Assert.DoesNotContain("ctr1", Guardada("Nom1"));
+            // admAmador y admNicolas tienen la misma contraseña, pero el salt hace distinto el hash.
+            Assert.NotEqual(Guardada("admAmador"), Guardada("admNicolas"));
+        }
+
+        [Fact]
+        public void ModificarUnUsuarioSinContraseñaConservaLaActual()
+        {
+            var dao = new DaoUsuarios();
+            var nom1 = dao.ObtenerUsuario(new Usuario { IdUsuario1 = 5 });
+
+            nom1.Contraseña1 = null;
+            Assert.Equal(1, dao.actualizarUsuario(nom1));
+            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+
+            nom1.Contraseña1 = "nueva123";
+            Assert.Equal(1, dao.actualizarUsuario(nom1));
+            Assert.False(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "nueva123")));
+        }
+
+        [Fact]
         public void NombreDeUsuarioEsCaseInsensitiveComoEnSqlServer()
         {
             Assert.True(new DaoUsuarios().ExisteUsuario(Usuario("ADMAMADOR", null)));
@@ -112,7 +159,7 @@ namespace Dao.Tests
         public void AgregaYActualizaUnUsuario()
         {
             var gestion = new GestionUsuarios();
-            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave", Email1 = "nuevo@mail.com", Telefono1 = "123", Tipo1 = false };
+            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "nuevo@mail.com", Telefono1 = "123", Tipo1 = false };
 
             Assert.True(gestion.agregarUsuario(nuevo));
             Assert.False(gestion.agregarUsuario(nuevo));
@@ -176,6 +223,89 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void ActualizarArticuloGuardaLaCategoria()
+        {
+            var dao = new DaoArticulos();
+            var art = new Articulo
+            {
+                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 3 }, Descripcion1 = "Gabinete Gamemax",
+                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
+            };
+
+            Assert.True(dao.ActualizarArticulo(art));
+            Assert.Equal(3L, dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Categoria_ar"]);
+        }
+
+        [Fact]
+        public void ObtenerArticuloCargaTodosLosCampos()
+        {
+            var art = new DaoArticulos().ObtenerArticulo(new Articulo { CodArticulo1 = "gb1" });
+
+            Assert.Equal(2, art.Categoria1.IdCategoria1);
+            Assert.Equal("Gabinete Gamemax", art.Descripcion1);
+            Assert.Equal(10, art.Stock1);
+            Assert.Equal(3500f, art.Precio_Unitario1);
+            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", art.ImagenURL1);
+            Assert.True(art.Estado1);
+        }
+
+        [Fact]
+        public void ObtenerCategoriaCargaTodosLosCampos()
+        {
+            var cat = new DaoCategorias().ObtenerCategoria(new Categoria { IdCategoria1 = 8 });
+
+            Assert.Equal("Ssd", cat.Decripcion1);
+            Assert.True(cat.Estado1);
+        }
+
+        [Fact]
+        public void ObtenerVentaCargaTodosLosCampos()
+        {
+            var dao = new DaoVentas();
+            dao.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 456 });
+            int id = dao.IDultimaventa(new Ventas()).IdVenta1;
+
+            var venta = dao.ObtenerVenta(new Ventas { IdVenta1 = id });
+
+            Assert.Equal(5, venta.Usuario1.IdUsuario1);
+            Assert.Equal(0f, venta.TotalVenta1);
+            Assert.True(venta.Metodo_Pago1);
+            Assert.Equal(456, venta.Cod_Seguridad1);
+        }
+
+        [Fact]
+        public void ActualizarArticuloPermiteReactivarlo()
+        {
+            var dao = new DaoArticulos();
+            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
+            var art = new Articulo
+            {
+                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Gabinete Gamemax",
+                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
+            };
+
+            Assert.True(dao.ActualizarArticulo(art));
+            Assert.True((bool)dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Estado_ar"]);
+        }
+
+        [Fact]
+        public void ElCatalogoSoloMuestraArticulosActivosDeCategoriasActivas()
+        {
+            var dao = new DaoArticulos();
+            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
+            new DaoCategorias().eliminarCategoria(new Categoria { IdCategoria1 = 1 }); // Fuente: 9 artículos
+
+            var catalogo = dao.getTablaArticulosCatalogo(null, null);
+
+            Assert.Equal(68 - 1 - 9, catalogo.Rows.Count);
+            Assert.DoesNotContain(catalogo.Rows.Cast<DataRow>(), f => (string)f["CodArticulo_ar"] == "gb1" || (long)f["Categoria_ar"] == 1);
+            Assert.Equal(8, dao.getTablaArticulosCatalogo(null, 2).Rows.Count);
+            Assert.Empty(dao.getTablaArticulosCatalogo(null, 1).Rows);
+            Assert.Equal(2, dao.getTablaArticulosCatalogo("ryzen", null).Rows.Count);
+            Assert.Empty(dao.getTablaArticulosCatalogo("Deepcool 700W", null).Rows);
+        }
+
+        [Fact]
         public void UnaCompraDescuentaStockYSumaElTotal()
         {
             var ventas = new DaoVentas();
@@ -211,21 +341,31 @@ namespace Dao.Tests
             var tarjeta = new Tarjeta
             {
                 Us = new Usuario { IdUsuario1 = 5 }, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa",
-                Tipo_Tarjeta1 = true, Num_Tarjeta1 = 45670012, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
+                Tipo_Tarjeta1 = true, Num_Tarjeta1 = 4567123412340012, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
             };
 
+            Assert.False(dao.ExisteTarjeta(tarjeta));
             Assert.Equal(1, dao.AgregarTarjeta(tarjeta));
+            Assert.True(dao.ExisteTarjeta(tarjeta));
 
+            // Un número de 16 dígitos se guarda completo (antes se truncaba a int).
+            Assert.Equal(4567123412340012L, dao.getTablaTarjeta(tarjeta).Rows[0]["Num_Tarjeta_t"]);
             var tabla = dao.ObtenerTarjetasUsuario(new Usuario { IdUsuario1 = 5 });
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);
             Assert.Equal(new DateTime(2099, 12, 1), tabla.Rows[0]["Fecha_Vencimiento_t"]);
+            // Lo que llega a las páginas no incluye el código de seguridad.
+            Assert.False(tabla.Columns.Contains("Codigo_Seguridad_t"));
 
-            // La vista busca por los últimos 4 dígitos ingresados como número.
-            var porUltimos = new Tarjeta { Num_Tarjeta1 = 12, Codigo_Seguridad1 = 321, Titular_Tarjeta1 = "Nom Uno" };
-            Assert.True(dao.ExisteTarjeta(porUltimos));
-            Assert.Equal(1, dao.EliminarTarjeta(porUltimos));
-            Assert.False(dao.ExisteTarjeta(porUltimos));
+            long id = Convert.ToInt64(tabla.Rows[0]["IdTarjeta_t"]);
+            Assert.Equal(321, dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Codigo_Seguridad1);
+            Assert.True(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Tipo_Tarjeta1);
+            Assert.Null(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 6 }, id));
+
+            // Se elimina por id, y solo dentro de las tarjetas del usuario.
+            Assert.Equal(0, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 6 }, IdTarjeta1 = id }));
+            Assert.Equal(1, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 5 }, IdTarjeta1 = id }));
+            Assert.False(dao.ExisteTarjeta(tarjeta));
         }
 
         [Fact]

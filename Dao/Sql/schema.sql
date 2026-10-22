@@ -1,5 +1,5 @@
 -- Schema SQLite de BD_Pcbooster_store.
--- Port de Scripts/legacy/sqlserver/Script DB_PCbooster_Store.sql.
+-- Port de Legacy/Scripts/sqlserver/Script DB_PCbooster_Store.sql.
 -- Los tipos bit/money/date se declaran así a propósito: System.Data.SQLite los
 -- mapea a Boolean/Decimal/DateTime, igual que SqlClient con SQL Server.
 -- COLLATE NOCASE replica la collation case-insensitive de SQL Server en las
@@ -8,11 +8,12 @@
 create table Usuarios(
 	IdUsuario_us integer primary key autoincrement,
 	Nombre_us varchar(10) not null unique collate nocase,
-	Contraseña_us varchar(7) not null,
+	Contraseña_us varchar(100) not null, -- hash PBKDF2 (ver Contrasenas.cs)
 	Email_us varchar(30) not null unique collate nocase,
 	Telefono_us varchar(15) null default 'Sin telefono',
 	Tipo_us bit not null default 0, -- 1 = admin, 0 = usuario
-	Estado_us bit not null default 1
+	Estado_us bit not null default 1,
+	FechaAlta_us datetime null default (datetime('now', 'localtime'))
 );
 
 create table Categorias(
@@ -29,6 +30,11 @@ create table Articulos(
 	PrecioUnitario_ar money not null,
 	Imagen varchar(100) null default 'Sin imagen',
 	Estado_ar bit not null default 1,
+	-- Detalle del producto (se muestra en el catálogo)
+	Marca_ar varchar(50) null,
+	DescripcionLarga_ar text null,
+	Especificaciones_ar text null, -- una por línea: "Clave: Valor"
+	Garantia_ar int null, -- meses
 	constraint CK_Articulos_Stock_ar check (Stock_ar >= 0),
 	constraint CK_Articulos_PrecioUnitario_Ar check (PrecioUnitario_ar > 0),
 	constraint PK_Articulos primary key (CodArticulo_ar),
@@ -86,12 +92,13 @@ begin
 	select raise(abort, 'Ck_Tarjetas_Fecha_Vencimiento: la tarjeta está vencida');
 end;
 
--- Calcula el total por compra
+-- Calcula el total por compra: suma el detalle solo a su venta.
+-- (El original filtraba por usuario y sumaba el monto a todas sus ventas.)
 create trigger tr_SumaTotal
 after insert on Detalle_Ventas
 begin
 	update Ventas set TotalVenta_ve = TotalVenta_ve + new.Cantidad_dv * new.Precio_Unitario_dv
-	where IdUsuario_ve = new.IdUsuario_dv;
+	where IdVentas_ve = new.IdDetVenta_dv;
 end;
 
 -- Descuenta el stock después de una compra

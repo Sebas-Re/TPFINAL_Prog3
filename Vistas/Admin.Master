@@ -1,0 +1,37 @@
+<%@ Master Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Admin.Master.cs" Inherits="Vistas.AdminMaster" %>
+
+<asp:Content ContentPlaceHolderID="Navegacion" runat="server">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="<%: ResolveUrl("~/AdminForms/AdminHome.aspx") %>">
+                <i class="bi bi-cpu-fill"></i> PC Booster <span class="badge text-bg-light text-primary ms-1">Admin</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuAdmin"
+                aria-controls="menuAdmin" aria-expanded="false" aria-label="Abrir menú">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuAdmin">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="<%: ClaseLink("AdminHome") %>" href="<%: ResolveUrl("~/AdminForms/AdminHome.aspx") %>"><i class="bi bi-speedometer2"></i> Panel</a></li>
+                    <li class="nav-item"><a class="<%: ClaseLink("AdminGestionArticulos") %>" href="<%: ResolveUrl("~/AdminForms/AdminGestionArticulos.aspx") %>"><i class="bi bi-box-seam"></i> Artículos y categorías</a></li>
+                    <li class="nav-item"><a class="<%: ClaseLink("AdminGestionUsuarios") %>" href="<%: ResolveUrl("~/AdminForms/AdminGestionUsuarios.aspx") %>"><i class="bi bi-people"></i> Usuarios</a></li>
+                    <li class="nav-item"><a class="<%: ClaseLink("ReportesAdmin") %>" href="<%: ResolveUrl("~/AdminForms/ReportesAdmin.aspx") %>"><i class="bi bi-graph-up"></i> Reportes</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <a class="btn btn-sm btn-outline-light" href="<%: ResolveUrl("~/UsuarioForms/Catalogo.aspx") %>"><i class="bi bi-shop"></i> Ver tienda</a>
+                    <span class="navbar-text text-light d-none d-lg-inline"><i class="bi bi-person-badge"></i> <%: NombreUsuario %></span>
+                    <a class="btn btn-sm btn-light" href="<%: ResolveUrl("~/Salir.ashx") %>" title="Cerrar sesión"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="Contenido" runat="server">
+    <asp:ContentPlaceHolder ID="Pagina" runat="server" />
+</asp:Content>
+
+<asp:Content ContentPlaceHolderID="Scripts" runat="server">
+    <script src="<%: ResolveUrl("~/Content/lib/chartjs/chart.umd.js") %>"></script>
+    <script src="<%: ResolveUrl("~/Content/graficos.js") %>"></script>
+</asp:Content>

@@ -1,0 +1,108 @@
+/* Estilos propios. Todo lo demás sale de Bootstrap 5. */
+
+body {
+    background-color: #f4f6f9;
+}
+
+.card {
+    border: 0;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .08);
+}
+
+/* Portada (login y registro) */
+.portada {
+    min-height: 70vh;
+}
+
+.portada .marca {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+}
+
+/* Tarjetas de producto del catálogo */
+.producto .imagen {
+    height: 170px;
+    object-fit: contain;
+    padding: 1rem;
+    background: #fff;
+}
+
+.producto {
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.producto:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 24, 40, .12);
+}
+
+.producto .descripcion {
+    min-height: 2.6em;
+}
+
+.resumen-carrito {
+    top: 5rem;
+}
+
+/* GridView: el pager se renderiza como una tabla anidada */
+.pager-gv table {
+    margin: .5rem auto 0;
+}
+
+.pager-gv td {
+    padding: 0 .15rem;
+}
+
+.pager-gv a,
+.pager-gv span {
+    display: inline-block;
+    min-width: 2rem;
+    padding: .25rem .5rem;
+    border-radius: .375rem;
+    text-align: center;
+    text-decoration: none;
+}
+
+.pager-gv span {
+    background: var(--bs-primary);
+    color: #fff;
+}
+
+.pager-gv a:hover {
+    background: var(--bs-secondary-bg);
+}
+
+.table > :not(caption) > * > * {
+    vertical-align: middle;
+}
+
+/* Indicadores del panel de administración */
+.indicador .icono {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.4rem;
+}
+
+/* Validadores de WebForms */
+.validador {
+    display: block;
+    font-size: .875em;
+    color: var(--bs-danger);
+}
+
+/* Contenedores de gráficos (Chart.js necesita un alto fijo con maintainAspectRatio: false) */
+.grafico {
+    position: relative;
+    height: 300px;
+}
+
+.grafico-chico {
+    height: 240px;
+}
+
+/* Modal de detalle del producto */
+.detalle-imagen {
+    max-height: 280px;
+    object-fit: contain;
+}

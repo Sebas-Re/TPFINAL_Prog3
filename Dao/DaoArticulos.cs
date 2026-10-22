@@ -17,15 +17,15 @@ namespace Dao
 
         public Articulo ObtenerArticulo(Articulo art) //Devuelve un objeto articulo
         {
-            DataTable tabla = ds.ObtenerTabla("Articulos","select CodArticulo_ar,Categoria_r,Descripcion_ar,Stock_ar,PrecioUnitario_ar,Imagen_ar from Articulos where CodArticulo = @CodArticulo",
+            DataTable tabla = ds.ObtenerTabla("Articulos","select CodArticulo_ar,Categoria_ar,Descripcion_ar,Stock_ar,PrecioUnitario_ar,Imagen,Estado_ar from Articulos where CodArticulo_ar = @CodArticulo",
                 new SQLiteParameter("@CodArticulo", art.CodArticulo1));
             art.CodArticulo1 = tabla.Rows[0][0].ToString();
-            art.Categoria1.IdCategoria1 = Convert.ToInt32(tabla.Rows[0][1].ToString());
+            art.Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(tabla.Rows[0][1]) };
             art.Descripcion1 = tabla.Rows[0][2].ToString();
-            art.Stock1 = Convert.ToInt32(tabla.Rows[0][3].ToString());
-            art.Precio_Unitario1 = Convert.ToInt32(tabla.Rows[0][4].ToString());
+            art.Stock1 = Convert.ToInt32(tabla.Rows[0][3]);
+            art.Precio_Unitario1 = Convert.ToSingle(tabla.Rows[0][4]);
             art.ImagenURL1 = tabla.Rows[0][5].ToString();
-            art.Estado1 = Convert.ToBoolean(tabla.Rows[0][6].ToString());
+            art.Estado1 = (bool)tabla.Rows[0][6];
             return art;
         }
 
@@ -61,6 +61,20 @@ namespace Dao
             return art;
         }
         /*---------------------------*/
+
+        /* Lo que ve el cliente: solo artículos activos de categorías activas,
+           opcionalmente filtrados por texto o por categoría. */
+        public DataTable getTablaArticulosCatalogo(string busqueda, int? categoria)
+        {
+            String consulta = "select a.*, c.Descripcion_ca as Categoria from Articulos a inner join Categorias c on c.IdCategoria_ca = a.Categoria_ar " +
+                "where a.Estado_ar = 1 and c.Estado_ca = 1 " +
+                "and (@Busqueda is null or a.Descripcion_ar like '%' || @Busqueda || '%') " +
+                "and (@Categoria is null or a.Categoria_ar = @Categoria) " +
+                "order by a.rowid";
+            return ds.ObtenerTabla("Articulos", consulta,
+                new SQLiteParameter("@Busqueda", String.IsNullOrWhiteSpace(busqueda) ? (object)DBNull.Value : busqueda.Trim()),
+                new SQLiteParameter("@Categoria", categoria.HasValue ? (object)categoria.Value : DBNull.Value));
+        }
 
         public DataTable getTablaArticulos() // Devuelve todos los articulos
         {
@@ -100,10 +114,11 @@ namespace Dao
         {
             SQLiteCommand Comando = new SQLiteCommand();
             ArmarParametrosArticuloAgregar(ref Comando,art);
+            Comando.Parameters.Add("@Estado", DbType.Boolean).Value = art.Estado1;
             AccesoDatos ad = new AccesoDatos();
-            // ex sp_ModificarArticulo
+            // ex sp_ModificarArticulo (que no actualizaba el estado: no había forma de reactivar un artículo)
             int FilasInsertadas = ad.EjecutarComando(Comando,
-                "update Articulos set Categoria_ar = @CodArticulo, Descripcion_ar = @Descripcion, Stock_ar = @Stock, PrecioUnitario_ar = @PrecioUnitario, Imagen = @ImagenURL where CodArticulo_ar = @CodArticulo");
+                "update Articulos set Categoria_ar = @Categoria, Descripcion_ar = @Descripcion, Stock_ar = @Stock, PrecioUnitario_ar = @PrecioUnitario, Imagen = @ImagenURL, Estado_ar = @Estado where CodArticulo_ar = @CodArticulo");
             if (FilasInsertadas == 1)
             {
                 return true;

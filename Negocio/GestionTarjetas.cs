@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Entidades;
 using Dao;
-using System.Windows.Forms;
 using System.Data;
 
 namespace Negocio
@@ -61,13 +60,16 @@ namespace Negocio
         {            
             if (dao.ExisteTarjeta(tarj))
             {
-                MessageBox.Show("Esta tarjeta ya existe en la base de datos", "Error");
                 return false;
             }
-            else
+            try
             {
-                dao.AgregarTarjeta(tarj);
-                return true;
+                return dao.AgregarTarjeta(tarj) == 1;
+            }
+            catch (Exception)
+            {
+                // Tarjeta vencida o repetida para el usuario (restricciones de la base).
+                return false;
             }
         }
     }

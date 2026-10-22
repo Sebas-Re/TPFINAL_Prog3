@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Data;
 using Entidades;
 using Dao;
-using System.Windows.Forms;
 
 namespace Negocio
 {
@@ -16,6 +16,11 @@ namespace Negocio
         public DataTable getArticulos() //devuelve todos los Articulos
         {
             return dao.getTablaArticulos();
+        }
+
+        public DataTable getArticulosCatalogo(string busqueda, int? categoria) //solo los que se pueden comprar
+        {
+            return dao.getTablaArticulosCatalogo(busqueda, categoria);
         }
 
         public DataTable getReporteArticulos()
@@ -39,30 +44,6 @@ namespace Negocio
         }
 
 
-        public DataTable CrearTablaArticulos()
-        {
-            DataTable dt = new DataTable();
-            DataColumn Columna = new DataColumn("DESCRIPCION", Type.GetType("System.String"));
-            dt.Columns.Add(Columna);
-
-            Columna = new DataColumn("PRECIO UNITARIO", Type.GetType("System.Decimal"));
-            dt.Columns.Add(Columna);
-
-            Columna = new DataColumn("CANTIDAD", Type.GetType("System.String"));
-            dt.Columns.Add(Columna);
-
-            return dt;
-        }
-
-        public void AgregarFila(ref DataTable tabla, Articulo art)
-        {
-            DataRow dr = tabla.NewRow();
-            dr["DESCRIPCION"] = art.Descripcion1;
-            dr["PRECIO UNITARIO"] = art.Precio_Unitario1;
-            dr["CANTIDAD"] = "1";
-
-            tabla.Rows.Add(dr);
-        }
 
         public DataTable getArticuloCOD(Articulo art) //Devuelve un Articulo
         {
@@ -97,8 +78,34 @@ namespace Negocio
             }
         }
 
+        /* Código de 1 a 4 letras o números, como los de los datos de prueba. */
+        public static bool CodigoValido(string codigo)
+        {
+            return codigo != null && Regex.IsMatch(codigo, "^[A-Za-z0-9]{1,4}$");
+        }
+
+        /* La imagen se muestra en el catálogo: solo rutas del sitio ("~/..." o
+           "/...") o direcciones http(s). Nada de "javascript:", "data:", etc. */
+        public static bool ImagenValida(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url) || url.Length > 100)
+            {
+                return false;
+            }
+            if (url.StartsWith("~/") || (url.StartsWith("/") && !url.StartsWith("//")))
+            {
+                return true;
+            }
+            Uri uri;
+            return Uri.TryCreate(url, UriKind.Absolute, out uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+        }
+
         public bool ActualizarArticulo(Articulo art)
         {
+            if (!ImagenValida(art.ImagenURL1))
+            {
+                return false;
+            }
             bool eliminado = dao.ActualizarArticulo(art);
             if (eliminado)
             {
@@ -122,18 +129,14 @@ namespace Negocio
         public bool agregarArticulo(Articulo art)
         {
             int cantFilas = 0;
+            if (!CodigoValido(art.CodArticulo1) || !ImagenValida(art.ImagenURL1))
+            {
+                return false;
+            }
             if (dao.ExisteArticulo(art) == false)
             {
                 cantFilas = dao.agregarArticulo(art);
             }
-            else
-            {
-                MessageBox.Show("El articulo ya existe en la base de datos", "Error");
-            }
-
-
-
-
             if (cantFilas == 1)
             {
                 return true;

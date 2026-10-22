@@ -16,11 +16,25 @@ namespace Dao
         static readonly object bloqueoInicializacion = new object();
         static String rutaInicializada;
 
-        /* Ruta del archivo SQLite. Por defecto App_Data (ASP.NET define "DataDirectory")
-           o, fuera de ASP.NET, la carpeta del ejecutable. Los tests la redirigen. */
-        public static String RutaBaseDatos { get; set; } = Path.Combine(
-            AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
-            NombreArchivo);
+        public const String VariableEntorno = "PCBOOSTER_DB";
+
+        /* Ruta del archivo SQLite. Los tests la redirigen. */
+        public static String RutaBaseDatos { get; set; } = RutaPorDefecto();
+
+        /* La variable de entorno PCBOOSTER_DB, si está definida (la usan los tests
+           E2E para levantar el sitio con una base temporal). Si no, App_Data
+           (ASP.NET define "DataDirectory") o la carpeta del ejecutable. */
+        public static String RutaPorDefecto()
+        {
+            String desdeEntorno = Environment.GetEnvironmentVariable(VariableEntorno);
+            if (!String.IsNullOrWhiteSpace(desdeEntorno))
+            {
+                return desdeEntorno;
+            }
+            return Path.Combine(
+                AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
+                NombreArchivo);
+        }
 
         public AccesoDatos()
         {
@@ -34,8 +48,27 @@ namespace Dao
             return cn;
         }
 
+        /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
+           en esta versión; una existente se actualiza con los scripts de Migraciones. */
+        public const int VersionSchema = 4;
+
+        /* Scripts que llevan una base de la versión N-1 a la N (índice 0 = versión 1). */
+        static readonly String[][] Migraciones =
+        {
+            new[] { "migracion_1.sql" },
+            new[] { "migracion_2.sql", "articulos_detalle.sql" },
+            new[] { "migracion_3.sql" },
+            new String[0] // versión 4: hash de contraseñas (HashearContraseñas, no se puede hacer en SQL)
+        };
+
+        /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:
+           clientes y ventas de los últimos 6 meses). Los tests de las capas lo
+           apagan para trabajar con datos chicos y predecibles. */
+        public static bool CargarDatosDemo { get; set; } = true;
+
         /* La primera vez que se usa la base, si el archivo no existe se crea con
-           el schema y los datos de prueba embebidos en el assembly. */
+           el schema y los datos de prueba embebidos en el assembly; si existe, se
+           le aplican las migraciones pendientes. */
         private static void InicializarBaseDatos()
         {
             String ruta = RutaBaseDatos;
@@ -47,7 +80,36 @@ namespace Dao
                 {
                     CrearBaseDatos(ruta);
                 }
+                else
+                {
+                    Migrar(ruta);
+                }
                 rutaInicializada = ruta;
+            }
+        }
+
+        private static void Migrar(String ruta)
+        {
+            using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + ruta + ";Foreign Keys=True"))
+            {
+                cn.Open();
+                int version = Convert.ToInt32(EjecutarEscalar(cn, "pragma user_version"));
+                for (int siguiente = version + 1; siguiente <= VersionSchema; siguiente++)
+                {
+                    using (SQLiteTransaction tx = cn.BeginTransaction())
+                    {
+                        foreach (String script in Migraciones[siguiente - 1])
+                        {
+                            EjecutarScript(cn, script);
+                        }
+                        if (siguiente == 4)
+                        {
+                            HashearContraseñas(cn);
+                        }
+                        EjecutarEscalar(cn, "pragma user_version = " + siguiente);
+                        tx.Commit();
+                    }
+                }
             }
         }
 
@@ -65,11 +127,49 @@ namespace Dao
                 {
                     EjecutarScript(cn, "schema.sql");
                     EjecutarScript(cn, "seed.sql");
+                    EjecutarScript(cn, "articulos_detalle.sql");
+                    if (CargarDatosDemo)
+                    {
+                        EjecutarScript(cn, "demo.sql");
+                    }
+                    HashearContraseñas(cn);
+                    EjecutarEscalar(cn, "pragma user_version = " + VersionSchema);
                     tx.Commit();
                 }
             }
             SQLiteConnection.ClearAllPools();
             File.Move(temporal, ruta);
+        }
+
+        /* Los comandos se cierran siempre: uno abierto deja el archivo bloqueado. */
+        private static object EjecutarEscalar(SQLiteConnection cn, String sql)
+        {
+            using (SQLiteCommand cmd = new SQLiteCommand(sql, cn))
+            {
+                return cmd.ExecuteScalar();
+            }
+        }
+
+        /* Los scripts de datos traen las contraseñas en texto plano (son legibles
+           para quien prueba el proyecto); acá se reemplazan por su hash. */
+        private static void HashearContraseñas(SQLiteConnection cn)
+        {
+            DataTable usuarios = new DataTable();
+            using (SQLiteDataAdapter adp = new SQLiteDataAdapter("select IdUsuario_us, Contraseña_us from Usuarios", cn))
+            {
+                adp.Fill(usuarios);
+            }
+            foreach (DataRow fila in usuarios.Rows)
+            {
+                String guardada = fila["Contraseña_us"].ToString();
+                if (Contrasenas.EstaHasheada(guardada)) continue;
+                using (SQLiteCommand cmd = new SQLiteCommand("update Usuarios set Contraseña_us = @Hash where IdUsuario_us = @Id", cn))
+                {
+                    cmd.Parameters.AddWithValue("@Hash", Contrasenas.Hashear(guardada));
+                    cmd.Parameters.AddWithValue("@Id", fila["IdUsuario_us"]);
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
         private static void EjecutarScript(SQLiteConnection cn, String nombre)
@@ -110,6 +210,20 @@ namespace Dao
                 Comando.CommandType = CommandType.Text;
                 Comando.CommandText = Sql;
                 return Comando.ExecuteNonQuery();
+            }
+        }
+
+        /* Ejecuta "trabajo" en una sola conexión y transacción: se confirma todo o
+           nada. System.Data.SQLite abre la transacción con BEGIN IMMEDIATE, así que
+           otra escritura concurrente espera hasta que esta termine. */
+        public T EnTransaccion<T>(Func<SQLiteConnection, T> trabajo)
+        {
+            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteTransaction tx = Conexion.BeginTransaction())
+            {
+                T resultado = trabajo(Conexion);
+                tx.Commit();
+                return resultado; // si "trabajo" lanza una excepción, el Dispose hace rollback
             }
         }
 

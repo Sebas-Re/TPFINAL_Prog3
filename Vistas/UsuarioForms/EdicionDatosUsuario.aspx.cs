@@ -1,137 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using Negocio;
-using Entidades;
 using System.Data;
-using System.Windows.Forms;
-using TextBox = System.Web.UI.WebControls.TextBox;
-using Label = System.Web.UI.WebControls.Label;
+using System.Web.UI.WebControls;
+using Entidades;
+using Negocio;
 
 namespace Vistas
 {
-    public partial class EdicionDatosUsuario : System.Web.UI.Page
+    public partial class EdicionDatosUsuario : PaginaBase
     {
         GestionTarjetas gestarj = new GestionTarjetas();
         GestionUsuarios gestus = new GestionUsuarios();
-        Usuario usuario = new Usuario();
-        Tarjeta tarj = new Tarjeta();
-        
+
+        protected override NivelAcceso Acceso
+        {
+            get { return NivelAcceso.Cliente; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblNombreUsuario.Text = Session["NombreUsuario"].ToString();
-
             if (!IsPostBack)
             {
-                cargarGvModificarUsuario();
-                CargarGvTarjetas();
+                CargarDatosUsuario();
+                CargarTarjetas();
             }
         }
 
-        public void cargarGvModificarUsuario ()
+        private void CargarDatosUsuario()
         {
-            usuario.Nombre1 = Convert.ToString(Session["NombreUsuario"]);
-            gvDatoUsuario.DataSource = gestus.getUsuariosActualizar(usuario);
-            gvDatoUsuario.DataBind();
+            Usuario usuario = gestus.get(new Usuario { IdUsuario1 = Sesion.Usuario.IdUsuario1 });
+            txtNombre.Text = usuario.Nombre1;
+            txtEmail.Text = usuario.Email1;
+            txtTelefono.Text = usuario.Telefono1;
         }
 
-        public void CargarGvTarjetas()
+        private void CargarTarjetas()
         {
-            usuario.Nombre1 = Convert.ToString(Session["NombreUsuario"]);
-            usuario.IdUsuario1 = gestus.DevolverIDusuario(usuario);
-            gvTarjetas.DataSource = gestarj.getTablaTarjetasUsuario(usuario);
+            DataTable tarjetas = gestarj.getTablaTarjetasUsuario(Sesion.Usuario);
+            gvTarjetas.DataSource = tarjetas;
             gvTarjetas.DataBind();
+            lblSinTarjetas.Visible = tarjetas.Rows.Count == 0;
         }
 
-        protected void ddlMenuNavegacion_SelectedIndexChanged(object sender, EventArgs e)
+        protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            int op = Convert.ToInt32(ddlMenuNavegacion.SelectedValue);
-            switch (op)
+            Usuario usuario = new Usuario
             {
-                case 1:
-                    Server.Transfer("~/UsuarioForms/Catalogo.aspx");
-                    break;
-                case 2:
-                    Server.Transfer("~/UsuarioForms/HistorialCompras.aspx");
-                    break;
-                case 3:
-                    Server.Transfer("~/UsuarioForms/Carrito.aspx");
-                    break;
-                case 4:
-                    Session["NombreUsuario"] = null;
-                    Server.Transfer("~/Inicio.aspx");
-                    break;
-            }
-        }
+                IdUsuario1 = Sesion.Usuario.IdUsuario1,
+                Nombre1 = txtNombre.Text.Trim(),
+                Contraseña1 = txtContraseña.Text, // vacía = no cambiarla
+                Email1 = txtEmail.Text.Trim(),
+                Telefono1 = txtTelefono.Text.Trim()
+            };
 
-        protected void gvDatoUsuario_RowEditing(object sender, GridViewEditEventArgs e)
-        {
-            gvDatoUsuario.EditIndex = e.NewEditIndex;
-            cargarGvModificarUsuario();
-        }
-
-        protected void gvDatoUsuario_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
-        {
-            gvDatoUsuario.EditIndex = -1;
-            cargarGvModificarUsuario();
-        }
-
-        protected void gvDatoUsuario_RowUpdating(object sender, GridViewUpdateEventArgs e)
-        {
-            usuario.IdUsuario1 = Convert.ToInt32(((Label)gvDatoUsuario.Rows[e.RowIndex].FindControl("lblEditId")).Text);
-            usuario.Nombre1 = ((TextBox)gvDatoUsuario.Rows[e.RowIndex].FindControl("txtEditNombre")).Text;
-            usuario.Contraseña1 = ((TextBox)gvDatoUsuario.Rows[e.RowIndex].FindControl("txtEditContraseña")).Text;
-            usuario.Email1 = ((TextBox)gvDatoUsuario.Rows[e.RowIndex].FindControl("txtEditEmail")).Text;
-            usuario.Telefono1 = ((TextBox)gvDatoUsuario.Rows[e.RowIndex].FindControl("txtEditTelefono")).Text;
-            usuario.Estado1 = true;
-
-            if(gestus.VerificarNombreModificar(usuario)==true && gestus.VerificarEmailModificar(usuario) == true)
+            string error = gestus.ActualizarDatosPropios(usuario, txtContraseñaActual.Text);
+            if (error != null)
             {
-                gestus.ActualizarUsuario(usuario);
-
-                gvDatoUsuario.EditIndex = -1;
-
-                Session["NombreUsuario"] = usuario.Nombre1;
-
-                cargarGvModificarUsuario();
-
-                MessageBox.Show("SE GUARDARON LOS CAMBIOS, AHORA ESTOS SON TUS NUEVOS DATOS", "Atencion");
-
-
-                Server.Transfer("~/Inicio.aspx");
+                MostrarMensaje(error, TipoMensaje.Error);
+                return;
             }
-            else
-            {
-                gvDatoUsuario.EditIndex = -1;
-                cargarGvModificarUsuario();
-                lblMensajeUsuario.Text = "EL NOMBRE O EMAIL INGRESADOS YA ESTAN CARGADOS";
-            }
-            
+            Sesion.Usuario.Nombre1 = usuario.Nombre1;
+            MostrarMensaje("Guardamos tus cambios.", TipoMensaje.Exito);
         }
 
         protected void gvTarjetas_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-           tarj.Num_Tarjeta1 = Convert.ToInt32(((Label)gvTarjetas.Rows[e.RowIndex].FindControl("lblNumTarjeta")).Text);
-           tarj.Codigo_Seguridad1 = Convert.ToInt32(((Label)gvTarjetas.Rows[e.RowIndex].FindControl("lblCodSeguridad")).Text);
-            tarj.Titular_Tarjeta1 = ((Label)gvTarjetas.Rows[e.RowIndex].FindControl("lblTitularTarjeta")).Text;
-                
-            if (gestarj.eliminarTarjeta(tarj))
+            Tarjeta tarjeta = new Tarjeta
             {
-                MessageBox.Show("Tarjeta Eliminada con exito", "Atencion");
+                Us = Sesion.Usuario,
+                IdTarjeta1 = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
+            };
+            if (gestarj.eliminarTarjeta(tarjeta))
+            {
+                MostrarMensaje("Eliminaste la tarjeta.", TipoMensaje.Exito);
             }
             else
             {
-                MessageBox.Show("No se ha podido eliminar la tarjeta", "Atencion");
+                MostrarMensaje("No se pudo eliminar la tarjeta.", TipoMensaje.Error);
             }
-            gvTarjetas.EditIndex = -1;
-            
-            CargarGvTarjetas();
-
-
-
+            CargarTarjetas();
         }
     }
 }
