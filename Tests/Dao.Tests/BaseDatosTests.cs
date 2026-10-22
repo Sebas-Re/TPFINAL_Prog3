@@ -46,6 +46,22 @@ namespace Dao.Tests
         }
 
         [Fact]
+        public void LaRutaPorDefectoRespetaLaVariableDeEntorno()
+        {
+            string ruta = Path.Combine(carpeta, "desde-entorno.db");
+            Environment.SetEnvironmentVariable(AccesoDatos.VariableEntorno, ruta);
+            try
+            {
+                Assert.Equal(ruta, AccesoDatos.RutaPorDefecto());
+            }
+            finally
+            {
+                Environment.SetEnvironmentVariable(AccesoDatos.VariableEntorno, null);
+            }
+            Assert.EndsWith("PCbooster.db", AccesoDatos.RutaPorDefecto());
+        }
+
+        [Fact]
         public void LosIdsDeCategoriaCoincidenConLosDeSqlServer()
         {
             // En SQL Server el 'insert ... union' asignaba los identity en orden alfabético.

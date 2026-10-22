@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace Vistas
 {
@@ -27,6 +28,24 @@ namespace Vistas
                 Redirigir("~/UsuarioForms/Catalogo.aspx");
             }
             base.OnInit(e);
+        }
+
+        /* Los validadores de WebForms validan en el navegador, pero en el servidor
+           el evento del botón se ejecuta igual aunque Page.IsValid sea false
+           (por ejemplo, con JavaScript desactivado). Acá se corta en ese caso. */
+        protected override void RaisePostBackEvent(IPostBackEventHandler sourceControl, string eventArgument)
+        {
+            IButtonControl boton = sourceControl as IButtonControl;
+            if (boton != null && boton.CausesValidation)
+            {
+                Validate(boton.ValidationGroup);
+                if (!IsValid)
+                {
+                    MostrarMensaje("Revisá los datos marcados en el formulario.", TipoMensaje.Error);
+                    return;
+                }
+            }
+            base.RaisePostBackEvent(sourceControl, eventArgument);
         }
 
         protected void MostrarMensaje(string texto, TipoMensaje tipo)

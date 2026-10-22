@@ -16,11 +16,25 @@ namespace Dao
         static readonly object bloqueoInicializacion = new object();
         static String rutaInicializada;
 
-        /* Ruta del archivo SQLite. Por defecto App_Data (ASP.NET define "DataDirectory")
-           o, fuera de ASP.NET, la carpeta del ejecutable. Los tests la redirigen. */
-        public static String RutaBaseDatos { get; set; } = Path.Combine(
-            AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
-            NombreArchivo);
+        public const String VariableEntorno = "PCBOOSTER_DB";
+
+        /* Ruta del archivo SQLite. Los tests la redirigen. */
+        public static String RutaBaseDatos { get; set; } = RutaPorDefecto();
+
+        /* La variable de entorno PCBOOSTER_DB, si está definida (la usan los tests
+           E2E para levantar el sitio con una base temporal). Si no, App_Data
+           (ASP.NET define "DataDirectory") o la carpeta del ejecutable. */
+        public static String RutaPorDefecto()
+        {
+            String desdeEntorno = Environment.GetEnvironmentVariable(VariableEntorno);
+            if (!String.IsNullOrWhiteSpace(desdeEntorno))
+            {
+                return desdeEntorno;
+            }
+            return Path.Combine(
+                AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
+                NombreArchivo);
+        }
 
         public AccesoDatos()
         {

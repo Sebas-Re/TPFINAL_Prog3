@@ -1,18 +1,18 @@
 # PCbooster Store
 
 Tienda online de componentes de PC, hecha como Trabajo Práctico Integrador de Programación III (UTN).
-ASP.NET WebForms sobre .NET Framework 4.7.2, con arquitectura en capas:
+ASP.NET WebForms sobre .NET Framework 4.7.2, con interfaz en Bootstrap 5 y arquitectura en capas:
 
 | Proyecto    | Responsabilidad                                   |
 |-------------|---------------------------------------------------|
-| `Vistas`    | Sitio WebForms (páginas de usuario y de admin)    |
+| `Vistas`    | Sitio WebForms (tienda y panel de administración) |
 | `Negocio`   | Reglas de negocio y validaciones                  |
 | `Dao`       | Acceso a datos (SQL parametrizado sobre SQLite)   |
 | `Entidades` | Clases del dominio                                |
 
 ## Cómo correrlo
 
-1. Abrí `TP_Integrador.sln` en Visual Studio 2022 (workload *ASP.NET and web development*).
+1. Abrí `TP_Integrador.sln` en Visual Studio 2022 o posterior (workload *ASP.NET and web development*).
 2. Elegí `Vistas` como proyecto de inicio y presioná F5. Visual Studio restaura los paquetes NuGet.
 
 **No hace falta instalar ningún motor de base de datos.** La app usa SQLite embebido: la primera vez
@@ -28,11 +28,22 @@ a empezar de cero, borrá ese archivo.
 
 ## Tests
 
-Tests de integración de la capa de datos contra un SQLite temporal. Corren sin Visual Studio, con el .NET SDK:
+| Proyecto              | Qué prueba                                                             | Requisitos               |
+|-----------------------|------------------------------------------------------------------------|--------------------------|
+| `Tests/Dao.Tests`     | Acceso a datos contra un SQLite temporal                               | .NET SDK                 |
+| `Tests/Negocio.Tests` | Carrito, login, compras y validaciones de la capa de negocio           | .NET SDK                 |
+| `Tests/Vistas.E2E`    | El sitio real en IIS Express: login, catálogo, compra completa y admin | Compilar `Vistas` antes  |
+
+Los dos primeros corren sin Visual Studio:
 
 ```
 dotnet test Tests/Dao.Tests
+dotnet test Tests/Negocio.Tests
 ```
+
+Los E2E levantan `Vistas` en IIS Express (viene con Visual Studio), en un puerto libre y con una base
+temporal, así que no tocan `App_Data`. Compilá la solución primero y después corré todo desde el
+Explorador de pruebas de Visual Studio, o con `dotnet test Tests/Vistas.E2E`.
 
 ## Base de datos
 
