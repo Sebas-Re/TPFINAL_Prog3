@@ -64,6 +64,17 @@ namespace Negocio.Tests
         }
 
         [Fact]
+        public void UnUsuarioDesactivadoNoPuedeIniciarSesion()
+        {
+            var gestion = new GestionUsuarios();
+            var cliente = Cliente;
+
+            Assert.True(gestion.eliminarUsuario(ref cliente));
+
+            Assert.Null(gestion.Login("Nom1", "ctr1"));
+        }
+
+        [Fact]
         public void NoPermiteRegistrarUnUsuarioRepetido()
         {
             var gestion = new GestionUsuarios();

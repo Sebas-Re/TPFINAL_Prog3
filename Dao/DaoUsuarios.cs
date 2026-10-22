@@ -81,13 +81,13 @@ namespace Dao
 
         public Boolean ExisteUsuarioLogin(Usuario us)
         {
-            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena";
+            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena and Estado_us = 1";
             return ds.existe(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
         }
 
         public bool TipoUsuarioLogin(Usuario us)
         {
-            string consulta = "select Tipo_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena";
+            string consulta = "select Tipo_us from Usuarios where Nombre_us = @Nombre and Contraseña_us = @Contrasena and Estado_us = 1";
             return ds.existeLogin(consulta, new SQLiteParameter("@Nombre", us.Nombre1), new SQLiteParameter("@Contrasena", us.Contraseña1));
         }
 
