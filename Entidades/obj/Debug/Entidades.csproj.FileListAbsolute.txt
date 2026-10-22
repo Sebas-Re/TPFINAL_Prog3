@@ -80,3 +80,9 @@ C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Entidades\bin\Debug\Entidades.pdb
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.dll
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.pdb
+D:\Repos\TPFINAL_Prog3\Entidades\bin\Debug\Entidades.dll
+D:\Repos\TPFINAL_Prog3\Entidades\bin\Debug\Entidades.pdb
+D:\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.csproj.AssemblyReference.cache
+D:\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.csproj.CoreCompileInputs.cache
+D:\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.dll
+D:\Repos\TPFINAL_Prog3\Entidades\obj\Debug\Entidades.pdb

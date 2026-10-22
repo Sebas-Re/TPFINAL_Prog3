@@ -127,3 +127,14 @@ C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Dao\bin\Debug\Entidades.pdb
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.CopyComplete
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.dll
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.pdb
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\Dao.dll
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\Dao.pdb
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\Entidades.dll
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\Entidades.pdb
+D:\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.AssemblyReference.cache
+D:\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.CoreCompileInputs.cache
+D:\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.csproj.Up2Date
+D:\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.dll
+D:\Repos\TPFINAL_Prog3\Dao\obj\Debug\Dao.pdb
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\System.Data.SQLite.dll
+D:\Repos\TPFINAL_Prog3\Dao\bin\Debug\System.Data.SQLite.xml

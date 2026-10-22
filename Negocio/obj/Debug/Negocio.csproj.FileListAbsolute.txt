@@ -174,3 +174,16 @@ C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.Assem
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.CopyComplete
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.dll
 C:\Users\Sebas\Source\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.pdb
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Negocio.dll
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Negocio.pdb
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Dao.dll
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Entidades.dll
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Dao.pdb
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\Entidades.pdb
+D:\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
+D:\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
+D:\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.csproj.Up2Date
+D:\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.dll
+D:\Repos\TPFINAL_Prog3\Negocio\obj\Debug\Negocio.pdb
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\System.Data.SQLite.dll
+D:\Repos\TPFINAL_Prog3\Negocio\bin\Debug\System.Data.SQLite.xml
