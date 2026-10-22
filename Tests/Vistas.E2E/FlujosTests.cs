@@ -270,6 +270,21 @@ namespace Vistas.E2E
         }
 
         [Fact]
+        public async Task NoSeGuardaUnaImagenQueNoSeaUnaUrlDelSitioOHttp()
+        {
+            await IniciarSesion("admAmador", "admpsw2");
+            Pagina articulos = await navegador.Abrir("AdminForms/AdminGestionArticulos.aspx");
+            articulos = await navegador.Click(articulos, articulos.PorId("btnBuscarporCodigo"), Campos("txtIdArticulo", "hdd8"));
+            Pagina edicion = await navegador.Click(articulos, articulos.Links("[id$=gvArticulos] a[title=Editar]").Single());
+            var guardar = edicion.Links("[id$=gvArticulos] a").First(a => a.TextContent.Trim() == "Guardar");
+
+            Pagina pagina = await navegador.Click(edicion, guardar, Campos("txt_et_Imagen", "x' onerror='alert(1)"));
+
+            Assert.Contains(pagina.Alertas, a => a.Contains("La imagen tiene que ser"));
+            Assert.DoesNotContain("onerror='alert", pagina.Html);
+        }
+
+        [Fact]
         public async Task UnArticuloDadoDeBajaNoSeVendeHastaReactivarlo()
         {
             await IniciarSesion("admNicolas", "admpsw2");

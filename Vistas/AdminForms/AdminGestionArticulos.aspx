@@ -69,7 +69,7 @@
                     <Columns>
                         <asp:TemplateField>
                             <ItemTemplate>
-                                <img src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt="" width="48" height="48" style="object-fit: contain" loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
+                                <img src='<%#: ResolveUrl(Eval("Imagen").ToString()) %>' alt="" width="48" height="48" style="object-fit: contain" loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="CodArticulo_ar" HeaderText="Código" ReadOnly="true" />

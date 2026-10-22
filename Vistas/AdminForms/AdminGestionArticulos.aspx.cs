@@ -105,6 +105,8 @@ namespace Vistas.AdminForms
             CargarGvArticulos();
         }
 
+        const string ErrorImagen = "La imagen tiene que ser una ruta del sitio (~/Imagenes_ar/...) o una dirección http(s).";
+
         protected void gvArticulos_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvArticulos.Rows[e.RowIndex];
@@ -119,6 +121,11 @@ namespace Vistas.AdminForms
                 Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
             };
 
+            if (!GestionArticulos.ImagenValida(art.ImagenURL1))
+            {
+                MostrarMensaje(ErrorImagen, TipoMensaje.Error);
+                return;
+            }
             if (gestart.ExisteDescripcionArticuloModificar(art))
             {
                 MostrarMensaje("Ya existe otro artículo con esa descripción.", TipoMensaje.Error);
@@ -167,6 +174,16 @@ namespace Vistas.AdminForms
                 Estado1 = true
             };
 
+            if (!GestionArticulos.CodigoValido(art.CodArticulo1))
+            {
+                MostrarMensaje("El código tiene que tener de 1 a 4 letras o números.", TipoMensaje.Error);
+                return;
+            }
+            if (!GestionArticulos.ImagenValida(art.ImagenURL1))
+            {
+                MostrarMensaje(ErrorImagen, TipoMensaje.Error);
+                return;
+            }
             if (gestart.ExisteArticulo(art))
             {
                 MostrarMensaje("Ya existe un artículo con el código " + art.CodArticulo1 + ".", TipoMensaje.Error);

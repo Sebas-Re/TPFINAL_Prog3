@@ -152,10 +152,40 @@ namespace Negocio.Tests
             var repetido = new Articulo
             {
                 CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Otro gabinete",
-                Stock1 = 1, Precio_Unitario1 = 100, ImagenURL1 = ""
+                Stock1 = 1, Precio_Unitario1 = 100, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png"
             };
 
             Assert.False(gestion.agregarArticulo(repetido));
+            repetido.CodArticulo1 = "gb99";
+            Assert.True(gestion.agregarArticulo(repetido));
+        }
+
+        [Theory]
+        [InlineData("~/Imagenes_ar/Gabinete/gb1.png", true)]
+        [InlineData("/Imagenes_ar/x.png", true)]
+        [InlineData("https://cdn.ejemplo.com/a.png", true)]
+        [InlineData("javascript:alert(1)", false)]
+        [InlineData("data:image/svg+xml,<svg onload=alert(1)>", false)]
+        [InlineData("//otro-sitio.com/a.png", false)]
+        [InlineData("", false)]
+        public void SoloAceptaImagenesDelSitioOHttp(string url, bool valida)
+        {
+            Assert.Equal(valida, GestionArticulos.ImagenValida(url));
+        }
+
+        [Fact]
+        public void RechazaArticulosConCodigoOImagenInvalidos()
+        {
+            var gestion = new GestionArticulos();
+            Articulo Articulo(string codigo, string imagen) => new Articulo
+            {
+                CodArticulo1 = codigo, Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Nuevo " + codigo,
+                Stock1 = 1, Precio_Unitario1 = 100, ImagenURL1 = imagen, Estado1 = true
+            };
+
+            Assert.False(gestion.agregarArticulo(Articulo("x'><", "~/a.png")));
+            Assert.False(gestion.agregarArticulo(Articulo("ok1", "javascript:alert(1)")));
+            Assert.False(gestion.ActualizarArticulo(Articulo("gb1", "' onerror='alert(1)")));
         }
 
         [Fact]

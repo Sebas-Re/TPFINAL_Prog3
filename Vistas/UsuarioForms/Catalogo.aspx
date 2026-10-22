@@ -40,13 +40,13 @@
                     <ItemTemplate>
                         <div class="col">
                             <div class="card h-100 producto">
-                                <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>'>
-                                    <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
+                                <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#<%# IdHtml("detalle", Eval("CodArticulo_ar")) %>'>
+                                    <img class="card-img-top imagen" src='<%#: ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
                                 </a>
                                 <div class="card-body d-flex flex-column">
                                     <div class="small text-body-secondary mb-1"><%#: Eval("Marca_ar") %></div>
                                     <h2 class="h6 card-title descripcion">
-                                        <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>'><%#: Eval("Descripcion_ar") %></a>
+                                        <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#<%# IdHtml("detalle", Eval("CodArticulo_ar")) %>'><%#: Eval("Descripcion_ar") %></a>
                                     </h2>
                                     <div class="d-flex align-items-baseline justify-content-between mt-auto">
                                         <span class="fs-5 fw-semibold"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span>
@@ -56,7 +56,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex gap-2">
-                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>' title="Ver detalle">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target='#<%# IdHtml("detalle", Eval("CodArticulo_ar")) %>' title="Ver detalle">
                                         <i class="bi bi-info-circle"></i>
                                     </button>
                                     <asp:LinkButton runat="server" CommandName="Agregar" CommandArgument='<%# Eval("CodArticulo_ar") %>' ToolTip="Agregar al carrito"
@@ -68,7 +68,7 @@
                         </div>
 
                         <%-- Detalle del producto: un modal por tarjeta, sin JavaScript propio. --%>
-                        <div class="modal fade" id='detalle-<%# Eval("CodArticulo_ar") %>' tabindex="-1" aria-labelledby='titulo-<%# Eval("CodArticulo_ar") %>' aria-hidden="true">
+                        <div class="modal fade" id='<%# IdHtml("detalle", Eval("CodArticulo_ar")) %>' tabindex="-1" aria-labelledby='<%# IdHtml("titulo", Eval("CodArticulo_ar")) %>' aria-hidden="true">
                             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header border-0 pb-0">
@@ -79,7 +79,7 @@
                                         <div class="row g-4">
                                             <div class="col-md-5">
                                                 <div class="border rounded-3 p-3 bg-white text-center">
-                                                    <img class="img-fluid detalle-imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
+                                                    <img class="img-fluid detalle-imagen" src='<%#: ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# UrlSinImagen %>'" />
                                                 </div>
                                                 <ul class="list-unstyled small text-body-secondary mt-3 mb-0">
                                                     <li class="mb-1"><i class="bi bi-shield-check text-success"></i> Garantía oficial: <%#: TextoGarantia(Eval("Garantia_ar")) %></li>
@@ -89,7 +89,7 @@
                                             </div>
                                             <div class="col-md-7">
                                                 <div class="text-body-secondary small"><%#: Eval("Marca_ar") %> &middot; Código <%#: Eval("CodArticulo_ar") %></div>
-                                                <h3 class="h4 mb-2" id='titulo-<%# Eval("CodArticulo_ar") %>'><%#: Eval("Descripcion_ar") %></h3>
+                                                <h3 class="h4 mb-2" id='<%# IdHtml("titulo", Eval("CodArticulo_ar")) %>'><%#: Eval("Descripcion_ar") %></h3>
                                                 <div class="d-flex align-items-center gap-3 mb-3">
                                                     <span class="fs-3 fw-semibold"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span>
                                                     <span class='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? "badge text-bg-success" : "badge text-bg-danger" %>'>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI.WebControls;
 using Entidades;
@@ -155,6 +156,13 @@ namespace Vistas
                 pares.Add(new KeyValuePair<string, string>("Especificaciones", "Consultá con nuestro equipo de ventas"));
             }
             return pares;
+        }
+
+        /* Id HTML a partir del código del artículo, con solo caracteres seguros
+           (va dentro de atributos y de los selectores de los modales). */
+        protected string IdHtml(string prefijo, object codigo)
+        {
+            return prefijo + "-" + Regex.Replace(Convert.ToString(codigo), "[^A-Za-z0-9_-]", "_");
         }
 
         protected string TextoGarantia(object meses)
