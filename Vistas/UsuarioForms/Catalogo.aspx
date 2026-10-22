@@ -40,9 +40,14 @@
                     <ItemTemplate>
                         <div class="col">
                             <div class="card h-100 producto">
-                                <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>'>
+                                    <img class="card-img-top imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                </a>
                                 <div class="card-body d-flex flex-column">
-                                    <h2 class="h6 card-title descripcion"><%#: Eval("Descripcion_ar") %></h2>
+                                    <div class="small text-body-secondary mb-1"><%#: Eval("Marca_ar") %></div>
+                                    <h2 class="h6 card-title descripcion">
+                                        <a href="#" class="text-reset text-decoration-none" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>'><%#: Eval("Descripcion_ar") %></a>
+                                    </h2>
                                     <div class="d-flex align-items-baseline justify-content-between mt-auto">
                                         <span class="fs-5 fw-semibold"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span>
                                         <span class='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? "badge text-bg-light" : "badge text-bg-danger" %>'>
@@ -50,11 +55,71 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-white border-0 pt-0 pb-3">
-                                    <asp:LinkButton runat="server" CommandName="Agregar" CommandArgument='<%# Eval("CodArticulo_ar") %>'
-                                        CssClass="btn btn-primary w-100" Enabled='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 %>'>
+                                <div class="card-footer bg-white border-0 pt-0 pb-3 d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target='#detalle-<%# Eval("CodArticulo_ar") %>' title="Ver detalle">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                    <asp:LinkButton runat="server" CommandName="Agregar" CommandArgument='<%# Eval("CodArticulo_ar") %>' ToolTip="Agregar al carrito"
+                                        CssClass="btn btn-primary flex-grow-1" Enabled='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 %>'>
                                         <i class="bi bi-cart-plus"></i> Agregar al carrito
                                     </asp:LinkButton>
+                                </div>
+                            </div>
+                        </div>
+
+                        <%-- Detalle del producto: un modal por tarjeta, sin JavaScript propio. --%>
+                        <div class="modal fade" id='detalle-<%# Eval("CodArticulo_ar") %>' tabindex="-1" aria-labelledby='titulo-<%# Eval("CodArticulo_ar") %>' aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0 pb-0">
+                                        <span class="badge text-bg-light"><%#: Eval("Categoria") %></span>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body pt-2">
+                                        <div class="row g-4">
+                                            <div class="col-md-5">
+                                                <div class="border rounded-3 p-3 bg-white text-center">
+                                                    <img class="img-fluid detalle-imagen" src='<%# ResolveUrl(Eval("Imagen").ToString()) %>' alt='<%#: Eval("Descripcion_ar") %>' loading="lazy" onerror="this.onerror=null;this.src='<%# ResolveUrl("~/Content/sin-imagen.svg") %>'" />
+                                                </div>
+                                                <ul class="list-unstyled small text-body-secondary mt-3 mb-0">
+                                                    <li class="mb-1"><i class="bi bi-shield-check text-success"></i> Garantía oficial: <%#: TextoGarantia(Eval("Garantia_ar")) %></li>
+                                                    <li class="mb-1"><i class="bi bi-truck text-primary"></i> Envío a todo el país</li>
+                                                    <li><i class="bi bi-arrow-repeat text-primary"></i> 30 días para cambios</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="text-body-secondary small"><%#: Eval("Marca_ar") %> &middot; Código <%#: Eval("CodArticulo_ar") %></div>
+                                                <h3 class="h4 mb-2" id='titulo-<%# Eval("CodArticulo_ar") %>'><%#: Eval("Descripcion_ar") %></h3>
+                                                <div class="d-flex align-items-center gap-3 mb-3">
+                                                    <span class="fs-3 fw-semibold"><%#: Eval("PrecioUnitario_ar", "{0:C0}") %></span>
+                                                    <span class='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? "badge text-bg-success" : "badge text-bg-danger" %>'>
+                                                        <%# Convert.ToInt64(Eval("Stock_ar")) > 0 ? Eval("Stock_ar") + " disponibles" : "Sin stock" %>
+                                                    </span>
+                                                </div>
+                                                <p class="mb-3"><%#: Eval("DescripcionLarga_ar") %></p>
+
+                                                <h4 class="h6">Especificaciones</h4>
+                                                <table class="table table-sm small mb-3">
+                                                    <tbody>
+                                                        <asp:Repeater runat="server" DataSource='<%# Especificaciones(Eval("Especificaciones_ar")) %>'>
+                                                            <ItemTemplate>
+                                                                <tr><th scope="row" class="text-body-secondary fw-normal w-50"><%#: Eval("Key") %></th><td><%#: Eval("Value") %></td></tr>
+                                                            </ItemTemplate>
+                                                        </asp:Repeater>
+                                                    </tbody>
+                                                </table>
+
+                                                <asp:Panel runat="server" CssClass="d-flex gap-2" Visible='<%# Convert.ToInt64(Eval("Stock_ar")) > 0 %>'>
+                                                    <asp:TextBox ID="txtCantidad" runat="server" TextMode="Number" Text="1" CssClass="form-control" style="width: 6rem"
+                                                        min="1" max='<%# Eval("Stock_ar") %>' aria-label="Cantidad" />
+                                                    <asp:LinkButton runat="server" CommandName="AgregarCantidad" CommandArgument='<%# Eval("CodArticulo_ar") %>'
+                                                        CssClass="btn btn-primary flex-grow-1" ToolTip="Agregar la cantidad elegida">
+                                                        <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                                    </asp:LinkButton>
+                                                </asp:Panel>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

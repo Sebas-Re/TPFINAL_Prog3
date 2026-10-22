@@ -66,7 +66,7 @@ namespace Dao
            opcionalmente filtrados por texto o por categoría. */
         public DataTable getTablaArticulosCatalogo(string busqueda, int? categoria)
         {
-            String consulta = "select a.* from Articulos a inner join Categorias c on c.IdCategoria_ca = a.Categoria_ar " +
+            String consulta = "select a.*, c.Descripcion_ca as Categoria from Articulos a inner join Categorias c on c.IdCategoria_ca = a.Categoria_ar " +
                 "where a.Estado_ar = 1 and c.Estado_ca = 1 " +
                 "and (@Busqueda is null or a.Descripcion_ar like '%' || @Busqueda || '%') " +
                 "and (@Categoria is null or a.Categoria_ar = @Categoria) " +

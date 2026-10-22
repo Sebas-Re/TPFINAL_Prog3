@@ -77,6 +77,8 @@ namespace Dao.Tests
             // Simula una base creada antes del versionado: sin FechaAlta_us y con la imagen rota.
             new DaoCategorias().agregarCategoria(new Categoria { Decripcion1 = "Monitores" });
             Ejecutar("alter table Usuarios drop column FechaAlta_us; " +
+                     "alter table Articulos drop column Marca_ar; alter table Articulos drop column DescripcionLarga_ar; " +
+                     "alter table Articulos drop column Especificaciones_ar; alter table Articulos drop column Garantia_ar; " +
                      "update Articulos set Imagen = '~/Imagenes_ar/Fuente/fnt8png' where CodArticulo_ar = 'fnt8'; " +
                      "pragma user_version = 0;");
 
@@ -87,6 +89,22 @@ namespace Dao.Tests
             Assert.Equal(0L, Escalar("select count(*) from Usuarios where FechaAlta_us is null"));
             Assert.Equal("~/Imagenes_ar/Fuente/fnt8.png", Escalar("select Imagen from Articulos where CodArticulo_ar = 'fnt8'"));
             Assert.Equal(1L, Escalar("select count(*) from Categorias where Descripcion_ca = 'Monitores'"));
+            Assert.Equal(68L, Escalar("select count(*) from Articulos where DescripcionLarga_ar is not null"));
+        }
+
+        [Fact]
+        public void TodosLosArticulosDePruebaTienenDetalle()
+        {
+            var catalogo = new DaoArticulos().getTablaArticulosCatalogo(null, null);
+
+            Assert.Equal(68, catalogo.Rows.Count);
+            foreach (System.Data.DataRow fila in catalogo.Rows)
+            {
+                Assert.False(string.IsNullOrWhiteSpace(fila["Marca_ar"].ToString()), fila["CodArticulo_ar"].ToString());
+                Assert.False(string.IsNullOrWhiteSpace(fila["Categoria"].ToString()));
+                Assert.Contains(": ", fila["Especificaciones_ar"].ToString());
+                Assert.True(Convert.ToInt32(fila["Garantia_ar"]) > 0);
+            }
         }
 
         [Fact]

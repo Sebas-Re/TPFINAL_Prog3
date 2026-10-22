@@ -100,3 +100,9 @@ body {
 .grafico-chico {
     height: 240px;
 }
+
+/* Modal de detalle del producto */
+.detalle-imagen {
+    max-height: 280px;
+    object-fit: contain;
+}

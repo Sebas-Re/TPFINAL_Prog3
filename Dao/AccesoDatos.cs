@@ -49,8 +49,15 @@ namespace Dao
         }
 
         /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
-           en esta versión; una existente se actualiza con Sql/migracion_N.sql. */
-        public const int VersionSchema = 1;
+           en esta versión; una existente se actualiza con los scripts de Migraciones. */
+        public const int VersionSchema = 2;
+
+        /* Scripts que llevan una base de la versión N-1 a la N (índice 0 = versión 1). */
+        static readonly String[][] Migraciones =
+        {
+            new[] { "migracion_1.sql" },
+            new[] { "migracion_2.sql", "articulos_detalle.sql" }
+        };
 
         /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:
            clientes y ventas de los últimos 6 meses). Los tests de las capas lo
@@ -89,7 +96,10 @@ namespace Dao
                 {
                     using (SQLiteTransaction tx = cn.BeginTransaction())
                     {
-                        EjecutarScript(cn, "migracion_" + siguiente + ".sql");
+                        foreach (String script in Migraciones[siguiente - 1])
+                        {
+                            EjecutarScript(cn, script);
+                        }
                         EjecutarEscalar(cn, "pragma user_version = " + siguiente);
                         tx.Commit();
                     }
@@ -111,6 +121,7 @@ namespace Dao
                 {
                     EjecutarScript(cn, "schema.sql");
                     EjecutarScript(cn, "seed.sql");
+                    EjecutarScript(cn, "articulos_detalle.sql");
                     if (CargarDatosDemo)
                     {
                         EjecutarScript(cn, "demo.sql");

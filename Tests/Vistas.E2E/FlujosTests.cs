@@ -55,7 +55,7 @@ namespace Vistas.E2E
             Pagina catalogo = await navegador.Abrir(rutaCatalogo);
             for (int i = 0; i < cantidadProductos; i++)
             {
-                var agregar = catalogo.Links("a[href*=rptArticulos]");
+                var agregar = catalogo.Links("a[title='Agregar al carrito']");
                 catalogo = await navegador.Click(catalogo, agregar[i]);
                 Assert.Contains(catalogo.Alertas, a => a.StartsWith("Agregaste"));
             }
@@ -124,6 +124,27 @@ namespace Vistas.E2E
             Assert.DoesNotContain("Fuente Deepcool", gabinetes.Texto);
             Assert.Contains("Procesador gamer AMD Ryzen 7", busqueda.Texto);
             Assert.Contains("Procesador AMD Ryzen 7 3800XT", busqueda.Texto);
+        }
+
+        [Fact]
+        public async Task ElModalMuestraElDetalleYAgregaLaCantidadElegida()
+        {
+            await RegistrarClienteNuevo();
+            Pagina catalogo = await navegador.Abrir("UsuarioForms/Catalogo.aspx?q=Ryzen%207%203800XT");
+
+            var modal = catalogo.Documento.QuerySelector("#detalle-ps7");
+            Assert.NotNull(modal);
+            Assert.Contains("Especificaciones", modal.TextContent);
+            Assert.Contains("8 / 16", modal.TextContent);
+            Assert.Contains("Procesador", modal.TextContent);
+
+            var agregar = modal.QuerySelector("a[title='Agregar la cantidad elegida']");
+            Pagina resultado = await navegador.Click(catalogo, agregar, Campos("txtCantidad", "3"));
+
+            Assert.Contains(resultado.Alertas, a => a.Contains("Agregaste 3 unidades"));
+            Pagina carrito = await navegador.Abrir("UsuarioForms/Carrito.aspx");
+            var fila = carrito.Documento.QuerySelectorAll("[id$=gvMiscompras] tr").Single(tr => tr.TextContent.Contains("3800XT"));
+            Assert.Contains("3", fila.Children[2].TextContent);
         }
 
         [Fact]

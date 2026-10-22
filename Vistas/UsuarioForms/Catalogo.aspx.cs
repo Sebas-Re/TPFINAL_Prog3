@@ -95,9 +95,16 @@ namespace Vistas
 
         protected void rptArticulos_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            if (e.CommandName != "Agregar")
+            if (e.CommandName != "Agregar" && e.CommandName != "AgregarCantidad")
             {
                 return;
+            }
+            int cantidad = 1;
+            if (e.CommandName == "AgregarCantidad")
+            {
+                // Desde el modal de detalle, con la cantidad elegida.
+                int.TryParse(((TextBox)e.Item.FindControl("txtCantidad")).Text, out cantidad);
+                cantidad = Math.Max(1, Math.Min(cantidad, 99));
             }
             // Precio y stock se leen de la base, no de lo que muestra la página.
             DataTable tabla = gestart.getArticuloCOD(new Articulo { CodArticulo1 = e.CommandArgument.ToString() });
@@ -108,17 +115,52 @@ namespace Vistas
             }
             DataRow fila = tabla.Rows[0];
             string descripcion = fila["Descripcion_ar"].ToString();
-            bool agregado = Sesion.Carrito.Agregar(fila["CodArticulo_ar"].ToString(), descripcion,
-                Convert.ToDecimal(fila["PrecioUnitario_ar"]), Convert.ToInt32(fila["Stock_ar"]));
-
-            if (agregado)
+            int agregadas = 0;
+            while (agregadas < cantidad && Sesion.Carrito.Agregar(fila["CodArticulo_ar"].ToString(), descripcion,
+                Convert.ToDecimal(fila["PrecioUnitario_ar"]), Convert.ToInt32(fila["Stock_ar"])))
             {
-                MostrarMensaje("Agregaste \"" + descripcion + "\" al carrito.", TipoMensaje.Exito);
+                agregadas++;
+            }
+
+            if (agregadas == cantidad)
+            {
+                MostrarMensaje(cantidad == 1
+                    ? "Agregaste \"" + descripcion + "\" al carrito."
+                    : "Agregaste " + cantidad + " unidades de \"" + descripcion + "\" al carrito.", TipoMensaje.Exito);
+            }
+            else if (agregadas > 0)
+            {
+                MostrarMensaje("Solo había stock para agregar " + agregadas + " unidades de \"" + descripcion + "\".", TipoMensaje.Aviso);
             }
             else
             {
                 MostrarMensaje("No hay más stock de \"" + descripcion + "\".", TipoMensaje.Aviso);
             }
+        }
+
+        /* "Clave: Valor" por línea -> pares para la tabla de especificaciones del modal. */
+        protected IEnumerable<KeyValuePair<string, string>> Especificaciones(object texto)
+        {
+            var pares = new List<KeyValuePair<string, string>>();
+            foreach (string linea in (texto as string ?? "").Split('\n'))
+            {
+                int separador = linea.IndexOf(':');
+                if (separador > 0)
+                {
+                    pares.Add(new KeyValuePair<string, string>(linea.Substring(0, separador).Trim(), linea.Substring(separador + 1).Trim()));
+                }
+            }
+            if (pares.Count == 0)
+            {
+                pares.Add(new KeyValuePair<string, string>("Especificaciones", "Consultá con nuestro equipo de ventas"));
+            }
+            return pares;
+        }
+
+        protected string TextoGarantia(object meses)
+        {
+            int valor = meses is DBNull || meses == null ? 12 : Convert.ToInt32(meses);
+            return valor % 12 == 0 && valor >= 24 ? (valor / 12) + " años" : valor + " meses";
         }
 
         protected void btnBuscar_Click(object sender, EventArgs e)

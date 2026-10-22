@@ -30,6 +30,11 @@ create table Articulos(
 	PrecioUnitario_ar money not null,
 	Imagen varchar(100) null default 'Sin imagen',
 	Estado_ar bit not null default 1,
+	-- Detalle del producto (se muestra en el catálogo)
+	Marca_ar varchar(50) null,
+	DescripcionLarga_ar text null,
+	Especificaciones_ar text null, -- una por línea: "Clave: Valor"
+	Garantia_ar int null, -- meses
 	constraint CK_Articulos_Stock_ar check (Stock_ar >= 0),
 	constraint CK_Articulos_PrecioUnitario_Ar check (PrecioUnitario_ar > 0),
 	constraint PK_Articulos primary key (CodArticulo_ar),
