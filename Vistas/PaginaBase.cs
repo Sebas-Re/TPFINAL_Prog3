@@ -25,6 +25,12 @@ namespace Vistas
 
         protected override void OnInit(EventArgs e)
         {
+            /* Contra CSRF: el ViewState queda atado al login, así que un formulario
+               armado en otro sitio (o en otra sesión) no pasa la validación. */
+            if (Sesion.Logueado)
+            {
+                ViewStateUserKey = Sesion.Token;
+            }
             if (Acceso != NivelAcceso.Publico && !Sesion.Logueado)
             {
                 RedirigirConMensaje("~/Inicio.aspx", "Iniciá sesión para continuar.", TipoMensaje.Info);

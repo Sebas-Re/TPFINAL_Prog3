@@ -13,9 +13,11 @@ namespace Vistas.E2E
         static readonly Random azar = new Random();
 
         readonly Navegador navegador;
+        readonly SitioFixture sitio;
 
         public FlujosTests(SitioFixture sitio)
         {
+            this.sitio = sitio;
             navegador = new Navegador(sitio.Direccion);
         }
 
@@ -83,6 +85,41 @@ namespace Vistas.E2E
 
             pagina = await IniciarSesion("Nom5", "ctr5");
             Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
+        }
+
+        [Fact]
+        public async Task ElIdDeSesionSinLaCookieDeAutenticacionNoAlcanza()
+        {
+            await IniciarSesion("Nom1", "ctr1");
+            using (var atacante = new Navegador(sitio.Direccion))
+            {
+                // Quien conoce (o fijó antes del login) el id de sesión de la víctima...
+                atacante.PonerCookie("ASP.NET_SessionId", navegador.Cookie("ASP.NET_SessionId"));
+                Pagina pagina = await atacante.Abrir("UsuarioForms/HistorialCompras.aspx");
+                Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
+
+                // ...necesita también el token que se generó en el login.
+                atacante.PonerCookie("PCBooster.Auth", navegador.Cookie("PCBooster.Auth"));
+                pagina = await atacante.Abrir("UsuarioForms/HistorialCompras.aspx");
+                Assert.EndsWith("/HistorialCompras.aspx", pagina.Ruta);
+            }
+        }
+
+        [Fact]
+        public async Task UnFormularioArmadoEnOtraSesionEsRechazado()
+        {
+            Pagina formularioAjeno;
+            using (var atacante = new Navegador(sitio.Direccion))
+            {
+                await atacante.Enviar(await atacante.Abrir("Inicio.aspx"), "btnIniciarSesion", Campos("txtUsuario", "Nom2", "txtContraseña", "ctr2"));
+                formularioAjeno = await atacante.Abrir("UsuarioForms/EdicionDatosUsuario.aspx");
+            }
+            await IniciarSesion("Nom1", "ctr1");
+
+            // Como en un CSRF: la víctima postea un formulario que no generó su sesión.
+            var error = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                navegador.Enviar(formularioAjeno, "btnGuardar", Campos("txtEmail", "robado@test.com")));
+            Assert.Contains("500", error.Message);
         }
 
         [Fact]

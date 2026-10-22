@@ -22,14 +22,25 @@ namespace Vistas.E2E
 
         readonly HttpClient cliente;
         readonly Uri direccion;
+        readonly CookieContainer cookies = new CookieContainer();
 
         public Navegador(Uri direccion)
         {
             this.direccion = direccion;
-            cliente = new HttpClient(new HttpClientHandler { CookieContainer = new CookieContainer(), AllowAutoRedirect = true })
+            cliente = new HttpClient(new HttpClientHandler { CookieContainer = cookies, AllowAutoRedirect = true })
             {
                 Timeout = TimeSpan.FromSeconds(30)
             };
+        }
+
+        public string Cookie(string nombre)
+        {
+            return cookies.GetCookies(direccion)[nombre]?.Value;
+        }
+
+        public void PonerCookie(string nombre, string valor)
+        {
+            cookies.Add(direccion, new Cookie(nombre, valor));
         }
 
         public async Task<Pagina> Abrir(string ruta)

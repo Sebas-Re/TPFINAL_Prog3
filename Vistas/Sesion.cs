@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System;
+using System.Security.Cryptography;
+using System.Web;
 using System.Web.SessionState;
 using Entidades;
 
@@ -11,15 +13,36 @@ namespace Vistas
         const string ClaveUsuario = "Usuario";
         const string ClaveCarrito = "Carrito";
         const string ClaveMensaje = "MensajeFlash";
+        const string ClaveToken = "TokenAutenticacion";
+        const string CookieToken = "PCBooster.Auth";
 
         static HttpSessionState Actual
         {
             get { return HttpContext.Current.Session; }
         }
 
+        /* El usuario cuenta como logueado solo si el navegador presenta la cookie
+           con el token que se generó al iniciar sesión. Así, conocer el id de
+           sesión (por ejemplo, uno fijado por un atacante antes del login) no
+           alcanza para usar la sesión ya autenticada. */
         public static Usuario Usuario
         {
-            get { return Actual[ClaveUsuario] as Usuario; }
+            get
+            {
+                string token = Token;
+                HttpCookie cookie = HttpContext.Current.Request.Cookies[CookieToken];
+                if (token == null || cookie == null || !IgualesEnTiempoConstante(cookie.Value, token))
+                {
+                    return null;
+                }
+                return Actual[ClaveUsuario] as Usuario;
+            }
+        }
+
+        /* Se usa también como ViewStateUserKey, para atar los formularios al login. */
+        public static string Token
+        {
+            get { return Actual[ClaveToken] as string; }
         }
 
         public static bool Logueado
@@ -49,13 +72,41 @@ namespace Vistas
         public static void Iniciar(Usuario usuario)
         {
             Actual.Clear();
+            byte[] bytes = new byte[32];
+            using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
+            string token = Convert.ToBase64String(bytes);
             Actual[ClaveUsuario] = usuario;
+            Actual[ClaveToken] = token;
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie(CookieToken, token)
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Lax,
+                Secure = HttpContext.Current.Request.IsSecureConnection
+            });
         }
 
         public static void Cerrar()
         {
             Actual.Clear();
             Actual.Abandon();
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie(CookieToken, "")
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(-1)
+            });
+        }
+
+        static bool IgualesEnTiempoConstante(string a, string b)
+        {
+            int diferencia = a.Length ^ b.Length;
+            for (int i = 0; i < a.Length && i < b.Length; i++)
+            {
+                diferencia |= a[i] ^ b[i];
+            }
+            return diferencia == 0;
         }
 
         public static void GuardarMensaje(string texto, TipoMensaje tipo)
