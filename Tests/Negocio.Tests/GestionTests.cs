@@ -66,6 +66,46 @@ namespace Negocio.Tests
         }
 
         [Fact]
+        public void BloqueaElLoginDespuesDeVariosIntentosFallidos()
+        {
+            var gestion = new GestionUsuarios();
+            try
+            {
+                for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos; i++)
+                {
+                    Assert.Null(gestion.Login("Nom2", "incorrecta"));
+                }
+
+                Assert.True(gestion.LoginBloqueado("NOM2"));
+                Assert.Null(gestion.Login("Nom2", "ctr2")); // ni con la contraseña correcta
+                Assert.False(gestion.LoginBloqueado("Nom3"));
+
+                GestionUsuarios.DuracionBloqueo = TimeSpan.Zero; // pasó el tiempo de bloqueo
+                Assert.NotNull(gestion.Login("Nom2", "ctr2"));
+            }
+            finally
+            {
+                GestionUsuarios.DuracionBloqueo = TimeSpan.FromMinutes(5);
+            }
+        }
+
+        [Fact]
+        public void UnLoginCorrectoReiniciaLosIntentosFallidos()
+        {
+            var gestion = new GestionUsuarios();
+
+            for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos - 1; i++)
+            {
+                gestion.Login("Nom3", "incorrecta");
+            }
+            Assert.NotNull(gestion.Login("Nom3", "ctr3"));
+            gestion.Login("Nom3", "incorrecta");
+
+            Assert.False(gestion.LoginBloqueado("Nom3"));
+            Assert.NotNull(gestion.Login("Nom3", "ctr3"));
+        }
+
+        [Fact]
         public void UnUsuarioDesactivadoNoPuedeIniciarSesion()
         {
             var gestion = new GestionUsuarios();

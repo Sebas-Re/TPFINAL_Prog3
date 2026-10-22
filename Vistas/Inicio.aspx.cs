@@ -23,7 +23,13 @@ namespace Vistas
 
         protected void btnIniciarSesion_Click(object sender, EventArgs e)
         {
-            Usuario usuario = us.Login(txtUsuario.Text.Trim(), txtContraseña.Text);
+            string nombre = txtUsuario.Text.Trim();
+            Usuario usuario = us.Login(nombre, txtContraseña.Text);
+            if (usuario == null && us.LoginBloqueado(nombre))
+            {
+                MostrarMensaje("Demasiados intentos fallidos. Esperá unos minutos y volvé a probar.", TipoMensaje.Error);
+                return;
+            }
             if (usuario == null)
             {
                 MostrarMensaje("Usuario o contraseña incorrectos. Si todavía no tenés cuenta, registrate.", TipoMensaje.Error);

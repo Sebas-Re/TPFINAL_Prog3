@@ -72,6 +72,20 @@ namespace Vistas.E2E
         }
 
         [Fact]
+        public async Task DemasiadosIntentosFallidosBloqueanElLogin()
+        {
+            Pagina pagina = null;
+            for (int i = 0; i < 6; i++)
+            {
+                pagina = await IniciarSesion("Nom5", "incorrecta");
+            }
+            Assert.Contains(pagina.Alertas, a => a.Contains("Demasiados intentos fallidos"));
+
+            pagina = await IniciarSesion("Nom5", "ctr5");
+            Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
+        }
+
+        [Fact]
         public async Task SinSesionLasPaginasRedirigenAlInicio()
         {
             Pagina pagina = await navegador.Abrir("UsuarioForms/Carrito.aspx");
