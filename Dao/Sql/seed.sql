@@ -5,9 +5,7 @@
 
 insert into Usuarios (IdUsuario_us, Nombre_us, Contraseña_us, Email_us, Telefono_us, Tipo_us, FechaAlta_us) values
 	(1, 'admAmador','admpsw2','Amador@adm.com','777444111','1', datetime('now','localtime','start of day','-210 days')),
-	(2, 'admDiamela','admpsw1','Diamela@adm.com','111222333','1', datetime('now','localtime','start of day','-210 days')),
-	(3, 'admNicolas','admpsw2','Nicolas@adm.com','777888999','1', datetime('now','localtime','start of day','-210 days')),
-	(4, 'admSebasti','admpsw2','Sebastian@adm.com','444555666','1', datetime('now','localtime','start of day','-210 days')),
+	(4, 'admSebas','admpsw2','Sebastian@adm.com','444555666','1', datetime('now','localtime','start of day','-210 days')),
 	(5, 'Nom1','ctr1','ema1','12345','0', datetime('now','localtime','start of day','-210 days')),
 	(6, 'Nom2','ctr2','ema2','23456','0', datetime('now','localtime','start of day','-210 days')),
 	(7, 'Nom3','ctr3','ema3','67891','0', datetime('now','localtime','start of day','-210 days')),
