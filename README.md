@@ -1,6 +1,9 @@
 # PCbooster Store
 
 Tienda online de componentes de PC, hecha como Trabajo Práctico Integrador de Programación III (UTN).
+<img width="1377" height="981" alt="image" src="https://github.com/user-attachments/assets/660f5810-c953-44f4-a470-f017cb386355" />
+<img width="1359" height="1050" alt="image" src="https://github.com/user-attachments/assets/02677004-713e-4cbb-9b3c-4ae8f324786c" />
+<img width="1341" height="1324" alt="image" src="https://github.com/user-attachments/assets/5ec9cb86-573c-4bc9-952e-e014ca8b84a1" />
 ASP.NET WebForms sobre .NET Framework 4.7.2, con interfaz en Bootstrap 5 y arquitectura en capas:
 
 | Proyecto    | Responsabilidad                                   |
