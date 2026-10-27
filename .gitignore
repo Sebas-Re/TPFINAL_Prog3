@@ -65,3 +65,4 @@ packages/
 .vs/
 *.user
 *.suo
+.vscode/settings.json
