@@ -8,17 +8,22 @@ namespace Negocio.Tests
         /* Id de una tarjeta vigente del usuario; la guarda si todavía no tiene. */
         public static long TarjetaDe(int idUsuario)
         {
-            var gestion = new GestionTarjetas();
-            var usuario = new Usuario { IdUsuario1 = idUsuario };
-            var tarjetas = gestion.getTablaTarjetasUsuario(usuario);
+            var gestionTarjetas = new GestionTarjetas();
+            var usuario = new Usuario { IdUsuario = idUsuario };
+            var tarjetas = gestionTarjetas.GetTablaTarjetasUsuario(usuario);
             if (tarjetas.Rows.Count == 0)
             {
-                gestion.agregarTarjeta(new Tarjeta
+                gestionTarjetas.AgregarTarjeta(new Tarjeta
                 {
-                    Us = usuario, Titular_Tarjeta1 = "Titular", Nombre_Tarjeta1 = "Visa", Tipo_Tarjeta1 = true,
-                    Num_Tarjeta1 = 4567123412340000 + idUsuario, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
+                    Usuario = usuario,
+                    TitularTarjeta = "Titular",
+                    NombreTarjeta = "Visa",
+                    TipoTarjeta = true,
+                    NumTarjeta = 4567123412340000 + idUsuario,
+                    FechaVencimiento = "01/12/2099",
+                    CodigoSeguridad = 321
                 });
-                tarjetas = gestion.getTablaTarjetasUsuario(usuario);
+                tarjetas = gestionTarjetas.GetTablaTarjetasUsuario(usuario);
             }
             return Convert.ToInt64(tarjetas.Rows[0]["IdTarjeta_t"]);
         }

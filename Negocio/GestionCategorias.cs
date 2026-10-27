@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
+﻿using System.Data;
 using Entidades;
 using Dao;
 
@@ -14,21 +9,17 @@ namespace Negocio
 {
     public class GestionCategorias
     {
-        DaoCategorias dao = new DaoCategorias();
-        
-        public DataTable getCategorias() //devuelve todas las Categorias
+        private readonly DaoCategorias _daoCategorias = new DaoCategorias();
+
+        public DataTable GetCategorias() //devuelve todas las Categorias
         {
-            return dao.getTablaCategorias();
+            return _daoCategorias.GetTablaCategorias();
         }
 
-        public DataTable getCategoriaId(Categoria cat) //Devuelve una categoria
-        {
-            return dao.GetTablaCategoria(cat);
-        }
 
-        public bool eliminarCategoria(Categoria cat)
+        public bool EliminarCategoria(Categoria categoria)
         {
-            int eliminado = dao.eliminarCategoria(cat);
+            int eliminado = _daoCategorias.EliminarCategoria(categoria);
             if (eliminado == 1)
             {
                 return true;
@@ -39,11 +30,11 @@ namespace Negocio
             }
         }
 
-        public bool agregarCategoria(Categoria cat)
+        public bool AgregarCategoria(Categoria categoria)
         {
             int cantFilas = 0;
-            cantFilas = dao.agregarCategoria(cat);
-            
+            cantFilas = _daoCategorias.AgregarCategoria(categoria);
+
             if (cantFilas == 1)
             {
                 return true;
@@ -54,9 +45,9 @@ namespace Negocio
             }
         }
 
-        public bool ActualizarCategoria(Categoria cat)
+        public bool ActualizarCategoria(Categoria categoria)
         {
-            bool eliminado = dao.ActualizarCategoria(cat);
+            bool eliminado = _daoCategorias.ActualizarCategoria(categoria);
             if (eliminado)
             {
                 return true;
@@ -67,10 +58,11 @@ namespace Negocio
             }
         }
 
-        public bool ExisteCategoria(Categoria cat)
+
+        public bool ExisteCategoriaModificar(Categoria categoria)
         {
 
-            if (dao.ExisteCategoria(cat))
+            if (_daoCategorias.ExisteCategoriaModificar(categoria))
             {
                 return true;
             }
@@ -80,10 +72,18 @@ namespace Negocio
             }
         }
 
-        public bool ExisteCategoriaModificar(Categoria cat)
+        public bool VerificarEstadoCat(Categoria categoria)
         {
 
-            if (dao.ExisteCategoriaModificar(cat))
+            bool IdCat = _daoCategorias.DevolverEstadoCat(categoria);
+            return IdCat;
+
+        }
+
+        public bool VerificarCategoria(Categoria categoria)
+        {
+
+            if (_daoCategorias.ExisteCategoriaDescripcion(categoria))
             {
                 return true;
             }
@@ -93,27 +93,6 @@ namespace Negocio
             }
         }
 
-        public bool VerificarEstadoCat(Categoria cat)
-        {
-            
-                bool IdCat = dao.DevolverEstadoCat(cat);
-                return IdCat;
-            
-        }
-
-        public bool VerificarCategoria(Categoria cat)
-        {
-
-            if (dao.ExisteCategoriaDescripcion(cat))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        
     }
 }
 

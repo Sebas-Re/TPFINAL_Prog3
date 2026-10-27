@@ -8,24 +8,13 @@ namespace Entidades
 {
     public class Usuario
     {
-		private int IdUsuario;
-		private string Nombre;
-		private string Contraseña;
-		private string Email;
-		private string Telefono;
-		private bool Tipo;
-		private bool Estado;
 
-        public Usuario()
-        { 
-        
-        }
-        public int IdUsuario1 { get => IdUsuario; set => IdUsuario = value; }
-        public string Nombre1 { get => Nombre; set => Nombre = value; }
-        public string Contraseña1 { get => Contraseña; set => Contraseña = value; }
-        public string Email1 { get => Email; set => Email = value; }
-        public string Telefono1 { get => Telefono; set => Telefono = value; }
-        public bool Tipo1 { get => Tipo; set => Tipo = value; }
-        public bool Estado1 { get => Estado; set => Estado = value; }
+        public int IdUsuario { get; set; }
+        public string Nombre { get; set; }
+        public string Contrasena { get; set; }
+        public string Email { get; set; }
+        public string Telefono { get; set; }
+        public bool Tipo { get; set; }
+        public bool Estado { get; set; }
     }
 }

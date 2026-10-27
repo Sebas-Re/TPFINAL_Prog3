@@ -27,15 +27,15 @@ namespace Vistas
 
         private void CargarDatosUsuario()
         {
-            Usuario usuario = gestus.get(new Usuario { IdUsuario1 = Sesion.Usuario.IdUsuario1 });
-            txtNombre.Text = usuario.Nombre1;
-            txtEmail.Text = usuario.Email1;
-            txtTelefono.Text = usuario.Telefono1;
+            Usuario usuario = gestus.get(new Usuario { IdUsuario = Sesion.Usuario.IdUsuario });
+            txtNombre.Text = usuario.Nombre;
+            txtEmail.Text = usuario.Email;
+            txtTelefono.Text = usuario.Telefono;
         }
 
         private void CargarTarjetas()
         {
-            DataTable tarjetas = gestarj.getTablaTarjetasUsuario(Sesion.Usuario);
+            DataTable tarjetas = gestarj.GetTablaTarjetasUsuario(Sesion.Usuario);
             gvTarjetas.DataSource = tarjetas;
             gvTarjetas.DataBind();
             lblSinTarjetas.Visible = tarjetas.Rows.Count == 0;
@@ -45,11 +45,11 @@ namespace Vistas
         {
             Usuario usuario = new Usuario
             {
-                IdUsuario1 = Sesion.Usuario.IdUsuario1,
-                Nombre1 = txtNombre.Text.Trim(),
-                Contraseña1 = txtContraseña.Text, // vacía = no cambiarla
-                Email1 = txtEmail.Text.Trim(),
-                Telefono1 = txtTelefono.Text.Trim()
+                IdUsuario = Sesion.Usuario.IdUsuario,
+                Nombre = txtNombre.Text.Trim(),
+                Contrasena = txtContraseña.Text, // vacía = no cambiarla
+                Email = txtEmail.Text.Trim(),
+                Telefono = txtTelefono.Text.Trim()
             };
 
             string error = gestus.ActualizarDatosPropios(usuario, txtContraseñaActual.Text);
@@ -58,7 +58,7 @@ namespace Vistas
                 MostrarMensaje(error, TipoMensaje.Error);
                 return;
             }
-            Sesion.Usuario.Nombre1 = usuario.Nombre1;
+            Sesion.Usuario.Nombre = usuario.Nombre;
             MostrarMensaje("Guardamos tus cambios.", TipoMensaje.Exito);
         }
 
@@ -67,9 +67,9 @@ namespace Vistas
             Tarjeta tarjeta = new Tarjeta
             {
                 Us = Sesion.Usuario,
-                IdTarjeta1 = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
+                IdTarjeta = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
             };
-            if (gestarj.eliminarTarjeta(tarjeta))
+            if (gestarj.EliminarTarjeta(tarjeta))
             {
                 MostrarMensaje("Eliminaste la tarjeta.", TipoMensaje.Exito);
             }

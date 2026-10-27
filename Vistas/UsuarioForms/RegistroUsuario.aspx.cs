@@ -21,11 +21,11 @@ namespace Vistas
         {
             Usuario usuario = new Usuario
             {
-                Nombre1 = txtUsuario.Text.Trim(),
-                Contraseña1 = txtContra1.Text,
-                Email1 = txtEmail.Text.Trim(),
-                Telefono1 = string.IsNullOrWhiteSpace(txtTelefono.Text) ? "Sin telefono" : txtTelefono.Text.Trim(),
-                Tipo1 = false
+                Nombre = txtUsuario.Text.Trim(),
+                Contrasena = txtContra1.Text,
+                Email = txtEmail.Text.Trim(),
+                Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? "Sin telefono" : txtTelefono.Text.Trim(),
+                Tipo = false
             };
 
             if (!us.VerificarNombre(usuario))
@@ -38,14 +38,14 @@ namespace Vistas
                 MostrarMensaje("Ya existe una cuenta con ese e-mail.", TipoMensaje.Error);
                 return;
             }
-            if (!us.agregarUsuario(usuario))
+            if (!us.AgregarUsuario(usuario))
             {
-                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
+                MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
                 return;
             }
 
-            Sesion.Iniciar(us.Login(usuario.Nombre1, usuario.Contraseña1));
-            RedirigirConMensaje("~/UsuarioForms/Catalogo.aspx", "¡Bienvenido/a, " + usuario.Nombre1 + "! Tu cuenta ya está lista.", TipoMensaje.Exito);
+            Sesion.Iniciar(us.Login(usuario.Nombre, usuario.Contrasena));
+            RedirigirConMensaje("~/UsuarioForms/Catalogo.aspx", "¡Bienvenido/a, " + usuario.Nombre + "! Tu cuenta ya está lista.", TipoMensaje.Exito);
         }
     }
 }

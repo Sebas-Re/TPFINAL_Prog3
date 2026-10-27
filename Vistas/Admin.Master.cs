@@ -8,7 +8,7 @@ namespace Vistas
     {
         protected string NombreUsuario
         {
-            get { return Sesion.Usuario.Nombre1; }
+            get { return Sesion.Usuario.Nombre; }
         }
 
         protected string ClaseLink(string pagina)

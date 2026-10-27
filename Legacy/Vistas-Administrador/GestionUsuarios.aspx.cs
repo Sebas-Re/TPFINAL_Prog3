@@ -20,12 +20,12 @@ namespace Vistas
             }
 
             public void CargarGvUsuarios()
-            {
-                GestionUsuarios us = new GestionUsuarios();
-                gvUsuarios.DataSource = us.getUsuarios();
-                gvUsuarios.DataBind();
+        {
+            GestionUsuarios us = new GestionUsuarios();
+            gvUsuarios.DataSource = us.GetUsuarios();
+            gvUsuarios.DataBind();
 
-            }
         }
     }
+}
 }

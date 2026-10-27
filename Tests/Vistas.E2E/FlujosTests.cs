@@ -10,7 +10,7 @@ namespace Vistas.E2E
     [Collection("Sitio")]
     public class FlujosTests : IDisposable
     {
-        static readonly Random azar = new Random();
+        static readonly Random azar = new();
 
         readonly Navegador navegador;
         readonly SitioFixture sitio;
@@ -36,10 +36,10 @@ namespace Vistas.E2E
             return campos;
         }
 
-        private async Task<Pagina> IniciarSesion(string usuario, string contraseña)
+        private async Task<Pagina> IniciarSesion(string usuario, string contrasena)
         {
             Pagina inicio = await navegador.Abrir("Inicio.aspx");
-            return await navegador.Enviar(inicio, "btnIniciarSesion", Campos("txtUsuario", usuario, "txtContraseña", contraseña));
+            return await navegador.Enviar(inicio, "btnIniciarSesion", Campos("txtUsuario", usuario, "txtContraseña", contrasena));
         }
 
         /* Cada test que cambia datos usa un cliente nuevo, para no depender del orden. */
@@ -70,7 +70,7 @@ namespace Vistas.E2E
             Pagina pagina = await IniciarSesion("Nom1", "incorrecta");
 
             Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
-            Assert.Contains(pagina.Alertas, a => a.Contains("Usuario o contraseña incorrectos"));
+            Assert.Contains(pagina.Alertas, a => a.Contains("Usuario o contrasena incorrectos"));
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Vistas.E2E
             string email = "cambiado" + azar.Next(100000, 999999) + "@test.com";
 
             Pagina sinClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email));
-            Assert.Contains(sinClave.Alertas, a => a.Contains("ingresá tu contraseña actual"));
+            Assert.Contains(sinClave.Alertas, a => a.Contains("ingresá tu contrasena actual"));
 
             Pagina conClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email, "txtContraseñaActual", "clave1"));
             Assert.Contains(conClave.Alertas, a => a.Contains("Guardamos tus cambios"));

@@ -30,19 +30,17 @@ namespace Dao.Tests
 
         object Escalar(string sql)
         {
-            using (var cn = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos))
-            {
-                cn.Open();
-                return new SQLiteCommand(sql, cn).ExecuteScalar();
-            }
+            using var conexion = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos);
+            conexion.Open();
+            return new SQLiteCommand(sql, conexion).ExecuteScalar();
         }
 
         void Ejecutar(string sql)
         {
-            using (var cn = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos))
+            using (var conexion = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos))
             {
-                cn.Open();
-                new SQLiteCommand(sql, cn).ExecuteNonQuery();
+                conexion.Open();
+                new SQLiteCommand(sql, conexion).ExecuteNonQuery();
             }
             SQLiteConnection.ClearAllPools();
         }
@@ -52,7 +50,7 @@ namespace Dao.Tests
         {
             string ruta = AccesoDatos.RutaBaseDatos;
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "otra.db");
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
             AccesoDatos.RutaBaseDatos = ruta;
         }
 
@@ -61,7 +59,7 @@ namespace Dao.Tests
         {
             AccesoDatos.CargarDatosDemo = true;
 
-            Assert.Equal(27, new DaoUsuarios().getTablaUsuarios().Rows.Count);
+            Assert.Equal(27, new DaoUsuarios().GetTablaUsuarios().Rows.Count);
             Assert.True(Convert.ToInt64(Escalar("select count(*) from Ventas")) > 100);
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
             // Ninguna venta en el futuro ni fuera de los últimos 6 meses.
@@ -76,7 +74,7 @@ namespace Dao.Tests
         public void UnaBaseSinVersionarSeMigraSinPerderDatos()
         {
             // Simula una base creada antes del versionado: sin FechaAlta_us y con la imagen rota.
-            new DaoCategorias().agregarCategoria(new Categoria { Decripcion1 = "Monitores" });
+            new DaoCategorias().AgregarCategoria(new Categoria { Descripcion = "Monitores" });
             Ejecutar("alter table Usuarios drop column FechaAlta_us; " +
                      "alter table Articulos drop column Marca_ar; alter table Articulos drop column DescripcionLarga_ar; " +
                      "alter table Articulos drop column Especificaciones_ar; alter table Articulos drop column Garantia_ar; " +
@@ -84,7 +82,7 @@ namespace Dao.Tests
                      "pragma user_version = 0;");
 
             ReiniciarApp();
-            Assert.Equal(1, new DaoUsuarios().agregarUsuario(new Usuario { Nombre1 = "nuevo", Contraseña1 = "x", Email1 = "n@x.com", Telefono1 = "1" }));
+            Assert.Equal(1, new DaoUsuarios().AgregarUsuario(new Usuario { Nombre = "nuevo", Contrasena = "x", Email = "n@x.com", Telefono = "1" }));
 
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
             Assert.Equal(0L, Escalar("select count(*) from Usuarios where FechaAlta_us is null"));
@@ -96,7 +94,7 @@ namespace Dao.Tests
         [Fact]
         public void TodosLosArticulosDePruebaTienenDetalle()
         {
-            var catalogo = new DaoArticulos().getTablaArticulosCatalogo(null, null);
+            var catalogo = new DaoArticulos().GetTablaArticulosCatalogo(null, null);
 
             Assert.Equal(68, catalogo.Rows.Count);
             foreach (System.Data.DataRow fila in catalogo.Rows)
@@ -112,7 +110,7 @@ namespace Dao.Tests
         public void LaMigracion3CorrigeLosTotalesInfladosPorElTriggerViejo()
         {
             // Base en versión 2, con el tr_SumaTotal original (filtraba por usuario).
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
             Ejecutar("drop trigger tr_SumaTotal; " +
                      "create trigger tr_SumaTotal after insert on Detalle_Ventas begin " +
                      "update Ventas set TotalVenta_ve = TotalVenta_ve + new.Cantidad_dv * new.Precio_Unitario_dv where IdUsuario_ve = new.IdUsuario_dv; end; " +
@@ -122,7 +120,7 @@ namespace Dao.Tests
             Assert.Equal(10800m, Total(primera)); // inflado
 
             ReiniciarApp();
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
 
             Assert.Equal(3500m, Total(primera));
             Assert.Equal(7300m, Total(segunda));
@@ -140,12 +138,17 @@ namespace Dao.Tests
         static int Comprar(string codigo, int precio)
         {
             var ventas = new DaoVentas();
-            ventas.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 1 });
-            int id = ventas.IDultimaventa(new Ventas()).IdVenta1;
-            new daoDetalleVentas().agregarDetalleVenta(new DetalleVentas
+            ventas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 });
+            int id = ventas.IDultimaventa(new Ventas()).IdVenta;
+            new DaoDetalleVentas().AgregarDetalleVenta(new DetalleVentas
             {
-                IdDetVenta1 = id, IdUsuario1 = 5, CodArticulo1 = codigo, Cantidad = 1, Precio1 = precio,
-                DireccionEntrega1 = "Calle 1", Contacto1 = "Yo"
+                IdDetalleVenta = id,
+                IdUsuario = 5,
+                CodigoArticulo = codigo,
+                Cantidad = 1,
+                Precio = precio,
+                DireccionEntrega = "Calle 1",
+                Contacto = "Yo"
             });
             return id;
         }
@@ -153,24 +156,24 @@ namespace Dao.Tests
         [Fact]
         public void LaMigracion4HasheaLasContraseñasEnTextoPlano()
         {
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
             Ejecutar("update Usuarios set Contraseña_us = 'ctr1' where Nombre_us = 'Nom1'; pragma user_version = 3;");
 
             ReiniciarApp();
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
 
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
             Assert.Equal(0L, Escalar("select count(*) from Usuarios where Contraseña_us not like 'pbkdf2$%'"));
-            Assert.True(new DaoUsuarios().ExisteUsuarioLogin(new Usuario { Nombre1 = "Nom1", Contraseña1 = "ctr1" }));
+            Assert.True(new DaoUsuarios().ExisteUsuarioLogin(new Usuario { Nombre = "Nom1", Contrasena = "ctr1" }));
         }
 
         [Fact]
         public void UnaBaseAlDiaNoSeVuelveAMigrar()
         {
-            new DaoCategorias().getTablaCategorias();
+            new DaoCategorias().GetTablaCategorias();
             ReiniciarApp();
 
-            Assert.Equal(7, new DaoUsuarios().getTablaUsuarios().Rows.Count);
+            Assert.Equal(7, new DaoUsuarios().GetTablaUsuarios().Rows.Count);
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
         }
     }

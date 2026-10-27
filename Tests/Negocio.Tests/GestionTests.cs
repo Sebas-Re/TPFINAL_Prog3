@@ -30,7 +30,7 @@ namespace Negocio.Tests
             try { Directory.Delete(carpeta, true); } catch (IOException) { }
         }
 
-        static Usuario Cliente => new Usuario { IdUsuario1 = 5, Nombre1 = "Nom1" };
+        static Usuario Cliente => new Usuario { IdUsuario = 5, Nombre = "Nom1" };
 
         static Carrito CarritoConDosArticulos()
         {
@@ -44,44 +44,44 @@ namespace Negocio.Tests
         [Fact]
         public void LoginDevuelveIdYTipo()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
-            var admin = gestion.Login("admAmador", "admpsw2");
-            var cliente = gestion.Login("Nom1", "ctr1");
+            var admin = gestionUsuarios.Login("admAmador", "admpsw2");
+            var cliente = gestionUsuarios.Login("Nom1", "ctr1");
 
-            Assert.Equal(1, admin.IdUsuario1);
-            Assert.True(admin.Tipo1);
-            Assert.Equal(5, cliente.IdUsuario1);
-            Assert.False(cliente.Tipo1);
+            Assert.Equal(1, admin.IdUsuario);
+            Assert.True(admin.Tipo);
+            Assert.Equal(5, cliente.IdUsuario);
+            Assert.False(cliente.Tipo);
         }
 
         [Fact]
         public void LoginConCredencialesInvalidasDevuelveNull()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
-            Assert.Null(gestion.Login("Nom1", "otra"));
-            Assert.Null(gestion.Login("noexiste", "ctr1"));
-            Assert.Null(gestion.Login("Nom1", "' or '1'='1"));
+            Assert.Null(gestionUsuarios.Login("Nom1", "otra"));
+            Assert.Null(gestionUsuarios.Login("noexiste", "ctr1"));
+            Assert.Null(gestionUsuarios.Login("Nom1", "' or '1'='1"));
         }
 
         [Fact]
         public void BloqueaElLoginDespuesDeVariosIntentosFallidos()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
             try
             {
                 for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos; i++)
                 {
-                    Assert.Null(gestion.Login("Nom2", "incorrecta"));
+                    Assert.Null(gestionUsuarios.Login("Nom2", "incorrecta"));
                 }
 
-                Assert.True(gestion.LoginBloqueado("NOM2"));
-                Assert.Null(gestion.Login("Nom2", "ctr2")); // ni con la contraseña correcta
-                Assert.False(gestion.LoginBloqueado("Nom3"));
+                Assert.True(gestionUsuarios.LoginBloqueado("NOM2"));
+                Assert.Null(gestionUsuarios.Login("Nom2", "ctr2")); // ni con la contraseña correcta
+                Assert.False(gestionUsuarios.LoginBloqueado("Nom3"));
 
                 GestionUsuarios.DuracionBloqueo = TimeSpan.Zero; // pasó el tiempo de bloqueo
-                Assert.NotNull(gestion.Login("Nom2", "ctr2"));
+                Assert.NotNull(gestionUsuarios.Login("Nom2", "ctr2"));
             }
             finally
             {
@@ -92,121 +92,121 @@ namespace Negocio.Tests
         [Fact]
         public void UnLoginCorrectoReiniciaLosIntentosFallidos()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
             for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos - 1; i++)
             {
-                gestion.Login("Nom3", "incorrecta");
+                gestionUsuarios.Login("Nom3", "incorrecta");
             }
-            Assert.NotNull(gestion.Login("Nom3", "ctr3"));
-            gestion.Login("Nom3", "incorrecta");
+            Assert.NotNull(gestionUsuarios.Login("Nom3", "ctr3"));
+            gestionUsuarios.Login("Nom3", "incorrecta");
 
-            Assert.False(gestion.LoginBloqueado("Nom3"));
-            Assert.NotNull(gestion.Login("Nom3", "ctr3"));
+            Assert.False(gestionUsuarios.LoginBloqueado("Nom3"));
+            Assert.NotNull(gestionUsuarios.Login("Nom3", "ctr3"));
         }
 
         [Fact]
         public void UnUsuarioDesactivadoNoPuedeIniciarSesion()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
             var cliente = Cliente;
 
-            Assert.True(gestion.eliminarUsuario(ref cliente));
+            Assert.True(gestionUsuarios.EliminarUsuario(ref cliente));
 
-            Assert.Null(gestion.Login("Nom1", "ctr1"));
+            Assert.Null(gestionUsuarios.Login("Nom1", "ctr1"));
         }
 
         [Fact]
         public void NoPermiteRegistrarUnUsuarioRepetido()
         {
-            var gestion = new GestionUsuarios();
-            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "n@mail.com", Telefono1 = "1" };
+            var gestionUsuarios = new GestionUsuarios();
+            var nuevo = new Usuario { Nombre = "nuevo", Contrasena = "clave1", Email = "n@mail.com", Telefono = "1" };
 
-            Assert.True(gestion.agregarUsuario(nuevo));
-            Assert.False(gestion.agregarUsuario(nuevo));
-            Assert.False(gestion.VerificarNombre(new Usuario { Nombre1 = "NUEVO" }));
-            Assert.False(gestion.VerificarEmail(new Usuario { Email1 = "n@mail.com" }));
+            Assert.True(gestionUsuarios.AgregarUsuario(nuevo));
+            Assert.False(gestionUsuarios.AgregarUsuario(nuevo));
+            Assert.False(gestionUsuarios.VerificarNombre(new Usuario { Nombre = "NUEVO" }));
+            Assert.False(gestionUsuarios.VerificarEmail(new Usuario { Email = "n@mail.com" }));
         }
 
         [Fact]
         public void ExigeUnLargoMinimoDeContraseña()
         {
-            var gestion = new GestionUsuarios();
-            var corta = new Usuario { Nombre1 = "corta", Contraseña1 = "12345", Email1 = "c@mail.com", Telefono1 = "1" };
+            var gestionUsuarios = new GestionUsuarios();
+            var corta = new Usuario { Nombre = "corta", Contrasena = "12345", Email = "c@mail.com", Telefono = "1" };
 
-            Assert.False(gestion.agregarUsuario(corta));
-            Assert.True(gestion.VerificarNombre(corta)); // no se creó
+            Assert.False(gestionUsuarios.AgregarUsuario(corta));
+            Assert.True(gestionUsuarios.VerificarNombre(corta)); // no se creó
 
             var cliente = new GestionUsuarios().get(Cliente);
-            cliente.Contraseña1 = "123";
-            Assert.False(gestion.ActualizarUsuario(cliente));
-            cliente.Contraseña1 = "";
-            Assert.True(gestion.ActualizarUsuario(cliente)); // vacía = conservar la actual
-            Assert.NotNull(gestion.Login("Nom1", "ctr1"));
+            cliente.Contrasena = "123";
+            Assert.False(gestionUsuarios.ActualizarUsuario(cliente));
+            cliente.Contrasena = "";
+            Assert.True(gestionUsuarios.ActualizarUsuario(cliente)); // vacía = conservar la actual
+            Assert.NotNull(gestionUsuarios.Login("Nom1", "ctr1"));
         }
 
         static Usuario CambiosDeNom4(string email = "ema4", string nombre = "Nom4", string nueva = "", string telefono = "23456")
         {
-            return new Usuario { IdUsuario1 = 8, Nombre1 = nombre, Email1 = email, Contraseña1 = nueva, Telefono1 = telefono };
+            return new Usuario { IdUsuario = 8, Nombre = nombre, Email = email, Contrasena = nueva, Telefono = telefono };
         }
 
         [Fact]
         public void CambiarNombreOEmailExigeLaContraseñaActual()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
-            Assert.Contains("contraseña actual", gestion.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com"), ""));
-            Assert.Contains("contraseña actual", gestion.ActualizarDatosPropios(CambiosDeNom4(nombre: "Intruso"), "incorrecta"));
-            Assert.Equal("ema4", gestion.get(new Usuario { IdUsuario1 = 8 }).Email1);
-            Assert.Equal("Nom4", gestion.get(new Usuario { IdUsuario1 = 8 }).Nombre1);
+            Assert.Contains("contraseña actual", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com"), ""));
+            Assert.Contains("contraseña actual", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(nombre: "Intruso"), "incorrecta"));
+            Assert.Equal("ema4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Email);
+            Assert.Equal("Nom4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Nombre);
 
-            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com", nombre: "Nom4b"), "ctr4"));
-            var guardado = gestion.get(new Usuario { IdUsuario1 = 8 });
-            Assert.Equal("nuevo@mail.com", guardado.Email1);
-            Assert.Equal("Nom4b", guardado.Nombre1);
-            Assert.False(guardado.Tipo1);
-            Assert.True(guardado.Estado1);
+            Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com", nombre: "Nom4b"), "ctr4"));
+            var guardado = gestionUsuarios.get(new Usuario { IdUsuario = 8 });
+            Assert.Equal("nuevo@mail.com", guardado.Email);
+            Assert.Equal("Nom4b", guardado.Nombre);
+            Assert.False(guardado.Tipo);
+            Assert.True(guardado.Estado);
         }
 
         [Fact]
         public void CambiarSoloElTelefonoNoPideContraseña()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
-            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(telefono: "1199887766"), ""));
-            Assert.Equal("1199887766", gestion.get(new Usuario { IdUsuario1 = 8 }).Telefono1);
+            Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(telefono: "1199887766"), ""));
+            Assert.Equal("1199887766", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Telefono);
         }
 
         [Fact]
         public void CambiarLaContraseñaExigeLaActual()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
 
-            Assert.NotNull(gestion.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), ""));
-            Assert.NotNull(gestion.Login("Nom4", "ctr4"));
+            Assert.NotNull(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), ""));
+            Assert.NotNull(gestionUsuarios.Login("Nom4", "ctr4"));
 
-            Assert.Null(gestion.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), "ctr4"));
-            Assert.Null(gestion.Login("Nom4", "ctr4"));
-            Assert.NotNull(gestion.Login("Nom4", "otra123"));
+            Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(nueva: "otra123"), "ctr4"));
+            Assert.Null(gestionUsuarios.Login("Nom4", "ctr4"));
+            Assert.NotNull(gestionUsuarios.Login("Nom4", "otra123"));
         }
 
         [Fact]
         public void LosErroresDeContraseñaActualCuentanParaElBloqueo()
         {
-            var gestion = new GestionUsuarios();
+            var gestionUsuarios = new GestionUsuarios();
             for (int i = 0; i < GestionUsuarios.MaxIntentosFallidos; i++)
             {
-                gestion.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "incorrecta");
+                gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "incorrecta");
             }
 
-            Assert.Contains("Demasiados intentos", gestion.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "ctr4"));
-            Assert.True(gestion.LoginBloqueado("Nom4"));
-            Assert.Equal("ema4", gestion.get(new Usuario { IdUsuario1 = 8 }).Email1);
+            Assert.Contains("Demasiados intentos", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "ctr4"));
+            Assert.True(gestionUsuarios.LoginBloqueado("Nom4"));
+            Assert.Equal("ema4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Email);
 
             GestionUsuarios.DuracionBloqueo = TimeSpan.Zero;
             try
             {
-                Assert.NotNull(gestion.Login("Nom4", "ctr4")); // reinicia la cuenta de intentos
+                Assert.NotNull(gestionUsuarios.Login("Nom4", "ctr4")); // reinicia la cuenta de intentos
             }
             finally
             {
@@ -217,16 +217,20 @@ namespace Negocio.Tests
         [Fact]
         public void NoPermiteAgregarUnArticuloConCodigoExistente()
         {
-            var gestion = new GestionArticulos();
+            var gestionArticulos = new GestionArticulos();
             var repetido = new Articulo
             {
-                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Otro gabinete",
-                Stock1 = 1, Precio_Unitario1 = 100, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png"
+                CodigoArticulo = "gb1",
+                Categoria = new Categoria { IdCategoria = 2 },
+                Descripcion = "Otro gabinete",
+                Stock = 1,
+                PrecioUnitario = 100,
+                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png"
             };
 
-            Assert.False(gestion.agregarArticulo(repetido));
-            repetido.CodArticulo1 = "gb99";
-            Assert.True(gestion.agregarArticulo(repetido));
+            Assert.False(gestionArticulos.AgregarArticulo(repetido));
+            repetido.CodigoArticulo = "gb99";
+            Assert.True(gestionArticulos.AgregarArticulo(repetido));
         }
 
         [Theory]
@@ -245,84 +249,94 @@ namespace Negocio.Tests
         [Fact]
         public void RechazaArticulosConCodigoOImagenInvalidos()
         {
-            var gestion = new GestionArticulos();
+            var gestionArticulos = new GestionArticulos();
             Articulo Articulo(string codigo, string imagen) => new Articulo
             {
-                CodArticulo1 = codigo, Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Nuevo " + codigo,
-                Stock1 = 1, Precio_Unitario1 = 100, ImagenURL1 = imagen, Estado1 = true
+                CodigoArticulo = codigo,
+                Categoria = new Categoria { IdCategoria = 2 },
+                Descripcion = "Nuevo " + codigo,
+                Stock = 1,
+                PrecioUnitario = 100,
+                ImagenURL = imagen,
+                Estado = true
             };
 
-            Assert.False(gestion.agregarArticulo(Articulo("x'><", "~/a.png")));
-            Assert.False(gestion.agregarArticulo(Articulo("ok1", "javascript:alert(1)")));
-            Assert.False(gestion.ActualizarArticulo(Articulo("gb1", "' onerror='alert(1)")));
+            Assert.False(gestionArticulos.AgregarArticulo(Articulo("x'><", "~/a.png")));
+            Assert.False(gestionArticulos.AgregarArticulo(Articulo("ok1", "javascript:alert(1)")));
+            Assert.False(gestionArticulos.ActualizarArticulo(Articulo("gb1", "' onerror='alert(1)")));
         }
 
         [Fact]
         public void CategoriasAltaYBajaLogica()
         {
-            var gestion = new GestionCategorias();
+            var gestionCategorias = new GestionCategorias();
 
-            Assert.True(gestion.agregarCategoria(new Categoria { Decripcion1 = "Monitores" }));
-            Assert.True(gestion.VerificarCategoria(new Categoria { Decripcion1 = "Monitores" }));
-            Assert.True(gestion.eliminarCategoria(new Categoria { IdCategoria1 = 9 }));
-            Assert.False(gestion.VerificarEstadoCat(new Categoria { IdCategoria1 = 9 }));
+            Assert.True(gestionCategorias.AgregarCategoria(new Categoria { Descripcion = "Monitores" }));
+            Assert.True(gestionCategorias.VerificarCategoria(new Categoria { Descripcion = "Monitores" }));
+            Assert.True(gestionCategorias.EliminarCategoria(new Categoria { IdCategoria = 9 }));
+            Assert.False(gestionCategorias.VerificarEstadoCat(new Categoria { IdCategoria = 9 }));
         }
 
         [Fact]
         public void AgregarTarjetaRechazaVencidasYRepetidas()
         {
-            var gestion = new GestionTarjetas();
-            Tarjeta Tarjeta(string vencimiento) => new Tarjeta
+            var gestionTarjetas = new GestionTarjetas();
+            static Tarjeta Tarjeta(string vencimiento) => new()
             {
-                Us = Cliente, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa", Tipo_Tarjeta1 = true,
-                Num_Tarjeta1 = 4567123412340012, Fecha_Vencimiento1 = vencimiento, Codigo_Seguridad1 = 321
+                Usuario = Cliente,
+                TitularTarjeta = "Nom Uno",
+                NombreTarjeta = "Visa",
+                TipoTarjeta = true,
+                NumTarjeta = 4567123412340012,
+                FechaVencimiento = vencimiento,
+                CodigoSeguridad = 321
             };
 
-            Assert.False(gestion.agregarTarjeta(Tarjeta("01/01/2020")));
-            Assert.True(gestion.agregarTarjeta(Tarjeta("01/12/2099")));
-            Assert.False(gestion.agregarTarjeta(Tarjeta("01/12/2099")));
-            Assert.Single(gestion.getTablaTarjetasUsuario(Cliente).Rows);
+            Assert.False(gestionTarjetas.AgregarTarjeta(Tarjeta("01/01/2020")));
+            Assert.True(gestionTarjetas.AgregarTarjeta(Tarjeta("01/12/2099")));
+            Assert.False(gestionTarjetas.AgregarTarjeta(Tarjeta("01/12/2099")));
+            Assert.Single(gestionTarjetas.GetTablaTarjetasUsuario(Cliente).Rows);
         }
 
         [Fact]
         public void ConfirmarCompraRegistraVentaDetallesYDescuentaStock()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
 
-            int idVenta = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "1122334455", Datos.TarjetaDe(5), out string error);
+            int idVenta = gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "1122334455", Datos.TarjetaDe(5), out string error);
 
             Assert.Null(error);
             Assert.True(idVenta > 0);
-            Assert.Single(gestion.filtrarIdUsuario(Cliente).Rows);
-            Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = idVenta }).Rows.Count);
-            Assert.Equal(8L, new GestionArticulos().getArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(14300m, gestion.getVenta(new Ventas { IdVenta1 = idVenta }).Rows[0]["TotalVenta_ve"]);
+            Assert.Single(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
+            Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta }).Rows.Count);
+            Assert.Equal(8L, new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
+            Assert.Equal(14300m, gestionVentas.GetVenta(new Ventas { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
         }
 
         [Fact]
         public void CadaCompraConservaSuPropioTotal()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
             string error;
 
-            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out error);
+            int primera = gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out error);
             var carrito = new Carrito();
             carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
-            int segunda = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out error);
+            int segunda = gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out error);
 
-            Assert.Equal(14300m, gestion.getVenta(new Ventas { IdVenta1 = primera }).Rows[0]["TotalVenta_ve"]);
-            Assert.Equal(4750m, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(14300m, gestionVentas.GetVenta(new Ventas { IdVenta = primera }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(4750m, gestionVentas.GetVenta(new Ventas { IdVenta = segunda }).Rows[0]["TotalVenta_ve"]);
         }
 
         static long Stock(string codigo)
         {
-            return Convert.ToInt64(new GestionArticulos().getArticuloCOD(new Articulo { CodArticulo1 = codigo }).Rows[0]["Stock_ar"]);
+            return Convert.ToInt64(new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = codigo }).Rows[0]["Stock_ar"]);
         }
 
         [Fact]
         public void SiFaltaStockDeUnArticuloNoSeRegistraNadaDeLaCompra()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
             long stockFuente = Stock("fnt1"), stockGabinete = Stock("gb1");
             // El carrito se armó cuando había más stock (otro cliente compró después).
             var carrito = new Carrito();
@@ -332,11 +346,11 @@ namespace Negocio.Tests
                 carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 1000);
             }
 
-            int idVenta = gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error);
+            int idVenta = gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error);
 
             Assert.Equal(0, idVenta);
             Assert.Contains("Solo quedan " + stockGabinete + " unidades", error);
-            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+            Assert.Empty(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
             Assert.Equal(stockFuente, Stock("fnt1")); // el detalle de la fuente también se deshizo
             Assert.Equal(stockGabinete, Stock("gb1"));
         }
@@ -344,56 +358,56 @@ namespace Negocio.Tests
         [Fact]
         public void NoSePuedeComprarUnArticuloDadoDeBaja()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
             var carrito = CarritoConDosArticulos();
-            new GestionArticulos().eliminarArticulo(new Articulo { CodArticulo1 = "fnt1" });
+            new GestionArticulos().EliminarArticulo(new Articulo { CodigoArticulo = "fnt1" });
 
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error));
+            Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error));
             Assert.Contains("ya no está disponible", error);
-            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+            Assert.Empty(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
         }
 
         [Fact]
         public void ConfirmarCompraDevuelveElIdDeSuPropiaVenta()
         {
-            var gestion = new GestionVentas();
-            int primera = gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out string error);
-            var otroCliente = new Usuario { IdUsuario1 = 6 };
+            var gestionVentas = new GestionVentas();
+            int primera = gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", Datos.TarjetaDe(5), out string error);
+            var otroCliente = new Usuario { IdUsuario = 6 };
             var carrito = new Carrito();
             carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
-            int segunda = gestion.ConfirmarCompra(otroCliente, carrito, "Calle 9", "22", Datos.TarjetaDe(6), out error);
+            int segunda = gestionVentas.ConfirmarCompra(otroCliente, carrito, "Calle 9", "22", Datos.TarjetaDe(6), out error);
 
             Assert.Equal(primera + 1, segunda);
-            Assert.Equal(6L, gestion.getVenta(new Ventas { IdVenta1 = segunda }).Rows[0]["IdUsuario_ve"]);
-            Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = segunda }).Rows);
+            Assert.Equal(6L, gestionVentas.GetVenta(new Ventas { IdVenta = segunda }).Rows[0]["IdUsuario_ve"]);
+            Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta = segunda }).Rows);
         }
 
         [Fact]
         public void ConfirmarCompraSoloAceptaUnaTarjetaDelUsuario()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
             long deOtroCliente = Datos.TarjetaDe(6);
 
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", deOtroCliente, out string ajena));
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", 0, out string inexistente));
+            Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", deOtroCliente, out string ajena));
+            Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), "Calle 123", "11", 0, out string inexistente));
 
             Assert.Contains("tarjetas guardadas", ajena);
             Assert.Contains("tarjetas guardadas", inexistente);
-            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+            Assert.Empty(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
         }
 
         [Fact]
         public void ConfirmarCompraValidaCarritoYDatosDeEntrega()
         {
-            var gestion = new GestionVentas();
+            var gestionVentas = new GestionVentas();
 
             long tarjeta = Datos.TarjetaDe(5);
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, new Carrito(), "Calle 123", "11", tarjeta, out string vacio));
-            Assert.Equal(0, gestion.ConfirmarCompra(Cliente, CarritoConDosArticulos(), " ", "11", tarjeta, out string sinDireccion));
+            Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, new Carrito(), "Calle 123", "11", tarjeta, out string vacio));
+            Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, CarritoConDosArticulos(), " ", "11", tarjeta, out string sinDireccion));
 
             Assert.Contains("vacío", vacio);
             Assert.Contains("dirección", sinDireccion);
-            Assert.Empty(gestion.filtrarIdUsuario(Cliente).Rows);
+            Assert.Empty(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
         }
     }
 }

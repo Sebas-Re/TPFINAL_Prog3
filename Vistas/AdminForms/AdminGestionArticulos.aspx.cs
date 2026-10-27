@@ -27,7 +27,7 @@ namespace Vistas.AdminForms
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            categorias = gcat.getCategorias();
+            categorias = gcat.GetCategorias();
             if (!IsPostBack)
             {
                 ddlCategoria.DataSource = CategoriasActivas();
@@ -55,8 +55,8 @@ namespace Vistas.AdminForms
         private void CargarGvArticulos()
         {
             gvArticulos.DataSource = FiltroCodigo == ""
-                ? gestart.getArticulos()
-                : gestart.getArticuloCOD(new Articulo { CodArticulo1 = FiltroCodigo });
+                ? gestart.GetArticulos()
+                : gestart.GetArticuloCOD(new Articulo { CodigoArticulo = FiltroCodigo });
             gvArticulos.DataBind();
         }
 
@@ -112,16 +112,16 @@ namespace Vistas.AdminForms
             GridViewRow fila = gvArticulos.Rows[e.RowIndex];
             Articulo art = new Articulo
             {
-                CodArticulo1 = gvArticulos.DataKeys[e.RowIndex].Value.ToString(),
-                Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(((DropDownList)fila.FindControl("ddl_et_Categoria")).SelectedValue) },
-                Descripcion1 = ((TextBox)fila.FindControl("txt_et_Descripcion")).Text.Trim(),
-                Stock1 = Convert.ToInt32(((TextBox)fila.FindControl("txt_et_Stock")).Text),
-                Precio_Unitario1 = (float)Convert.ToDouble(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
-                ImagenURL1 = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim(),
-                Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
+                CodigoArticulo = gvArticulos.DataKeys[e.RowIndex].Value.ToString(),
+                Categoria = new Categoria { IdCategoria = Convert.ToInt32(((DropDownList)fila.FindControl("ddl_et_Categoria")).SelectedValue) },
+                Descripcion = ((TextBox)fila.FindControl("txt_et_Descripcion")).Text.Trim(),
+                Stock = Convert.ToInt32(((TextBox)fila.FindControl("txt_et_Stock")).Text),
+                PrecioUnitario = (float)Convert.ToDouble(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
+                ImagenURL = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim(),
+                Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
             };
 
-            if (!GestionArticulos.ImagenValida(art.ImagenURL1))
+            if (!GestionArticulos.ImagenValida(art.ImagenURL))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;
@@ -133,7 +133,7 @@ namespace Vistas.AdminForms
             }
             if (gestart.ActualizarArticulo(art))
             {
-                MostrarMensaje("Artículo " + art.CodArticulo1 + " modificado.", TipoMensaje.Exito);
+                MostrarMensaje("Artículo " + art.CodigoArticulo + " modificado.", TipoMensaje.Exito);
             }
             else
             {
@@ -145,10 +145,10 @@ namespace Vistas.AdminForms
 
         protected void gvArticulos_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            Articulo art = new Articulo { CodArticulo1 = gvArticulos.DataKeys[e.RowIndex].Value.ToString() };
-            if (gestart.eliminarArticulo(art))
+            Articulo art = new Articulo { CodigoArticulo = gvArticulos.DataKeys[e.RowIndex].Value.ToString() };
+            if (gestart.EliminarArticulo(art))
             {
-                MostrarMensaje("Artículo " + art.CodArticulo1 + " dado de baja.", TipoMensaje.Exito);
+                MostrarMensaje("Artículo " + art.CodigoArticulo + " dado de baja.", TipoMensaje.Exito);
             }
             gvArticulos.EditIndex = -1;
             CargarGvArticulos();
@@ -165,28 +165,28 @@ namespace Vistas.AdminForms
         {
             Articulo art = new Articulo
             {
-                CodArticulo1 = txtCodArticulo.Text.Trim(),
-                Categoria1 = new Categoria { IdCategoria1 = Convert.ToInt32(ddlCategoria.SelectedValue) },
-                Descripcion1 = txtDescripcion.Text.Trim(),
-                Stock1 = Convert.ToInt32(txtStock.Text),
-                Precio_Unitario1 = (float)Convert.ToDouble(txtPrecio_Unitario.Text),
-                ImagenURL1 = txtImagen.Text.Trim(),
-                Estado1 = true
+                CodigoArticulo = txtCodArticulo.Text.Trim(),
+                Categoria = new Categoria { IdCategoria = Convert.ToInt32(ddlCategoria.SelectedValue) },
+                Descripcion = txtDescripcion.Text.Trim(),
+                Stock = Convert.ToInt32(txtStock.Text),
+                PrecioUnitario = (float)Convert.ToDouble(txtPrecio_Unitario.Text),
+                ImagenURL = txtImagen.Text.Trim(),
+                Estado = true
             };
 
-            if (!GestionArticulos.CodigoValido(art.CodArticulo1))
+            if (!GestionArticulos.CodigoValido(art.CodigoArticulo))
             {
                 MostrarMensaje("El código tiene que tener de 1 a 4 letras o números.", TipoMensaje.Error);
                 return;
             }
-            if (!GestionArticulos.ImagenValida(art.ImagenURL1))
+            if (!GestionArticulos.ImagenValida(art.ImagenURL))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;
             }
             if (gestart.ExisteArticulo(art))
             {
-                MostrarMensaje("Ya existe un artículo con el código " + art.CodArticulo1 + ".", TipoMensaje.Error);
+                MostrarMensaje("Ya existe un artículo con el código " + art.CodigoArticulo + ".", TipoMensaje.Error);
                 return;
             }
             if (gestart.ExisteDescripcionArticulo(art))
@@ -194,12 +194,12 @@ namespace Vistas.AdminForms
                 MostrarMensaje("Ya existe un artículo con esa descripción.", TipoMensaje.Error);
                 return;
             }
-            if (!gestart.agregarArticulo(art))
+            if (!gestart.AgregarArticulo(art))
             {
                 MostrarMensaje("No se pudo agregar el artículo.", TipoMensaje.Error);
                 return;
             }
-            MostrarMensaje("Artículo " + art.CodArticulo1 + " agregado.", TipoMensaje.Exito);
+            MostrarMensaje("Artículo " + art.CodigoArticulo + " agregado.", TipoMensaje.Exito);
             LimpiarCampoArticulo();
             CargarGvArticulos();
         }
@@ -225,7 +225,7 @@ namespace Vistas.AdminForms
         /* Después de modificar categorías se recargan también los desplegables de artículos. */
         private void RecargarCategorias()
         {
-            categorias = gcat.getCategorias();
+            categorias = gcat.GetCategorias();
             CargarGvCategorias();
             ddlCategoria.DataSource = CategoriasActivas();
             ddlCategoria.DataBind();
@@ -234,15 +234,15 @@ namespace Vistas.AdminForms
 
         protected void btnAgregarCategoria_Click(object sender, EventArgs e)
         {
-            Categoria cat = new Categoria { Decripcion1 = txtDescripcioncat.Text.Trim() };
+            Categoria cat = new Categoria { Descripcion = txtDescripcioncat.Text.Trim() };
             if (gcat.VerificarCategoria(cat))
             {
                 MostrarMensaje("Ya existe una categoría con ese nombre.", TipoMensaje.Error);
                 return;
             }
-            if (gcat.agregarCategoria(cat))
+            if (gcat.AgregarCategoria(cat))
             {
-                MostrarMensaje("Categoría \"" + cat.Decripcion1 + "\" agregada.", TipoMensaje.Exito);
+                MostrarMensaje("Categoría \"" + cat.Descripcion + "\" agregada.", TipoMensaje.Exito);
                 txtDescripcioncat.Text = "";
                 RecargarCategorias();
             }
@@ -265,9 +265,9 @@ namespace Vistas.AdminForms
             GridViewRow fila = gvCategorias.Rows[e.RowIndex];
             Categoria cat = new Categoria
             {
-                IdCategoria1 = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value),
-                Decripcion1 = ((TextBox)fila.FindControl("txt_eit_Decripcion")).Text.Trim(),
-                Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstadoCat")).SelectedValue)
+                IdCategoria = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value),
+                Descripcion = ((TextBox)fila.FindControl("txt_eit_Decripcion")).Text.Trim(),
+                Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstadoCat")).SelectedValue)
             };
 
             if (gcat.ExisteCategoriaModificar(cat))
@@ -283,8 +283,8 @@ namespace Vistas.AdminForms
 
         protected void gvCategorias_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            Categoria cat = new Categoria { IdCategoria1 = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value) };
-            gcat.eliminarCategoria(cat);
+            Categoria cat = new Categoria { IdCategoria = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value) };
+            gcat.EliminarCategoria(cat);
             MostrarMensaje("Categoría desactivada.", TipoMensaje.Exito);
             gvCategorias.EditIndex = -1;
             RecargarCategorias();

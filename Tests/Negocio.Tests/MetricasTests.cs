@@ -37,14 +37,14 @@ namespace Negocio.Tests
             carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 10);
             carrito.Agregar("fnt1", "Fuente Deepcool 700W", 7300m, 100);
             string error;
-            Assert.True(new GestionVentas().ConfirmarCompra(new Usuario { IdUsuario1 = idUsuario }, carrito, "Calle 1", "Yo", Datos.TarjetaDe(idUsuario), out error) > 0, error);
+            Assert.True(new GestionVentas().ConfirmarCompra(new Usuario { IdUsuario = idUsuario }, carrito, "Calle 1", "Yo", Datos.TarjetaDe(idUsuario), out error) > 0, error);
         }
 
         [Fact]
         public void ResumenDelPeriodoContraElAnterior()
         {
             Comprar();
-            new GestionUsuarios().agregarUsuario(new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "n@x.com", Telefono1 = "1" });
+            new GestionUsuarios().AgregarUsuario(new Usuario { Nombre = "nuevo", Contrasena = "clave1", Email = "n@x.com", Telefono = "1" });
 
             Comparativa c = metricas.Comparar(30);
 
@@ -107,7 +107,7 @@ namespace Negocio.Tests
         [Fact]
         public void StockBajoSoloIncluyeArticulosActivos()
         {
-            new GestionArticulos().eliminarArticulo(new Articulo { CodArticulo1 = "gb8" });
+            new GestionArticulos().EliminarArticulo(new Articulo { CodigoArticulo = "gb8" });
 
             var tabla = metricas.StockBajo(10);
             var codigos = tabla.Rows.Cast<System.Data.DataRow>().Select(f => f["Codigo"].ToString()).ToList();

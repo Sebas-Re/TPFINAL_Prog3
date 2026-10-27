@@ -96,8 +96,8 @@ namespace Vistas.AdminForms
         private void CargarGvVentas()
         {
             DataTable ventas = FiltroUsuario == 0
-                ? gestven.getVentas()
-                : gestven.filtrarIdUsuario(new Usuario { IdUsuario1 = FiltroUsuario });
+                ? gestven.GetVentas()
+                : gestven.FiltrarIdUsuario(new Usuario { IdUsuario = FiltroUsuario });
             DataView recientes = ventas.DefaultView;
             recientes.Sort = "IdVentas_ve DESC";
             gvVentas.DataSource = recientes;
@@ -135,7 +135,7 @@ namespace Vistas.AdminForms
         {
             int idVenta = Convert.ToInt32(gvVentas.DataKeys[e.NewSelectedIndex].Value);
             gvVentas.SelectedIndex = e.NewSelectedIndex;
-            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = idVenta });
+            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta });
             gvDetallesVenta.DataBind();
             lblTituloDetalle.Text = "Detalle de la venta N° " + idVenta;
             pnlDetalle.Visible = true;
@@ -146,7 +146,7 @@ namespace Vistas.AdminForms
         //-------------------------------------------------------------------------
         private void CargarReporteArticulos()
         {
-            DataView reporte = gestart.getReporteArticulos().DefaultView;
+            DataView reporte = gestart.GetReporteArticulos().DefaultView;
             reporte.Sort = ddlOrdenador.SelectedValue;
             string codigo = txtCodArticulo.Text.Trim();
             if (codigo != "")

@@ -1,39 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Entidades;
 using Dao;
 using System.Data;
 
 namespace Negocio
 {
-   public class GestionTarjetas
+    public class GestionTarjetas
     {
-        DaoTarjetas dao = new DaoTarjetas();
+        private readonly DaoTarjetas _daoTarjetas = new DaoTarjetas();
 
-        public Tarjeta getTarjeta(Tarjeta tarj)
+        public DataTable GetTablaTarjetasUsuario(Usuario us)
         {
-            dao.ObtenerTarjeta(tarj);
-            return tarj;
-        }
-
-        public DataTable getTablaTarjeta(Tarjeta tarj)
-        {
-            DataTable tarjeta = dao.getTablaTarjeta(tarj);
-            return tarjeta;
-        }
-
-        public DataTable getTablaTarjetasUsuario(Usuario us)
-        {
-            DataTable Tarjetas = dao.ObtenerTarjetasUsuario(us);
+            DataTable Tarjetas = _daoTarjetas.ObtenerTarjetasUsuario(us);
             return Tarjetas;
         }
 
-        public bool ExisteTarjeta(Tarjeta tarj)
+        public bool EliminarTarjeta(Tarjeta tarjeta)
         {
-            if (dao.ExisteTarjeta(tarj))
+
+            if (_daoTarjetas.EliminarTarjeta(tarjeta) == 1)
             {
                 return true;
             }
@@ -43,28 +28,15 @@ namespace Negocio
             }
         }
 
-        public bool eliminarTarjeta(Tarjeta tarj)
+        public bool AgregarTarjeta(Tarjeta tarjeta)
         {
-            
-            if (dao.EliminarTarjeta(tarj) == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool agregarTarjeta(Tarjeta tarj)
-        {            
-            if (dao.ExisteTarjeta(tarj))
+            if (_daoTarjetas.ExisteTarjeta(tarjeta))
             {
                 return false;
             }
             try
             {
-                return dao.AgregarTarjeta(tarj) == 1;
+                return _daoTarjetas.AgregarTarjeta(tarjeta) == 1;
             }
             catch (Exception)
             {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Dao;
 using System.Data;
 using Entidades;
@@ -11,51 +7,24 @@ namespace Negocio
 {
     public class GestionVentas
     {
-        DaoVentas daov = new DaoVentas();
-        daoDetalleVentas daoDetalle = new daoDetalleVentas();
-        DaoTarjetas daoTarjetas = new DaoTarjetas();
-       
+        private readonly DaoVentas daoVentas = new DaoVentas();
+        private readonly DaoTarjetas daoTarjetas = new DaoTarjetas();
 
-        public DataTable getVentas()
-        {            
-            return daov.getTablaVentas();
+
+        public DataTable GetVentas()
+        {
+            return daoVentas.GetTablaVentas();
         }
 
-        public DataTable ObtenerMaximaVenta()
+        public DataTable GetVenta(Ventas venta)
         {
-            return daov.getMaximoVenta();
-        }
-        public DataTable getVenta(Ventas ve) 
-        {
-            return daov.GetTablaVentas(ve);           
-        }        
-
-        public DataTable filtrarIdUsuario(Usuario us)
-        {
-            //  return daou.GetTablaUsuario(us);
-            return daov.GetTablaIdUsuario(us);
+            return daoVentas.GetTablaVentas(venta);
         }
 
-        public Ventas getVentaobj(Ventas ve)
+        public DataTable FiltrarIdUsuario(Usuario usuario)
         {
-            return daov.ObtenerVenta(ve);
-        }
-
-        public bool agregarVenta(Ventas ve)
-        {
-            int cantFilas = 0;
-            if (daov.ExisteVentas(ve) == false)
-            {
-                cantFilas = daov.agregarVenta(ve);
-            }
-            if (cantFilas == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            //  return daou.GetTablaUsuario(usuario);
+            return daoVentas.GetTablaIdUsuario(usuario);
         }
 
 
@@ -64,7 +33,7 @@ namespace Negocio
            triggers de la base descuentan el stock y acumulan el total.
            Devuelve el id de la venta, o 0 si no se pudo registrar (en ese
            caso "error" explica el motivo). */
-        public int ConfirmarCompra(Usuario us, Carrito carrito, string direccion, string contacto, long idTarjeta, out string error)
+        public int ConfirmarCompra(Usuario usuario, Carrito carrito, string direccion, string contacto, long idTarjeta, out string error)
         {
             error = null;
             if (carrito == null || carrito.Vacio)
@@ -79,32 +48,32 @@ namespace Negocio
             }
 
             // El medio de pago se toma de la base, no de lo que mande la página.
-            Tarjeta tarjeta = daoTarjetas.ObtenerTarjetaVigente(us, idTarjeta);
+            Tarjeta tarjeta = daoTarjetas.ObtenerTarjetaVigente(usuario, idTarjeta);
             if (tarjeta == null)
             {
                 error = "Elegí una de tus tarjetas guardadas que no esté vencida.";
                 return 0;
             }
 
-            Ventas venta = new Ventas { Usuario1 = us, Metodo_Pago1 = tarjeta.Tipo_Tarjeta1, Cod_Seguridad1 = tarjeta.Codigo_Seguridad1 };
+            Ventas venta = new Ventas { Usuario = usuario, MetodoPago = tarjeta.TipoTarjeta, CodigoSeguridad = tarjeta.CodigoSeguridad };
             List<DetalleVentas> detalles = new List<DetalleVentas>();
             foreach (ItemCarrito item in carrito.Items)
             {
                 detalles.Add(new DetalleVentas
                 {
-                    IdUsuario1 = us.IdUsuario1,
-                    CodArticulo1 = item.CodArticulo,
+                    IdUsuario = usuario.IdUsuario,
+                    CodigoArticulo = item.CodArticulo,
                     Cantidad = item.Cantidad,
-                    Precio1 = (float)item.PrecioUnitario,
-                    DireccionEntrega1 = direccion,
-                    Contacto1 = contacto
+                    Precio = (float)item.PrecioUnitario,
+                    DireccionEntrega = direccion,
+                    Contacto = contacto
                 });
             }
 
             // Venta y detalles van juntos: si algo falla no queda una compra a medias.
             try
             {
-                return daov.RegistrarCompra(venta, detalles);
+                return daoVentas.RegistrarCompra(venta, detalles);
             }
             catch (StockInsuficienteException ex)
             {

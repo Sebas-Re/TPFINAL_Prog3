@@ -18,11 +18,11 @@ namespace Vistas.E2E
     public sealed class Navegador : IDisposable
     {
         // __doPostBack('target','arg') o, si el link valida, WebForm_PostBackOptions("target", "arg", ...).
-        static readonly Regex DoPostBack = new Regex(@"__doPostBack\('(?<target>[^']*)','(?<arg>[^']*)'\)|WebForm_PostBackOptions\(""(?<target>[^""]*)"", ""(?<arg>[^""]*)""");
+        static readonly Regex DoPostBack = new(@"__doPostBack\('(?<target>[^']*)','(?<arg>[^']*)'\)|WebForm_PostBackOptions\(""(?<target>[^""]*)"", ""(?<arg>[^""]*)""");
 
         readonly HttpClient cliente;
         readonly Uri direccion;
-        readonly CookieContainer cookies = new CookieContainer();
+        readonly CookieContainer cookies = new();
 
         public Navegador(Uri direccion)
         {

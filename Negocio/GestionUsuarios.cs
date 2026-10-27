@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using Entidades;
 using Dao;
@@ -12,8 +8,8 @@ namespace Negocio
 {
     public class GestionUsuarios
     {
-        DaoUsuarios dao = new DaoUsuarios();
-        Usuario us = new Usuario();
+        private readonly DaoUsuarios _daoUsuarios = new DaoUsuarios();
+
 
         public const int LargoMinimoContraseña = 6;
         public const int LargoMaximoContraseña = 64;
@@ -23,25 +19,19 @@ namespace Negocio
             return contraseña != null && contraseña.Length >= LargoMinimoContraseña && contraseña.Length <= LargoMaximoContraseña;
         }
 
-        public DataTable getUsuarios() //devuelve todos los usarios
-        {            
-            return dao.getTablaUsuarios();
-        }
-       
-        public DataTable getTabla(Usuario us) //Devuelve un usuario
+        public DataTable GetUsuarios() //devuelve todos los usarios
         {
-            return dao.GetTablaUsuario(us);
+            return _daoUsuarios.GetTablaUsuarios();
         }
 
-        public DataTable getUsuariosActualizar(Usuario us) //lo estaba usando para el griw para que los usuarios actualizen sus datos
+        public DataTable GetTabla(Usuario usuario) //Devuelve un usuario
         {
-            DaoUsuarios dao = new DaoUsuarios();
-            return dao.getTablaUsuariosActualizar(us);
+            return _daoUsuarios.GetTablaUsuario(usuario);
         }
 
-        public bool VerificarLogin(Usuario us)
-        {            
-            if (dao.ExisteUsuarioLogin(us) == false)
+        public bool VerificarLogin(Usuario usuario)
+        {
+            if (_daoUsuarios.ExisteUsuarioLogin(usuario) == false)
             {
                 return false;
             }
@@ -116,7 +106,7 @@ namespace Negocio
             {
                 return null;
             }
-            Usuario credenciales = new Usuario { Nombre1 = nombre, Contraseña1 = contraseña };
+            Usuario credenciales = new Usuario { Nombre = nombre, Contrasena = contraseña };
             if (!VerificarLogin(credenciales))
             {
                 RegistrarFallo(nombre);
@@ -124,31 +114,31 @@ namespace Negocio
             }
             Intentos anteriores;
             intentosFallidos.TryRemove(nombre, out anteriores);
-            credenciales.IdUsuario1 = DevolverIDusuario(credenciales);
-            credenciales.Tipo1 = VerificarTipoUsuario(credenciales);
+            credenciales.IdUsuario = DevolverIDusuario(credenciales);
+            credenciales.Tipo = VerificarTipoUsuario(credenciales);
             return credenciales;
         }
 
-        public bool VerificarTipoUsuario(Usuario us)
-        {            
-            bool tipo = dao.TipoUsuarioLogin(us);
+        public bool VerificarTipoUsuario(Usuario usuario)
+        {
+            bool tipo = _daoUsuarios.TipoUsuarioLogin(usuario);
             return tipo;
         }
 
-        public int DevolverIDusuario(Usuario us)
+        public int DevolverIDusuario(Usuario usuario)
         {
-           int ID = dao.DevolverIDusuario(us);
+            int ID = _daoUsuarios.DevolverIDusuario(usuario);
             return ID;
         }
 
-        public Usuario get(Usuario us)
+        public Usuario get(Usuario usuario)
         {
-            return dao.ObtenerUsuario(us);
+            return _daoUsuarios.ObtenerUsuario(usuario);
         }
 
-        public bool eliminarUsuario(ref Usuario us)
+        public bool EliminarUsuario(ref Usuario usuario)
         {
-            int op = dao.eliminarUsuario(ref us);
+            int op = _daoUsuarios.EliminarUsuario(ref usuario);
             if (op == 1)
             {
                 return true;
@@ -159,16 +149,16 @@ namespace Negocio
             }
         }
 
-        public bool agregarUsuario(Usuario us)
+        public bool AgregarUsuario(Usuario usuario)
         {
             int cantFilas = 0;
-            if (!ContraseñaValida(us.Contraseña1))
+            if (!ContraseñaValida(usuario.Contrasena))
             {
                 return false;
             }
-            if (dao.ExisteUsuario(us) == false)
+            if (_daoUsuarios.ExisteUsuario(usuario) == false)
             {
-                cantFilas = dao.agregarUsuario(us);
+                cantFilas = _daoUsuarios.AgregarUsuario(usuario);
             }
             else
             {
@@ -185,10 +175,10 @@ namespace Negocio
             }
         }
 
-        public bool VerificarNombre(Usuario us)
+        public bool VerificarNombre(Usuario usuario)
         {
 
-            if (dao.ExisteUsuario(us) == false)
+            if (_daoUsuarios.ExisteUsuario(usuario) == false)
             {
                 return true;
             }
@@ -198,10 +188,10 @@ namespace Negocio
             }
         }
 
-        public bool VerificarNombreModificar(Usuario us)
+        public bool VerificarNombreModificar(Usuario usuario)
         {
 
-            if (dao.ExisteUsuarioModificar(us) == false)
+            if (_daoUsuarios.ExisteUsuarioModificar(usuario) == false)
             {
                 return true;
             }
@@ -211,10 +201,10 @@ namespace Negocio
             }
         }
 
-        public bool VerificarEmail(Usuario us)
+        public bool VerificarEmail(Usuario usuario)
         {
-            
-            if (dao.ExisteEmailUsuario(us) == false)
+
+            if (_daoUsuarios.ExisteEmailUsuario(usuario) == false)
             {
                 return true;
             }
@@ -224,10 +214,10 @@ namespace Negocio
             }
         }
 
-        public bool VerificarEmailModificar(Usuario us)
+        public bool VerificarEmailModificar(Usuario usuario)
         {
 
-            if (dao.ExisteEmailUsuarioModificar(us) == false)
+            if (_daoUsuarios.ExisteEmailUsuarioModificar(usuario) == false)
             {
                 return true;
             }
@@ -237,56 +227,56 @@ namespace Negocio
             }
         }
 
-       
+
         /* El usuario edita su propia cuenta. Cambiar nombre, e-mail o contraseña
            exige la contraseña actual: si alguien usa una sesión ajena abierta, no
            puede quedarse con la cuenta. Los errores cuentan para el mismo bloqueo
            que el login. Tipo y estado se conservan (un cliente no puede cambiarlos).
-           "cambios.Contraseña1" vacía = no cambiarla. Devuelve null si se guardó, o
+           "cambios.Contrasena" vacía = no cambiarla. Devuelve null si se guardó, o
            el motivo por el que no. */
         public string ActualizarDatosPropios(Usuario cambios, string contraseñaActual)
         {
-            Usuario actual = dao.ObtenerUsuario(new Usuario { IdUsuario1 = cambios.IdUsuario1 });
-            bool cambiaCredenciales = cambios.Nombre1 != actual.Nombre1
-                || !string.Equals(cambios.Email1, actual.Email1, StringComparison.OrdinalIgnoreCase)
-                || !string.IsNullOrEmpty(cambios.Contraseña1);
+            Usuario actual = _daoUsuarios.ObtenerUsuario(new Usuario { IdUsuario = cambios.IdUsuario });
+            bool cambiaCredenciales = cambios.Nombre != actual.Nombre
+                || !string.Equals(cambios.Email, actual.Email, StringComparison.OrdinalIgnoreCase)
+                || !string.IsNullOrEmpty(cambios.Contrasena);
 
             if (cambiaCredenciales)
             {
-                if (LoginBloqueado(actual.Nombre1))
+                if (LoginBloqueado(actual.Nombre))
                 {
                     return "Demasiados intentos fallidos. Esperá unos minutos y volvé a probar.";
                 }
-                if (string.IsNullOrEmpty(contraseñaActual) || !dao.VerificarContraseña(actual.IdUsuario1, contraseñaActual))
+                if (string.IsNullOrEmpty(contraseñaActual) || !_daoUsuarios.VerificarContraseña(actual.IdUsuario, contraseñaActual))
                 {
-                    RegistrarFallo(actual.Nombre1);
+                    RegistrarFallo(actual.Nombre);
                     return "Para cambiar el nombre, el e-mail o la contraseña, ingresá tu contraseña actual correcta.";
                 }
                 Intentos anteriores;
-                intentosFallidos.TryRemove(actual.Nombre1, out anteriores);
+                intentosFallidos.TryRemove(actual.Nombre, out anteriores);
             }
 
-            cambios.Tipo1 = actual.Tipo1;
-            cambios.Estado1 = actual.Estado1;
+            cambios.Tipo = actual.Tipo;
+            cambios.Estado = actual.Estado;
             if (!VerificarNombreModificar(cambios) || !VerificarEmailModificar(cambios))
             {
                 return "Ese nombre de usuario o e-mail ya lo usa otra cuenta.";
             }
-            if (!string.IsNullOrEmpty(cambios.Contraseña1) && !ContraseñaValida(cambios.Contraseña1))
+            if (!string.IsNullOrEmpty(cambios.Contrasena) && !ContraseñaValida(cambios.Contrasena))
             {
                 return string.Format("La contraseña tiene que tener entre {0} y {1} caracteres.", LargoMinimoContraseña, LargoMaximoContraseña);
             }
             return ActualizarUsuario(cambios) ? null : "No se pudieron guardar los cambios.";
         }
 
-        /* Contraseña1 vacía o null = conservar la actual. */
+        /* Contrasena vacía o null = conservar la actual. */
         public bool ActualizarUsuario(Usuario Usuario)
         {
-            if (!string.IsNullOrEmpty(Usuario.Contraseña1) && !ContraseñaValida(Usuario.Contraseña1))
+            if (!string.IsNullOrEmpty(Usuario.Contrasena) && !ContraseñaValida(Usuario.Contrasena))
             {
                 return false;
             }
-            int FilasInsertadas = dao.actualizarUsuario(Usuario);
+            int FilasInsertadas = _daoUsuarios.ActualizarUsuario(Usuario);
             if (FilasInsertadas == 1)
             {
                 return true;
@@ -297,6 +287,6 @@ namespace Negocio
             }
         }
 
-  
+
     }
 }

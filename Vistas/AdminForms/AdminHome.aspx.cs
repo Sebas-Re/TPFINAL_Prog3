@@ -23,7 +23,7 @@ namespace Vistas.AdminForms
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblNombreAdm.Text = Sesion.Usuario.Nombre1;
+            lblNombreAdm.Text = Sesion.Usuario.Nombre;
 
             Comparativa comparativa = metricas.Comparar(Dias);
             litIndicadores.Text = Indicador.Resumen(comparativa, "vs. 30 días anteriores")

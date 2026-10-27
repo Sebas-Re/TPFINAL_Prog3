@@ -11,7 +11,7 @@ namespace Negocio
     public class GestionMetricas
     {
         static readonly CultureInfo Cultura = new CultureInfo("es-AR");
-        DaoMetricas dao = new DaoMetricas();
+        private readonly DaoMetricas _daoMetricas = new DaoMetricas();
 
         /* Últimos "dias" días contra los "dias" días anteriores. */
         public Comparativa Comparar(int dias)
@@ -25,7 +25,7 @@ namespace Negocio
 
         private ResumenPeriodo Resumen(int inicio, int fin)
         {
-            DataRow fila = dao.getResumenVentas(inicio, fin).Rows[0];
+            DataRow fila = _daoMetricas.GetResumenVentas(inicio, fin).Rows[0];
             return new ResumenPeriodo
             {
                 Ingresos = Convert.ToDecimal(fila["Ingresos"]),
@@ -33,7 +33,7 @@ namespace Negocio
                 Unidades = Convert.ToInt32(fila["Unidades"]),
                 Compradores = Convert.ToInt32(fila["Compradores"]),
                 CompradoresRecurrentes = Convert.ToInt32(fila["CompradoresRecurrentes"]),
-                ClientesNuevos = dao.getClientesNuevos(inicio, fin)
+                ClientesNuevos = _daoMetricas.GetClientesNuevos(inicio, fin)
             };
         }
 
@@ -41,13 +41,13 @@ namespace Negocio
            calendario, incluido el actual; los meses sin ventas van en 0. */
         public Serie IngresosPorMes(int meses)
         {
-            DataTable tabla = dao.getIngresosPorMes(DiasHastaInicioDeMes(meses), 1);
+            DataTable tabla = _daoMetricas.GetIngresosPorMes(DiasHastaInicioDeMes(meses), 1);
             return SeriePorMes(meses, tabla, "Ingresos", "Pedidos");
         }
 
         public Serie ClientesNuevosPorMes(int meses)
         {
-            DataTable tabla = dao.getClientesNuevosPorMes(DiasHastaInicioDeMes(meses), 1);
+            DataTable tabla = _daoMetricas.GetClientesNuevosPorMes(DiasHastaInicioDeMes(meses), 1);
             return SeriePorMes(meses, tabla, "Clientes", null);
         }
 
@@ -55,7 +55,7 @@ namespace Negocio
         public Serie IngresosPorDia(int dias)
         {
             var porDia = new Dictionary<string, DataRow>();
-            foreach (DataRow fila in dao.getIngresosPorDia(1 - dias, 1).Rows)
+            foreach (DataRow fila in _daoMetricas.GetIngresosPorDia(1 - dias, 1).Rows)
             {
                 porDia[fila["Dia"].ToString()] = fila;
             }
@@ -74,7 +74,7 @@ namespace Negocio
         public Serie IngresosPorCategoria(int dias)
         {
             Serie serie = new Serie();
-            foreach (DataRow fila in dao.getIngresosPorCategoria(1 - dias, 1).Rows)
+            foreach (DataRow fila in _daoMetricas.GetIngresosPorCategoria(1 - dias, 1).Rows)
             {
                 serie.Agregar(fila["Categoria"].ToString(), Convert.ToDecimal(fila["Ingresos"]), Convert.ToDecimal(fila["Unidades"]));
             }
@@ -85,7 +85,7 @@ namespace Negocio
         public Serie TopProductos(int dias, int cantidad)
         {
             Serie serie = new Serie();
-            foreach (DataRow fila in dao.getTopProductos(1 - dias, 1, cantidad).Rows)
+            foreach (DataRow fila in _daoMetricas.GetTopProductos(1 - dias, 1, cantidad).Rows)
             {
                 serie.Agregar(fila["Descripcion"].ToString(), Convert.ToDecimal(fila["Unidades"]), Convert.ToDecimal(fila["Ingresos"]));
             }
@@ -96,7 +96,7 @@ namespace Negocio
         public Serie MetodosDePago(int dias)
         {
             decimal[] pedidos = new decimal[2], ingresos = new decimal[2];
-            foreach (DataRow fila in dao.getMetodosDePago(1 - dias, 1).Rows)
+            foreach (DataRow fila in _daoMetricas.GetMetodosDePago(1 - dias, 1).Rows)
             {
                 int i = Convert.ToBoolean(fila["Credito"]) ? 1 : 0;
                 pedidos[i] = Convert.ToDecimal(fila["Pedidos"]);
@@ -110,12 +110,12 @@ namespace Negocio
 
         public DataTable TopClientes(int dias, int cantidad)
         {
-            return dao.getTopClientes(1 - dias, 1, cantidad);
+            return _daoMetricas.GetTopClientes(1 - dias, 1, cantidad);
         }
 
         public DataTable StockBajo(int umbral)
         {
-            return dao.getStockBajo(umbral);
+            return _daoMetricas.GetStockBajo(umbral);
         }
 
         private static int DiasHastaInicioDeMes(int meses)

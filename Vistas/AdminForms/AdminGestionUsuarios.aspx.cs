@@ -31,7 +31,7 @@ namespace Vistas.AdminForms
 
         private void CargarGvUsuarios()
         {
-            gvUsuarios.DataSource = FiltroId == 0 ? us.getUsuarios() : us.getTabla(new Usuario { IdUsuario1 = FiltroId });
+            gvUsuarios.DataSource = FiltroId == 0 ? us.GetUsuarios() : us.GetTabla(new Usuario { IdUsuario = FiltroId });
             gvUsuarios.DataBind();
         }
 
@@ -66,17 +66,17 @@ namespace Vistas.AdminForms
         protected void gvUsuarios_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvUsuarios.Rows[e.RowIndex];
-            Usuario actual = us.get(new Usuario { IdUsuario1 = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
+            Usuario actual = us.get(new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
             string nuevaContraseña = ((TextBox)fila.FindControl("txt_eit_passUs")).Text;
             Usuario usuario = new Usuario
             {
-                IdUsuario1 = actual.IdUsuario1,
-                Nombre1 = ((TextBox)fila.FindControl("txt_eit_nombreUs")).Text.Trim(),
-                Contraseña1 = nuevaContraseña, // vacía = no cambiarla
-                Email1 = ((TextBox)fila.FindControl("txt_eit_emailUs")).Text.Trim(),
-                Telefono1 = ((TextBox)fila.FindControl("txt_eit_telefonoUs")).Text.Trim(),
-                Tipo1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditTipo")).SelectedValue),
-                Estado1 = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstado")).SelectedValue)
+                IdUsuario = actual.IdUsuario,
+                Nombre = ((TextBox)fila.FindControl("txt_eit_nombreUs")).Text.Trim(),
+                Contrasena = nuevaContraseña, // vacía = no cambiarla
+                Email = ((TextBox)fila.FindControl("txt_eit_emailUs")).Text.Trim(),
+                Telefono = ((TextBox)fila.FindControl("txt_eit_telefonoUs")).Text.Trim(),
+                Tipo = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditTipo")).SelectedValue),
+                Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstado")).SelectedValue)
             };
 
             if (!us.VerificarNombreModificar(usuario) || !us.VerificarEmailModificar(usuario))
@@ -86,23 +86,23 @@ namespace Vistas.AdminForms
             }
             if (!us.ActualizarUsuario(usuario))
             {
-                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo modificar el usuario.", TipoMensaje.Error);
+                MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo modificar el usuario.", TipoMensaje.Error);
                 return;
             }
-            MostrarMensaje("Usuario " + usuario.Nombre1 + " modificado.", TipoMensaje.Exito);
+            MostrarMensaje("Usuario " + usuario.Nombre + " modificado.", TipoMensaje.Exito);
             gvUsuarios.EditIndex = -1;
             CargarGvUsuarios();
         }
 
         protected void gvUsuarios_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            Usuario usuario = new Usuario { IdUsuario1 = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) };
-            if (usuario.IdUsuario1 == Sesion.Usuario.IdUsuario1)
+            Usuario usuario = new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) };
+            if (usuario.IdUsuario == Sesion.Usuario.IdUsuario)
             {
                 MostrarMensaje("No podés desactivar tu propia cuenta.", TipoMensaje.Aviso);
                 return;
             }
-            us.eliminarUsuario(ref usuario);
+            us.EliminarUsuario(ref usuario);
             MostrarMensaje("Usuario desactivado.", TipoMensaje.Exito);
             CargarGvUsuarios();
         }
@@ -111,11 +111,11 @@ namespace Vistas.AdminForms
         {
             Usuario usuario = new Usuario
             {
-                Nombre1 = txtNombreUsuario.Text.Trim(),
-                Contraseña1 = txtContraseña.Text,
-                Email1 = txtEmail.Text.Trim(),
-                Telefono1 = string.IsNullOrWhiteSpace(txtTelefono.Text) ? "Sin telefono" : txtTelefono.Text.Trim(),
-                Tipo1 = Convert.ToBoolean(ddlTipoUs.SelectedValue)
+                Nombre = txtNombreUsuario.Text.Trim(),
+                Contrasena = txtContraseña.Text,
+                Email = txtEmail.Text.Trim(),
+                Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? "Sin telefono" : txtTelefono.Text.Trim(),
+                Tipo = Convert.ToBoolean(ddlTipoUs.SelectedValue)
             };
 
             if (!us.VerificarNombre(usuario) || !us.VerificarEmail(usuario))
@@ -123,12 +123,12 @@ namespace Vistas.AdminForms
                 MostrarMensaje("No se pudo agregar: el nombre o el e-mail ya están en uso.", TipoMensaje.Error);
                 return;
             }
-            if (!us.agregarUsuario(usuario))
+            if (!us.AgregarUsuario(usuario))
             {
-                MostrarMensaje(ErrorContraseña(usuario.Contraseña1) ?? "No se pudo agregar el usuario.", TipoMensaje.Error);
+                MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo agregar el usuario.", TipoMensaje.Error);
                 return;
             }
-            MostrarMensaje((usuario.Tipo1 ? "Administrador " : "Cliente ") + usuario.Nombre1 + " agregado.", TipoMensaje.Exito);
+            MostrarMensaje((usuario.Tipo ? "Administrador " : "Cliente ") + usuario.Nombre + " agregado.", TipoMensaje.Exito);
             txtNombreUsuario.Text = "";
             txtEmail.Text = "";
             txtTelefono.Text = "";

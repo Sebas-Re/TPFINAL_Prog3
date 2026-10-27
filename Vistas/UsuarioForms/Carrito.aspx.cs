@@ -38,7 +38,7 @@ namespace Vistas
         /* El valor de cada opción es el id de la tarjeta: el código de seguridad no sale del servidor. */
         private void CargarTarjetas()
         {
-            DataTable tarjetas = gestcard.getTablaTarjetasUsuario(Sesion.Usuario);
+            DataTable tarjetas = gestcard.GetTablaTarjetasUsuario(Sesion.Usuario);
             ddlTarjetas.Items.Clear();
             ddlTarjetas.Items.Add(new ListItem("Elegí una tarjeta", ""));
             foreach (DataRow fila in tarjetas.Rows)
@@ -71,15 +71,15 @@ namespace Vistas
             Tarjeta tarjeta = new Tarjeta
             {
                 Us = Sesion.Usuario,
-                Num_Tarjeta1 = Convert.ToInt64(txtNumeroTarjeta.Text),
-                Titular_Tarjeta1 = txtTarjetaTitular.Text.Trim(),
-                Nombre_Tarjeta1 = txtNombreTarjeta.Text.Trim(),
-                Fecha_Vencimiento1 = "01/" + txtTarjetames.Text + "/" + txtTarjetaAño.Text,
-                Tipo_Tarjeta1 = rbDebitoCredito.SelectedValue == "1",
-                Codigo_Seguridad1 = Convert.ToInt32(txtCodSeguridad.Text)
+                NumTarjeta = Convert.ToInt64(txtNumeroTarjeta.Text),
+                TitularTarjeta = txtTarjetaTitular.Text.Trim(),
+                NombreTarjeta = txtNombreTarjeta.Text.Trim(),
+                FechaVencimiento = "01/" + txtTarjetames.Text + "/" + txtTarjetaAño.Text,
+                TipoTarjeta = rbDebitoCredito.SelectedValue == "1",
+                CodigoSeguridad = Convert.ToInt32(txtCodSeguridad.Text)
             };
 
-            if (gestcard.agregarTarjeta(tarjeta))
+            if (gestcard.AgregarTarjeta(tarjeta))
             {
                 MostrarMensaje("Tarjeta guardada. Ya podés elegirla como medio de pago.", TipoMensaje.Exito);
                 LimpiarCamposTarjeta();

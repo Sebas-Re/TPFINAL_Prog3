@@ -34,16 +34,16 @@ namespace Dao.Tests
             try { Directory.Delete(carpeta, true); } catch (IOException) { }
         }
 
-        static Usuario Usuario(string nombre, string contraseña) => new Usuario { Nombre1 = nombre, Contraseña1 = contraseña };
+        static Usuario Usuario(string nombre, string contrasena) => new() { Nombre = nombre, Contrasena = contrasena };
 
         [Fact]
         public void CreaLaBaseConLosDatosDePruebaLaPrimeraVez()
         {
             Assert.False(File.Exists(AccesoDatos.RutaBaseDatos));
 
-            Assert.Equal(7, new DaoUsuarios().getTablaUsuarios().Rows.Count);
-            Assert.Equal(8, new DaoCategorias().getTablaCategorias().Rows.Count);
-            Assert.Equal(68, new DaoArticulos().getTablaArticulos().Rows.Count);
+            Assert.Equal(7, new DaoUsuarios().GetTablaUsuarios().Rows.Count);
+            Assert.Equal(8, new DaoCategorias().GetTablaCategorias().Rows.Count);
+            Assert.Equal(68, new DaoArticulos().GetTablaArticulos().Rows.Count);
             Assert.True(File.Exists(AccesoDatos.RutaBaseDatos));
             Assert.False(File.Exists(AccesoDatos.RutaBaseDatos + ".tmp"));
         }
@@ -68,8 +68,8 @@ namespace Dao.Tests
         public void LosIdsDeCategoriaCoincidenConLosDeSqlServer()
         {
             // En SQL Server el 'insert ... union' asignaba los identity en orden alfabético.
-            var fuente = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria1 = 1 });
-            var ssd = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria1 = 8 });
+            var fuente = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria = 1 });
+            var ssd = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria = 8 });
 
             Assert.Equal("Fuente", fuente.Rows[0]["Descripcion_ca"]);
             Assert.Equal("Ssd", ssd.Rows[0]["Descripcion_ca"]);
@@ -78,21 +78,21 @@ namespace Dao.Tests
         [Fact]
         public void NoVuelveACargarDatosSiLaBaseYaExiste()
         {
-            new GestionCategorias().agregarCategoria(new Categoria { Decripcion1 = "Monitores" });
+            new GestionCategorias().AgregarCategoria(new Categoria { Descripcion = "Monitores" });
 
             // Cambiar de ruta y volver obliga a repetir el chequeo de inicialización.
             string original = AccesoDatos.RutaBaseDatos;
             AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "otra.db");
-            Assert.Equal(8, new DaoCategorias().getTablaCategorias().Rows.Count);
+            Assert.Equal(8, new DaoCategorias().GetTablaCategorias().Rows.Count);
             AccesoDatos.RutaBaseDatos = original;
-            Assert.Equal(9, new DaoCategorias().getTablaCategorias().Rows.Count);
+            Assert.Equal(9, new DaoCategorias().GetTablaCategorias().Rows.Count);
         }
 
         [Fact]
         public void LosTiposSeMapeanComoEnSqlServer()
         {
-            var tabla = new DaoUsuarios().getTablaUsuarios();
-            var articulos = new DaoArticulos().getTablaArticulos();
+            var tabla = new DaoUsuarios().GetTablaUsuarios();
+            var articulos = new DaoArticulos().GetTablaArticulos();
 
             Assert.Equal(typeof(bool), tabla.Columns["Tipo_us"].DataType);
             Assert.Equal(typeof(decimal), articulos.Columns["PrecioUnitario_ar"].DataType);
@@ -103,22 +103,22 @@ namespace Dao.Tests
         [Fact]
         public void LoginValidaUsuarioContraseñaYTipo()
         {
-            var dao = new DaoUsuarios();
+            var daoUsuarios = new DaoUsuarios();
 
-            Assert.True(dao.ExisteUsuarioLogin(Usuario("admAmador", "admpsw2")));
-            Assert.True(dao.TipoUsuarioLogin(Usuario("admAmador", "admpsw2")));
-            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
-            Assert.False(dao.TipoUsuarioLogin(Usuario("Nom1", "ctr1")));
-            Assert.False(dao.ExisteUsuarioLogin(Usuario("Nom1", "incorrecta")));
+            Assert.True(daoUsuarios.ExisteUsuarioLogin(Usuario("admAmador", "admpsw2")));
+            Assert.True(daoUsuarios.TipoUsuarioLogin(Usuario("admAmador", "admpsw2")));
+            Assert.True(daoUsuarios.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+            Assert.False(daoUsuarios.TipoUsuarioLogin(Usuario("Nom1", "ctr1")));
+            Assert.False(daoUsuarios.ExisteUsuarioLogin(Usuario("Nom1", "incorrecta")));
         }
 
         [Fact]
         public void LoginNoEsVulnerableASqlInjection()
         {
-            var dao = new DaoUsuarios();
+            var daoUsuarios = new DaoUsuarios();
 
-            Assert.False(dao.ExisteUsuarioLogin(Usuario("admAmador", "' or '1'='1")));
-            Assert.False(dao.ExisteUsuarioLogin(Usuario("' or 1=1 --", "x")));
+            Assert.False(daoUsuarios.ExisteUsuarioLogin(Usuario("admAmador", "' or '1'='1")));
+            Assert.False(daoUsuarios.ExisteUsuarioLogin(Usuario("' or 1=1 --", "x")));
         }
 
         [Fact]
@@ -136,17 +136,17 @@ namespace Dao.Tests
         [Fact]
         public void ModificarUnUsuarioSinContraseñaConservaLaActual()
         {
-            var dao = new DaoUsuarios();
-            var nom1 = dao.ObtenerUsuario(new Usuario { IdUsuario1 = 5 });
+            var daoUsuarios = new DaoUsuarios();
+            var nom1 = daoUsuarios.ObtenerUsuario(new Usuario { IdUsuario = 5 });
 
-            nom1.Contraseña1 = null;
-            Assert.Equal(1, dao.actualizarUsuario(nom1));
-            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+            nom1.Contrasena = null;
+            Assert.Equal(1, daoUsuarios.ActualizarUsuario(nom1));
+            Assert.True(daoUsuarios.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
 
-            nom1.Contraseña1 = "nueva123";
-            Assert.Equal(1, dao.actualizarUsuario(nom1));
-            Assert.False(dao.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
-            Assert.True(dao.ExisteUsuarioLogin(Usuario("Nom1", "nueva123")));
+            nom1.Contrasena = "nueva123";
+            Assert.Equal(1, daoUsuarios.ActualizarUsuario(nom1));
+            Assert.False(daoUsuarios.ExisteUsuarioLogin(Usuario("Nom1", "ctr1")));
+            Assert.True(daoUsuarios.ExisteUsuarioLogin(Usuario("Nom1", "nueva123")));
         }
 
         [Fact]
@@ -159,198 +159,222 @@ namespace Dao.Tests
         public void AgregaYActualizaUnUsuario()
         {
             var gestion = new GestionUsuarios();
-            var nuevo = new Usuario { Nombre1 = "nuevo", Contraseña1 = "clave1", Email1 = "nuevo@mail.com", Telefono1 = "123", Tipo1 = false };
+            var nuevo = new Usuario { Nombre = "nuevo", Contrasena = "clave1", Email = "nuevo@mail.com", Telefono = "123", Tipo = false };
 
-            Assert.True(gestion.agregarUsuario(nuevo));
-            Assert.False(gestion.agregarUsuario(nuevo));
-            nuevo.IdUsuario1 = gestion.DevolverIDusuario(nuevo);
-            Assert.Equal(10, nuevo.IdUsuario1);
+            Assert.True(gestion.AgregarUsuario(nuevo));
+            Assert.False(gestion.AgregarUsuario(nuevo));
+            nuevo.IdUsuario = gestion.DevolverIDusuario(nuevo);
+            Assert.Equal(10, nuevo.IdUsuario);
 
-            nuevo.Email1 = "otro@mail.com";
-            nuevo.Estado1 = true;
+            nuevo.Email = "otro@mail.com";
+            nuevo.Estado = true;
             Assert.True(gestion.ActualizarUsuario(nuevo));
-            var guardado = new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario1 = nuevo.IdUsuario1 });
-            Assert.Equal("otro@mail.com", guardado.Email1);
-            Assert.True(guardado.Estado1);
+            var guardado = new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario = nuevo.IdUsuario });
+            Assert.Equal("otro@mail.com", guardado.Email);
+            Assert.True(guardado.Estado);
         }
 
         [Fact]
         public void EliminarUsuarioEsBajaLogica()
         {
-            var us = new Usuario { IdUsuario1 = 5 };
+            var usuario = new Usuario { IdUsuario = 5 };
 
-            Assert.Equal(1, new DaoUsuarios().eliminarUsuario(ref us));
-            Assert.False(new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario1 = 5 }).Estado1);
+            Assert.Equal(1, new DaoUsuarios().EliminarUsuario(ref usuario));
+            Assert.False(new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario = 5 }).Estado);
         }
 
         [Fact]
         public void CategoriasAltaModificacionYBaja()
         {
-            var dao = new DaoCategorias();
+            var caoCategorias = new DaoCategorias();
 
-            Assert.Equal(1, dao.agregarCategoria(new Categoria { Decripcion1 = "Monitores" }));
-            Assert.True(dao.ExisteCategoriaDescripcion(new Categoria { Decripcion1 = "monitores" }));
-            Assert.True(dao.ExisteCategoriaModificar(new Categoria { IdCategoria1 = 1, Decripcion1 = "Monitores" }));
-            Assert.False(dao.ExisteCategoriaModificar(new Categoria { IdCategoria1 = 9, Decripcion1 = "Monitores" }));
+            Assert.Equal(1, caoCategorias.AgregarCategoria(new Categoria { Descripcion = "Monitores" }));
+            Assert.True(caoCategorias.ExisteCategoriaDescripcion(new Categoria { Descripcion = "monitores" }));
+            Assert.True(caoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 1, Descripcion = "Monitores" }));
+            Assert.False(caoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 9, Descripcion = "Monitores" }));
 
-            Assert.True(dao.ActualizarCategoria(new Categoria { IdCategoria1 = 9, Decripcion1 = "Monitores 4K", Estado1 = true }));
-            Assert.Equal(1, dao.eliminarCategoria(new Categoria { IdCategoria1 = 9 }));
-            Assert.False(dao.DevolverEstadoCat(new Categoria { IdCategoria1 = 9 }));
+            Assert.True(caoCategorias.ActualizarCategoria(new Categoria { IdCategoria = 9, Descripcion = "Monitores 4K", Estado = true }));
+            Assert.Equal(1, caoCategorias.EliminarCategoria(new Categoria { IdCategoria = 9 }));
+            Assert.False(caoCategorias.DevolverEstadoCat(new Categoria { IdCategoria = 9 }));
         }
 
         [Fact]
         public void ArticulosAltaBusquedaYBaja()
         {
-            var dao = new DaoArticulos();
-            var art = new Articulo
+            var daoArticulos = new DaoArticulos();
+            var articulo = new Articulo
             {
-                CodArticulo1 = "mn1", Categoria1 = new Categoria { IdCategoria1 = 1 }, Descripcion1 = "Monitor 24'' LG",
-                Stock1 = 10, Precio_Unitario1 = 1500.5f, ImagenURL1 = "~/Imagenes_ar/mn1.png"
+                CodigoArticulo = "mn1",
+                Categoria = new Categoria { IdCategoria = 1 },
+                Descripcion = "Monitor 24'' LG",
+                Stock = 10,
+                PrecioUnitario = 1500.5f,
+                ImagenURL = "~/Imagenes_ar/mn1.png"
             };
 
-            Assert.Equal(1, dao.agregarArticulo(art));
-            Assert.True(dao.ExisteArticulo(new Articulo { CodArticulo1 = "mn1" }));
-            Assert.True(dao.ExisteArticuloDescripcion(new Articulo { Descripcion1 = "Monitor 24'' LG" }));
-            Assert.False(dao.ExisteArticuloDescripcionModificar(new Articulo { CodArticulo1 = "mn1", Descripcion1 = "Monitor 24'' LG" }));
-            Assert.True(dao.ExisteArticuloDescripcionModificar(new Articulo { CodArticulo1 = "gb1", Descripcion1 = "Monitor 24'' LG" }));
+            Assert.Equal(1, daoArticulos.AgregarArticulo(articulo));
+            Assert.True(daoArticulos.ExisteArticulo(new Articulo { CodigoArticulo = "mn1" }));
+            Assert.True(daoArticulos.ExisteArticuloDescripcion(new Articulo { Descripcion = "Monitor 24'' LG" }));
+            Assert.False(daoArticulos.ExisteArticuloDescripcionModificar(new Articulo { CodigoArticulo = "mn1", Descripcion = "Monitor 24'' LG" }));
+            Assert.True(daoArticulos.ExisteArticuloDescripcionModificar(new Articulo { CodigoArticulo = "gb1", Descripcion = "Monitor 24'' LG" }));
 
-            Assert.Single(dao.GetTablaArticuloBuscar(new Articulo { Descripcion1 = "24'' lg" }).Rows);
-            Assert.Equal(9, dao.GetTablaArticuloxCat(new Articulo { Categoria1 = new Categoria { IdCategoria1 = 2 } }).Rows.Count);
-            Assert.Equal("gb1", dao.getIdxdescripcion(new Articulo { Descripcion1 = "Gabinete Gamemax" }).CodArticulo1);
+            Assert.Single(daoArticulos.GetTablaArticuloBuscar(new Articulo { Descripcion = "24'' lg" }).Rows);
+            Assert.Equal(9, daoArticulos.GetTablaArticuloxCat(new Articulo { Categoria = new Categoria { IdCategoria = 2 } }).Rows.Count);
+            Assert.Equal("gb1", daoArticulos.GetIdxdescripcion(new Articulo { Descripcion = "Gabinete Gamemax" }).CodigoArticulo);
 
-            Assert.Equal(1, dao.eliminarArticulo(new Articulo { CodArticulo1 = "mn1" }));
-            Assert.False((bool)dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "mn1" }).Rows[0]["Estado_ar"]);
+            Assert.Equal(1, daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "mn1" }));
+            Assert.False((bool)daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "mn1" }).Rows[0]["Estado_ar"]);
         }
 
         [Fact]
         public void ActualizarArticuloGuardaLaCategoria()
         {
-            var dao = new DaoArticulos();
-            var art = new Articulo
+            var daoArticulos = new DaoArticulos();
+            var articulo = new Articulo
             {
-                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 3 }, Descripcion1 = "Gabinete Gamemax",
-                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
+                CodigoArticulo = "gb1",
+                Categoria = new Categoria { IdCategoria = 3 },
+                Descripcion = "Gabinete Gamemax",
+                Stock = 10,
+                PrecioUnitario = 3500,
+                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png",
+                Estado = true
             };
 
-            Assert.True(dao.ActualizarArticulo(art));
-            Assert.Equal(3L, dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Categoria_ar"]);
+            Assert.True(daoArticulos.ActualizarArticulo(articulo));
+            Assert.Equal(3L, daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Categoria_ar"]);
         }
 
         [Fact]
         public void ObtenerArticuloCargaTodosLosCampos()
         {
-            var art = new DaoArticulos().ObtenerArticulo(new Articulo { CodArticulo1 = "gb1" });
+            var articulo = new DaoArticulos().ObtenerArticulo(new Articulo { CodigoArticulo = "gb1" });
 
-            Assert.Equal(2, art.Categoria1.IdCategoria1);
-            Assert.Equal("Gabinete Gamemax", art.Descripcion1);
-            Assert.Equal(10, art.Stock1);
-            Assert.Equal(3500f, art.Precio_Unitario1);
-            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", art.ImagenURL1);
-            Assert.True(art.Estado1);
+            Assert.Equal(2, articulo.Categoria.IdCategoria);
+            Assert.Equal("Gabinete Gamemax", articulo.Descripcion);
+            Assert.Equal(10, articulo.Stock);
+            Assert.Equal(3500f, articulo.PrecioUnitario);
+            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", articulo.ImagenURL);
+            Assert.True(articulo.Estado);
         }
 
         [Fact]
         public void ObtenerCategoriaCargaTodosLosCampos()
         {
-            var cat = new DaoCategorias().ObtenerCategoria(new Categoria { IdCategoria1 = 8 });
+            var categoria = new DaoCategorias().ObtenerCategoria(new Categoria { IdCategoria = 8 });
 
-            Assert.Equal("Ssd", cat.Decripcion1);
-            Assert.True(cat.Estado1);
+            Assert.Equal("Ssd", categoria.Descripcion);
+            Assert.True(categoria.Estado);
         }
 
         [Fact]
         public void ObtenerVentaCargaTodosLosCampos()
         {
-            var dao = new DaoVentas();
-            dao.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 456 });
-            int id = dao.IDultimaventa(new Ventas()).IdVenta1;
+            var daoVentas = new DaoVentas();
+            daoVentas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 456 });
+            int id = daoVentas.IDultimaventa(new Ventas()).IdVenta;
 
-            var venta = dao.ObtenerVenta(new Ventas { IdVenta1 = id });
+            var venta = daoVentas.ObtenerVenta(new Ventas { IdVenta = id });
 
-            Assert.Equal(5, venta.Usuario1.IdUsuario1);
-            Assert.Equal(0f, venta.TotalVenta1);
-            Assert.True(venta.Metodo_Pago1);
-            Assert.Equal(456, venta.Cod_Seguridad1);
+            Assert.Equal(5, venta.Usuario.IdUsuario);
+            Assert.Equal(0f, venta.TotalVenta);
+            Assert.True(venta.MetodoPago);
+            Assert.Equal(456, venta.CodigoSeguridad);
         }
 
         [Fact]
         public void ActualizarArticuloPermiteReactivarlo()
         {
-            var dao = new DaoArticulos();
-            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
-            var art = new Articulo
+            var daoArticulos = new DaoArticulos();
+            daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "gb1" });
+            var articulo = new Articulo
             {
-                CodArticulo1 = "gb1", Categoria1 = new Categoria { IdCategoria1 = 2 }, Descripcion1 = "Gabinete Gamemax",
-                Stock1 = 10, Precio_Unitario1 = 3500, ImagenURL1 = "~/Imagenes_ar/Gabinete/gb1.png", Estado1 = true
+                CodigoArticulo = "gb1",
+                Categoria = new Categoria { IdCategoria = 2 },
+                Descripcion = "Gabinete Gamemax",
+                Stock = 10,
+                PrecioUnitario = 3500,
+                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png",
+                Estado = true
             };
 
-            Assert.True(dao.ActualizarArticulo(art));
-            Assert.True((bool)dao.GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Estado_ar"]);
+            Assert.True(daoArticulos.ActualizarArticulo(articulo));
+            Assert.True((bool)daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Estado_ar"]);
         }
 
         [Fact]
         public void ElCatalogoSoloMuestraArticulosActivosDeCategoriasActivas()
         {
-            var dao = new DaoArticulos();
-            dao.eliminarArticulo(new Articulo { CodArticulo1 = "gb1" });
-            new DaoCategorias().eliminarCategoria(new Categoria { IdCategoria1 = 1 }); // Fuente: 9 artículos
+            var daoArticulos = new DaoArticulos();
+            daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "gb1" });
+            new DaoCategorias().EliminarCategoria(new Categoria { IdCategoria = 1 }); // Fuente: 9 artículos
 
-            var catalogo = dao.getTablaArticulosCatalogo(null, null);
+            var catalogo = daoArticulos.GetTablaArticulosCatalogo(null, null);
 
             Assert.Equal(68 - 1 - 9, catalogo.Rows.Count);
             Assert.DoesNotContain(catalogo.Rows.Cast<DataRow>(), f => (string)f["CodArticulo_ar"] == "gb1" || (long)f["Categoria_ar"] == 1);
-            Assert.Equal(8, dao.getTablaArticulosCatalogo(null, 2).Rows.Count);
-            Assert.Empty(dao.getTablaArticulosCatalogo(null, 1).Rows);
-            Assert.Equal(2, dao.getTablaArticulosCatalogo("ryzen", null).Rows.Count);
-            Assert.Empty(dao.getTablaArticulosCatalogo("Deepcool 700W", null).Rows);
+            Assert.Equal(8, daoArticulos.GetTablaArticulosCatalogo(null, 2).Rows.Count);
+            Assert.Empty(daoArticulos.GetTablaArticulosCatalogo(null, 1).Rows);
+            Assert.Equal(2, daoArticulos.GetTablaArticulosCatalogo("ryzen", null).Rows.Count);
+            Assert.Empty(daoArticulos.GetTablaArticulosCatalogo("Deepcool 700W", null).Rows);
         }
 
         [Fact]
         public void UnaCompraDescuentaStockYSumaElTotal()
         {
             var ventas = new DaoVentas();
-            var detalle = new daoDetalleVentas();
+            var detalle = new DaoDetalleVentas();
 
-            Assert.Equal(1, ventas.agregarVenta(new Ventas { Usuario1 = new Usuario { IdUsuario1 = 5 }, Metodo_Pago1 = true, Cod_Seguridad1 = 123 }));
-            int idVenta = ventas.IDultimaventa(new Ventas()).IdVenta1;
-            Assert.Equal(1, detalle.agregarDetalleVenta(new DetalleVentas
+            Assert.Equal(1, ventas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 }));
+            int idVenta = ventas.IDultimaventa(new Ventas()).IdVenta;
+            Assert.Equal(1, detalle.AgregarDetalleVenta(new DetalleVentas
             {
-                IdDetVenta1 = idVenta, IdUsuario1 = 5, CodArticulo1 = "gb1", Cantidad = 2, Precio1 = 3500,
-                DireccionEntrega1 = "Calle 123", Contacto1 = "1122334455"
+                IdDetalleVenta = idVenta,
+                IdUsuario = 5,
+                CodigoArticulo = "gb1",
+                Cantidad = 2,
+                Precio = 3500,
+                DireccionEntrega = "Calle 123",
+                Contacto = "1122334455"
             }));
 
-            Assert.Equal(8L, new DaoArticulos().GetTablaArticuloCOD(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(7000m, ventas.GetTablaVentas(new Ventas { IdVenta1 = idVenta }).Rows[0]["TotalVenta_ve"]);
-            Assert.IsType<DateTime>(ventas.GetTablaVentas(new Ventas { IdVenta1 = idVenta }).Rows[0]["FechaVenta_ve"]);
-            Assert.Single(detalle.GetTablaIdVentaUsuario(new Ventas { IdVenta1 = idVenta }).Rows);
+            Assert.Equal(8L, new DaoArticulos().GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
+            Assert.Equal(7000m, ventas.GetTablaVentas(new Ventas { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
+            Assert.IsType<DateTime>(ventas.GetTablaVentas(new Ventas { IdVenta = idVenta }).Rows[0]["FechaVenta_ve"]);
+            Assert.Single(detalle.GetTablaIdVentaUsuario(new Ventas { IdVenta = idVenta }).Rows);
 
             // Reportes: verifican que el SQL traducido de T-SQL corre en SQLite.
-            var dao = new DaoArticulos();
-            Assert.Single(dao.getTopArticulos().Rows);
-            Assert.Single(dao.getTablaReporteArtiuculos().Rows);
-            Assert.Single(dao.getTablaReportePorArtiuculos(new Articulo { CodArticulo1 = "gb1" }).Rows);
-            Assert.Equal(2L, dao.ObtenerTablaMaximo(new Articulo { CodArticulo1 = "gb1" }).Rows[0]["UNIDADES VENDIDAS"]);
-            Assert.Single(ventas.getMaximoVenta().Rows);
-            Assert.Single(detalle.getMaximaCantidad().Rows);
+            var daoArticulos = new DaoArticulos();
+            Assert.Single(daoArticulos.GetTopArticulos().Rows);
+            Assert.Single(daoArticulos.GetTablaReporteArtiuculos().Rows);
+            Assert.Single(daoArticulos.GetTablaReportePorArtiuculos(new Articulo { CodigoArticulo = "gb1" }).Rows);
+            Assert.Equal(2L, daoArticulos.ObtenerTablaMaximo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["UNIDADES VENDIDAS"]);
+            Assert.Single(ventas.GetMaximoVenta().Rows);
+            Assert.Single(detalle.GetMaximaCantidad().Rows);
         }
 
         [Fact]
         public void TarjetasAltaConsultaYBaja()
         {
-            var dao = new DaoTarjetas();
+            var daoTarjetas = new DaoTarjetas();
             var tarjeta = new Tarjeta
             {
-                Us = new Usuario { IdUsuario1 = 5 }, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa",
-                Tipo_Tarjeta1 = true, Num_Tarjeta1 = 4567123412340012, Fecha_Vencimiento1 = "01/12/2099", Codigo_Seguridad1 = 321
+                Usuario = new Usuario { IdUsuario = 5 },
+                TitularTarjeta = "Nom Uno",
+                NombreTarjeta = "Visa",
+                TipoTarjeta = true,
+                NumTarjeta = 4567123412340012,
+                FechaVencimiento = "01/12/2099",
+                CodigoSeguridad = 321
             };
 
-            Assert.False(dao.ExisteTarjeta(tarjeta));
-            Assert.Equal(1, dao.AgregarTarjeta(tarjeta));
-            Assert.True(dao.ExisteTarjeta(tarjeta));
+            Assert.False(daoTarjetas.ExisteTarjeta(tarjeta));
+            Assert.Equal(1, daoTarjetas.AgregarTarjeta(tarjeta));
+            Assert.True(daoTarjetas.ExisteTarjeta(tarjeta));
 
             // Un número de 16 dígitos se guarda completo (antes se truncaba a int).
-            Assert.Equal(4567123412340012L, dao.getTablaTarjeta(tarjeta).Rows[0]["Num_Tarjeta_t"]);
-            var tabla = dao.ObtenerTarjetasUsuario(new Usuario { IdUsuario1 = 5 });
+            Assert.Equal(4567123412340012L, daoTarjetas.GetTablaTarjeta(tarjeta).Rows[0]["Num_Tarjeta_t"]);
+            var tabla = daoTarjetas.ObtenerTarjetasUsuario(new Usuario { IdUsuario = 5 });
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);
             Assert.Equal(new DateTime(2099, 12, 1), tabla.Rows[0]["Fecha_Vencimiento_t"]);
@@ -358,14 +382,14 @@ namespace Dao.Tests
             Assert.False(tabla.Columns.Contains("Codigo_Seguridad_t"));
 
             long id = Convert.ToInt64(tabla.Rows[0]["IdTarjeta_t"]);
-            Assert.Equal(321, dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Codigo_Seguridad1);
-            Assert.True(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 5 }, id).Tipo_Tarjeta1);
-            Assert.Null(dao.ObtenerTarjetaVigente(new Usuario { IdUsuario1 = 6 }, id));
+            Assert.Equal(321, daoTarjetas.ObtenerTarjetaVigente(new Usuario { IdUsuario = 5 }, id).CodigoSeguridad);
+            Assert.True(daoTarjetas.ObtenerTarjetaVigente(new Usuario { IdUsuario = 5 }, id).TipoTarjeta);
+            Assert.Null(daoTarjetas.ObtenerTarjetaVigente(new Usuario { IdUsuario = 6 }, id));
 
             // Se elimina por id, y solo dentro de las tarjetas del usuario.
-            Assert.Equal(0, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 6 }, IdTarjeta1 = id }));
-            Assert.Equal(1, dao.EliminarTarjeta(new Tarjeta { Us = new Usuario { IdUsuario1 = 5 }, IdTarjeta1 = id }));
-            Assert.False(dao.ExisteTarjeta(tarjeta));
+            Assert.Equal(0, daoTarjetas.EliminarTarjeta(new Tarjeta { Usuario = new Usuario { IdUsuario = 6 }, IdTarjeta = id }));
+            Assert.Equal(1, daoTarjetas.EliminarTarjeta(new Tarjeta { Usuario = new Usuario { IdUsuario = 5 }, IdTarjeta = id }));
+            Assert.False(daoTarjetas.ExisteTarjeta(tarjeta));
         }
 
         [Fact]
@@ -373,8 +397,13 @@ namespace Dao.Tests
         {
             var vencida = new Tarjeta
             {
-                Us = new Usuario { IdUsuario1 = 5 }, Titular_Tarjeta1 = "Nom Uno", Nombre_Tarjeta1 = "Visa",
-                Tipo_Tarjeta1 = false, Num_Tarjeta1 = 1234, Fecha_Vencimiento1 = "01/01/2020", Codigo_Seguridad1 = 111
+                Usuario = new Usuario { IdUsuario = 5 },
+                TitularTarjeta = "Nom Uno",
+                NombreTarjeta = "Visa",
+                TipoTarjeta = false,
+                NumTarjeta = 1234,
+                FechaVencimiento = "01/01/2020",
+                CodigoSeguridad = 111
             };
 
             var error = Assert.Throws<SQLiteException>(() => new DaoTarjetas().AgregarTarjeta(vencida));

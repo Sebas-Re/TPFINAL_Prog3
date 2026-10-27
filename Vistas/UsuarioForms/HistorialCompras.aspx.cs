@@ -23,7 +23,7 @@ namespace Vistas
             {
                 return;
             }
-            gvUsuarioCompras.DataSource = gestven.filtrarIdUsuario(Sesion.Usuario);
+            gvUsuarioCompras.DataSource = gestven.FiltrarIdUsuario(Sesion.Usuario);
             gvUsuarioCompras.DataBind();
 
             bool tieneCompras = gvUsuarioCompras.Rows.Count > 0;
@@ -54,7 +54,7 @@ namespace Vistas
 
         private void MostrarDetalle(int idVenta)
         {
-            DataTable detalle = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta1 = idVenta });
+            DataTable detalle = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta });
             gvDetalleCompras.DataSource = detalle;
             gvDetalleCompras.DataBind();
             gvDetalleCompras.Visible = true;

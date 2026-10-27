@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Data;
 using Entidades;
 using Dao;
@@ -12,62 +8,31 @@ namespace Negocio
 {
     public class GestionArticulos
     {
-        DaoArticulos dao = new DaoArticulos();
-        public DataTable getArticulos() //devuelve todos los Articulos
+        private readonly DaoArticulos _daoArticulos = new DaoArticulos();
+        public DataTable GetArticulos() //devuelve todos los Articulos
         {
-            return dao.getTablaArticulos();
+            return _daoArticulos.GetTablaArticulos();
         }
 
-        public DataTable getArticulosCatalogo(string busqueda, int? categoria) //solo los que se pueden comprar
+        public DataTable GetArticulosCatalogo(string busqueda, int? categoria) //solo los que se pueden comprar
         {
-            return dao.getTablaArticulosCatalogo(busqueda, categoria);
+            return _daoArticulos.GetTablaArticulosCatalogo(busqueda, categoria);
         }
 
-        public DataTable getReporteArticulos()
+        public DataTable GetReporteArticulos()
         {
-            return dao.getTablaReporteArtiuculos();
+            return _daoArticulos.GetTablaReporteArtiuculos();
         }
 
-        public DataTable getReporteArticulo(Articulo art)
+        public DataTable GetArticuloCOD(Articulo articulo) //Devuelve un Articulo
         {
-            return dao.getTablaReportePorArtiuculos(art);
-        }
-
-        public DataTable TopArticulos()
-        {
-            return dao.getTopArticulos();
-        }
-
-        public DataTable OrdenarArticulos(int op)
-        {
-            return dao.OrdenarArticulosx(op);
+            return _daoArticulos.GetTablaArticuloCOD(articulo);
         }
 
 
-
-        public DataTable getArticuloCOD(Articulo art) //Devuelve un Articulo
+        public bool EliminarArticulo(Articulo articulo)
         {
-            return dao.GetTablaArticuloCOD(art);
-        }         
-
-        public Articulo getarticuloXdescripcion(Articulo art)
-        {
-            return dao.getIdxdescripcion(art);
-        }
-
-        public DataTable getarticulosXCategoria(Articulo art)
-        {
-            return dao.GetTablaArticuloxCat(art);
-        }
-
-        public DataTable getArticuloBuscar(Articulo art) //Devuelve un Articulo
-        {
-            return dao.GetTablaArticuloBuscar(art);
-        }
-
-        public bool eliminarArticulo(Articulo art)
-        {
-            int eliminado = dao.eliminarArticulo(art);
+            int eliminado = _daoArticulos.EliminarArticulo(articulo);
             if (eliminado == 1)
             {
                 return true;
@@ -100,13 +65,13 @@ namespace Negocio
             return Uri.TryCreate(url, UriKind.Absolute, out uri) && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
         }
 
-        public bool ActualizarArticulo(Articulo art)
+        public bool ActualizarArticulo(Articulo articulo)
         {
-            if (!ImagenValida(art.ImagenURL1))
+            if (!ImagenValida(articulo.ImagenURL))
             {
                 return false;
             }
-            bool eliminado = dao.ActualizarArticulo(art);
+            bool eliminado = _daoArticulos.ActualizarArticulo(articulo);
             if (eliminado)
             {
                 return true;
@@ -119,23 +84,16 @@ namespace Negocio
 
         }
 
-        public DataTable ObtenerMaximo(Articulo art)
-        {
-            DataTable Maximo = dao.ObtenerTablaMaximo(art);
-
-            return Maximo;
-        }
-
-        public bool agregarArticulo(Articulo art)
+        public bool AgregarArticulo(Articulo articulo)
         {
             int cantFilas = 0;
-            if (!CodigoValido(art.CodArticulo1) || !ImagenValida(art.ImagenURL1))
+            if (!CodigoValido(articulo.CodigoArticulo) || !ImagenValida(articulo.ImagenURL))
             {
                 return false;
             }
-            if (dao.ExisteArticulo(art) == false)
+            if (_daoArticulos.ExisteArticulo(articulo) == false)
             {
-                cantFilas = dao.agregarArticulo(art);
+                cantFilas = _daoArticulos.AgregarArticulo(articulo);
             }
             if (cantFilas == 1)
             {
@@ -147,10 +105,10 @@ namespace Negocio
             }
         }
 
-        public bool ExisteArticulo(Articulo art)
+        public bool ExisteArticulo(Articulo articulo)
         {
-            
-            if (dao.ExisteArticulo(art))
+
+            if (_daoArticulos.ExisteArticulo(articulo))
             {
                 return true;
             }
@@ -160,10 +118,10 @@ namespace Negocio
             }
         }
 
-        public bool ExisteDescripcionArticulo(Articulo art)
+        public bool ExisteDescripcionArticulo(Articulo articulo)
         {
 
-            if (dao.ExisteArticuloDescripcion(art))
+            if (_daoArticulos.ExisteArticuloDescripcion(articulo))
             {
                 return true;
             }
@@ -173,10 +131,10 @@ namespace Negocio
             }
         }
 
-        public bool ExisteDescripcionArticuloModificar(Articulo art)
+        public bool ExisteDescripcionArticuloModificar(Articulo articulo)
         {
 
-            if (dao.ExisteArticuloDescripcionModificar(art))
+            if (_daoArticulos.ExisteArticuloDescripcionModificar(articulo))
             {
                 return true;
             }

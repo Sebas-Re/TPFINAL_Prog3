@@ -52,7 +52,7 @@ namespace Vistas
 
         public static bool EsAdmin
         {
-            get { return Logueado && Usuario.Tipo1; }
+            get { return Logueado && Usuario.Tipo; }
         }
 
         public static Entidades.Carrito Carrito

@@ -28,7 +28,7 @@ namespace Vistas
         public void CargarGvUsuarios()
         {
             GestionUsuarios us = new GestionUsuarios();
-            gvUsuarios.DataSource = us.getUsuarios();
+            gvUsuarios.DataSource = us.GetUsuarios();
             gvUsuarios.DataBind();
 
         }
@@ -36,14 +36,14 @@ namespace Vistas
         public void CargarGvCategorias()
         {
             GestionCategorias cat = new GestionCategorias();
-            gvCategorias.DataSource = cat.getCategorias();
+            gvCategorias.DataSource = cat.GetCategorias();
             gvCategorias.DataBind();
         }
 
         public void CargarGvArticulos()
         {
             GestionArticulos ar = new GestionArticulos();
-            gvArticulos.DataSource = ar.getArticulos();
+            gvArticulos.DataSource = ar.GetArticulos();
             gvArticulos.DataBind();
         }
 

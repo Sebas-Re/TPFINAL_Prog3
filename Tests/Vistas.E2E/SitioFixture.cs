@@ -95,7 +95,7 @@ namespace Vistas.E2E
 
         private static string BuscarRaizRepositorio()
         {
-            DirectoryInfo dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+            DirectoryInfo dir = new(AppDomain.CurrentDomain.BaseDirectory);
             while (dir != null && !File.Exists(Path.Combine(dir.FullName, "TP_Integrador.sln")))
             {
                 dir = dir.Parent;
