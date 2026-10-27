@@ -11,20 +11,6 @@ namespace Dao
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
         const string TodoArticulos = "select * from Articulos";
 
-        public Articulo ObtenerArticulo(Articulo articulo) //Devuelve un objeto articulo
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Articulos", "select CodArticulo_ar,Categoria_ar,Descripcion_ar,Stock_ar,PrecioUnitario_ar,Imagen,Estado_ar from Articulos where CodArticulo_ar = @CodArticulo",
-                new SQLiteParameter("@CodArticulo", articulo.CodigoArticulo));
-            articulo.CodigoArticulo = tabla.Rows[0][0].ToString();
-            articulo.Categoria = new Categoria { IdCategoria = Convert.ToInt32(tabla.Rows[0][1]) };
-            articulo.Descripcion = tabla.Rows[0][2].ToString();
-            articulo.Stock = Convert.ToInt32(tabla.Rows[0][3]);
-            articulo.PrecioUnitario = Convert.ToDecimal(tabla.Rows[0][4]);
-            articulo.ImagenUrl = tabla.Rows[0][5].ToString();
-            articulo.Estado = (bool)tabla.Rows[0][6];
-            return articulo;
-        }
-
         public DataTable GetTablaArticuloCOD(Articulo articulo) //Devuelve un articulo
         {
             String NuevaConsul = TodoArticulos + " where CodArticulo_ar = @CodArticulo";
@@ -32,30 +18,6 @@ namespace Dao
             return tabla;
         }
 
-        /* Buscar articulo*/
-        public DataTable GetTablaArticuloBuscar(Articulo articulo) //Devuelve un articulo
-        {
-            String NuevaConsul = TodoArticulos + " where Descripcion_ar LIKE '%' || @Descripcion || '%'";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Articulos", NuevaConsul, new SQLiteParameter("@Descripcion", articulo.Descripcion));
-            return tabla;
-        }
-
-        public DataTable GetTablaArticuloxCat(Articulo articulo)
-        {
-            String nuevaConsul = TodoArticulos + " where Categoria_ar = @Categoria";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Articulos", nuevaConsul, new SQLiteParameter("@Categoria", articulo.Categoria.IdCategoria));
-            return tabla;
-        }
-
-
-        public Articulo GetIdxdescripcion(Articulo articulo)
-        {
-
-            String NuevaConsul = "Select CodArticulo_ar from Articulos where Descripcion_ar = @Descripcion";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Articulos", NuevaConsul, new SQLiteParameter("@Descripcion", articulo.Descripcion));
-            articulo.CodigoArticulo = (tabla.Rows[0][0]).ToString();
-            return articulo;
-        }
         /*---------------------------*/
 
         /* Lo que ve el cliente: solo artículos activos de categorías activas,
@@ -85,20 +47,6 @@ namespace Dao
             return tabla;
         }
 
-        public DataTable GetTablaReportePorArtiuculos(Articulo articulo)
-        {
-            String NuevaConsul = "select CodArticulo_dv,Descripcion_ar, SUM(Cantidad_dv) AS CantidadTotal,  sum(Cantidad_dv *Precio_Unitario_dv ) as totalventa from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv group by CodArticulo_dv,Descripcion_ar HAVING CodArticulo_dv = @CodArticulo";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Detalle_Ventas", NuevaConsul, new SQLiteParameter("@CodArticulo", articulo.CodigoArticulo));
-            return tabla;
-        }
-
-        public DataTable GetTopArticulos()
-        {
-            String NuevaConsul = "select CodArticulo_dv AS Codigo, Descripcion_ar AS Descripcion, SUM(Cantidad_dv) AS CantidadTotal, sum(Cantidad_dv * Precio_Unitario_dv ) as totalventa from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv group by CodArticulo_dv,Descripcion_ar limit 10";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Detalle_Ventas", NuevaConsul);
-            return tabla;
-        }
-
         public bool ActualizarArticulo(Articulo articulo)
         {
             SQLiteCommand Comando = new SQLiteCommand();
@@ -116,13 +64,6 @@ namespace Dao
             {
                 return false;
             }
-        }
-
-        public DataTable ObtenerTablaMaximo(Articulo articulo)
-        {
-            String ConsultaMaximo = "SELECT sum(Precio_Unitario_dv) AS [VENTAS TOTALES], sum(Cantidad_dv) AS [UNIDADES VENDIDAS], Stock_ar from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv GROUP BY Precio_Unitario_dv, Cantidad_dv, Stock_ar, CodArticulo_dv HAVING CodArticulo_dv = @CodArticulo";
-            DataTable Maximo = _accesoDatos.ObtenerTabla("Articulos", ConsultaMaximo, new SQLiteParameter("@CodArticulo", articulo.CodigoArticulo));
-            return Maximo;
         }
 
 

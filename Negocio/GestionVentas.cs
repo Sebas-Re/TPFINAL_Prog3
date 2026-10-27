@@ -16,11 +16,6 @@ namespace Negocio
             return daoVentas.GetTablaVentas();
         }
 
-        public DataTable GetVenta(Venta venta)
-        {
-            return daoVentas.GetTablaVentas(venta);
-        }
-
         public DataTable FiltrarIdUsuario(Usuario usuario)
         {
             //  return daou.GetTablaUsuario(usuario);

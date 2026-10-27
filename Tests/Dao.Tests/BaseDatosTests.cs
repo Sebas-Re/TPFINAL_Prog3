@@ -35,6 +35,22 @@ namespace Dao.Tests
 
         static Usuario Usuario(string nombre, string contrasena) => new() { Nombre = nombre, Contrasena = contrasena };
 
+        /* Primer valor de una consulta, para verificar el estado de la base. */
+        static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
+
+        /* Registra una venta de Nom1 (id 5) con los detalles dados, como una compra real. */
+        static int Comprar(params DetalleVenta[] detalles)
+        {
+            Venta venta = new() { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 };
+            foreach (DetalleVenta detalle in detalles)
+            {
+                detalle.IdUsuario = 5;
+                detalle.DireccionEntrega = "Calle 123";
+                detalle.Contacto = "1122334455";
+            }
+            return new DaoVentas().RegistrarCompra(venta, detalles);
+        }
+
         [Fact]
         public void CreaLaBaseConLosDatosDePruebaLaPrimeraVez()
         {
@@ -67,11 +83,8 @@ namespace Dao.Tests
         public void LosIdsDeCategoriaCoincidenConLosDeSqlServer()
         {
             // En SQL Server el 'insert ... union' asignaba los identity en orden alfabético.
-            var fuente = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria = 1 });
-            var ssd = new DaoCategorias().GetTablaCategoria(new Categoria { IdCategoria = 8 });
-
-            Assert.Equal("Fuente", fuente.Rows[0]["Descripcion_ca"]);
-            Assert.Equal("Ssd", ssd.Rows[0]["Descripcion_ca"]);
+            Assert.Equal("Fuente", Valor("select Descripcion_ca from Categorias where IdCategoria_ca = 1"));
+            Assert.Equal("Ssd", Valor("select Descripcion_ca from Categorias where IdCategoria_ca = 8"));
         }
 
         [Fact]
@@ -185,16 +198,16 @@ namespace Dao.Tests
         [Fact]
         public void CategoriasAltaModificacionYBaja()
         {
-            var caoCategorias = new DaoCategorias();
+            var daoCategorias = new DaoCategorias();
 
-            Assert.Equal(1, caoCategorias.AgregarCategoria(new Categoria { Descripcion = "Monitores" }));
-            Assert.True(caoCategorias.ExisteCategoriaDescripcion(new Categoria { Descripcion = "monitores" }));
-            Assert.True(caoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 1, Descripcion = "Monitores" }));
-            Assert.False(caoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 9, Descripcion = "Monitores" }));
+            Assert.Equal(1, daoCategorias.AgregarCategoria(new Categoria { Descripcion = "Monitores" }));
+            Assert.True(daoCategorias.ExisteCategoriaDescripcion(new Categoria { Descripcion = "monitores" }));
+            Assert.True(daoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 1, Descripcion = "Monitores" }));
+            Assert.False(daoCategorias.ExisteCategoriaModificar(new Categoria { IdCategoria = 9, Descripcion = "Monitores" }));
 
-            Assert.True(caoCategorias.ActualizarCategoria(new Categoria { IdCategoria = 9, Descripcion = "Monitores 4K", Estado = true }));
-            Assert.Equal(1, caoCategorias.EliminarCategoria(new Categoria { IdCategoria = 9 }));
-            Assert.False(caoCategorias.DevolverEstadoCat(new Categoria { IdCategoria = 9 }));
+            Assert.True(daoCategorias.ActualizarCategoria(new Categoria { IdCategoria = 9, Descripcion = "Monitores 4K", Estado = true }));
+            Assert.Equal(1, daoCategorias.EliminarCategoria(new Categoria { IdCategoria = 9 }));
+            Assert.Equal(false, Valor("select Estado_ca from Categorias where IdCategoria_ca = 9"));
         }
 
         [Fact]
@@ -217,10 +230,6 @@ namespace Dao.Tests
             Assert.False(daoArticulos.ExisteArticuloDescripcionModificar(new Articulo { CodigoArticulo = "mn1", Descripcion = "Monitor 24'' LG" }));
             Assert.True(daoArticulos.ExisteArticuloDescripcionModificar(new Articulo { CodigoArticulo = "gb1", Descripcion = "Monitor 24'' LG" }));
 
-            Assert.Single(daoArticulos.GetTablaArticuloBuscar(new Articulo { Descripcion = "24'' lg" }).Rows);
-            Assert.Equal(9, daoArticulos.GetTablaArticuloxCat(new Articulo { Categoria = new Categoria { IdCategoria = 2 } }).Rows.Count);
-            Assert.Equal("gb1", daoArticulos.GetIdxdescripcion(new Articulo { Descripcion = "Gabinete Gamemax" }).CodigoArticulo);
-
             Assert.Equal(1, daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "mn1" }));
             Assert.False((bool)daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "mn1" }).Rows[0]["Estado_ar"]);
         }
@@ -242,43 +251,6 @@ namespace Dao.Tests
 
             Assert.True(daoArticulos.ActualizarArticulo(articulo));
             Assert.Equal(3L, daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Categoria_ar"]);
-        }
-
-        [Fact]
-        public void ObtenerArticuloCargaTodosLosCampos()
-        {
-            var articulo = new DaoArticulos().ObtenerArticulo(new Articulo { CodigoArticulo = "gb1" });
-
-            Assert.Equal(2, articulo.Categoria.IdCategoria);
-            Assert.Equal("Gabinete Gamemax", articulo.Descripcion);
-            Assert.Equal(10, articulo.Stock);
-            Assert.Equal(3500m, articulo.PrecioUnitario);
-            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", articulo.ImagenUrl);
-            Assert.True(articulo.Estado);
-        }
-
-        [Fact]
-        public void ObtenerCategoriaCargaTodosLosCampos()
-        {
-            var categoria = new DaoCategorias().ObtenerCategoria(new Categoria { IdCategoria = 8 });
-
-            Assert.Equal("Ssd", categoria.Descripcion);
-            Assert.True(categoria.Estado);
-        }
-
-        [Fact]
-        public void ObtenerVentaCargaTodosLosCampos()
-        {
-            var daoVentas = new DaoVentas();
-            daoVentas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 456 });
-            int id = daoVentas.IDultimaventa(new Venta()).IdVenta;
-
-            var venta = daoVentas.ObtenerVenta(new Venta { IdVenta = id });
-
-            Assert.Equal(5, venta.Usuario.IdUsuario);
-            Assert.Equal(0m, venta.TotalVenta);
-            Assert.True(venta.MetodoPago);
-            Assert.Equal(456, venta.CodigoSeguridad);
         }
 
         [Fact]
@@ -321,35 +293,15 @@ namespace Dao.Tests
         [Fact]
         public void UnaCompraDescuentaStockYSumaElTotal()
         {
-            var ventas = new DaoVentas();
-            var detalle = new DaoDetalleVentas();
-
-            Assert.Equal(1, ventas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 }));
-            int idVenta = ventas.IDultimaventa(new Venta()).IdVenta;
-            Assert.Equal(1, detalle.AgregarDetalleVenta(new DetalleVenta
-            {
-                IdDetalleVenta = idVenta,
-                IdUsuario = 5,
-                CodigoArticulo = "gb1",
-                Cantidad = 2,
-                Precio = 3500,
-                DireccionEntrega = "Calle 123",
-                Contacto = "1122334455"
-            }));
+            int idVenta = Comprar(new DetalleVenta { CodigoArticulo = "gb1", Cantidad = 2, Precio = 3500 });
 
             Assert.Equal(8L, new DaoArticulos().GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(7000m, ventas.GetTablaVentas(new Venta { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
-            Assert.IsType<DateTime>(ventas.GetTablaVentas(new Venta { IdVenta = idVenta }).Rows[0]["FechaVenta_ve"]);
-            Assert.Single(detalle.GetTablaIdVentaUsuario(new Venta { IdVenta = idVenta }).Rows);
+            Assert.Equal(7000m, Valor("select TotalVenta_ve from Ventas where IdVentas_ve = " + idVenta));
+            Assert.IsType<DateTime>(Valor("select FechaVenta_ve from Ventas where IdVentas_ve = " + idVenta));
+            Assert.Single(new DaoDetalleVentas().GetTablaIdVentaUsuario(new Venta { IdVenta = idVenta }).Rows);
 
-            // Reportes: verifican que el SQL traducido de T-SQL corre en SQLite.
-            var daoArticulos = new DaoArticulos();
-            Assert.Single(daoArticulos.GetTopArticulos().Rows);
-            Assert.Single(daoArticulos.GetTablaReporteArtiuculos().Rows);
-            Assert.Single(daoArticulos.GetTablaReportePorArtiuculos(new Articulo { CodigoArticulo = "gb1" }).Rows);
-            Assert.Equal(2L, daoArticulos.ObtenerTablaMaximo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["UNIDADES VENDIDAS"]);
-            Assert.Single(ventas.GetMaximoVenta().Rows);
-            Assert.Single(detalle.GetMaximaCantidad().Rows);
+            // El reporte de artículos vendidos (SQL traducido de T-SQL) corre en SQLite.
+            Assert.Single(new DaoArticulos().GetTablaReporteArtiuculos().Rows);
         }
 
         [Fact]
@@ -372,7 +324,7 @@ namespace Dao.Tests
             Assert.True(daoTarjetas.ExisteTarjeta(tarjeta));
 
             // Un número de 16 dígitos se guarda completo (antes se truncaba a int).
-            Assert.Equal(4567123412340012L, daoTarjetas.GetTablaTarjeta(tarjeta).Rows[0]["Num_Tarjeta_t"]);
+            Assert.Equal(4567123412340012L, Valor("select Num_Tarjeta_t from Tarjetas where Id_TarjetaUsuario_t = 5"));
             var tabla = daoTarjetas.ObtenerTarjetasUsuario(new Usuario { IdUsuario = 5 });
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);

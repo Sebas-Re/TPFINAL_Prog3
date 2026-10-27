@@ -233,16 +233,6 @@ namespace Dao
             }
         }
 
-        public Boolean existeLogin(String consulta, params SQLiteParameter[] parametros)
-        {
-            using (SQLiteConnection Conexion = ObtenerConexion())
-            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
-            using (SQLiteDataReader datos = cmd.ExecuteReader())
-            {
-                return datos.Read() && datos.GetBoolean(0);
-            }
-        }
-
         public int ObtenerMaximo(String consulta, params SQLiteParameter[] parametros)
         {
             using (SQLiteConnection Conexion = ObtenerConexion())

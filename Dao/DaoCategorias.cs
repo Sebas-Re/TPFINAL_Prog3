@@ -10,23 +10,6 @@ namespace Dao
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
         const string TodoCategorias = "select * from Categorias";
 
-        public Categoria ObtenerCategoria(Categoria categoria)
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Categorias", "select IdCategoria_ca,Descripcion_ca,Estado_ca from Categorias where IdCategoria_ca = @IdCategoria",
-                new SQLiteParameter("@IdCategoria", categoria.IdCategoria));
-            categoria.IdCategoria = Convert.ToInt32(tabla.Rows[0][0].ToString());
-            categoria.Descripcion = tabla.Rows[0][1].ToString();
-            categoria.Estado = Convert.ToBoolean(tabla.Rows[0][2].ToString());
-            return categoria;
-        }
-
-        public DataTable GetTablaCategoria(Categoria categoria)
-        {
-            String NuevaConsul = TodoCategorias + " where IdCategoria_ca = @IdCategoria";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Categoria", NuevaConsul, new SQLiteParameter("@IdCategoria", categoria.IdCategoria));
-            return tabla;
-        }
-
         public DataTable GetTablaCategorias()
         {
             DataTable tabla = _accesoDatos.ObtenerTabla("Categorias", TodoCategorias);
@@ -62,14 +45,6 @@ namespace Dao
         {
             string consulta = TodoCategorias + " where Descripcion_ca = @Descripcion and IdCategoria_ca <> @IdCategoria";
             return _accesoDatos.existe(consulta, new SQLiteParameter("@Descripcion", categoria.Descripcion), new SQLiteParameter("@IdCategoria", categoria.IdCategoria));
-        }
-
-        public Boolean DevolverEstadoCat(Categoria categoria)
-        {
-            String NuevaConsul = "select Estado_ca from Categorias where IdCategoria_ca = @IdCategoria";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Categorias", NuevaConsul, new SQLiteParameter("@IdCategoria", categoria.IdCategoria));
-            bool Id = Convert.ToBoolean(tabla.Rows[0][0].ToString());
-            return Id;
         }
 
         public int EliminarCategoria(Categoria categoria)

@@ -32,6 +32,12 @@ namespace Negocio.Tests
 
         static Usuario Cliente => new Usuario { IdUsuario = 5, Nombre = "Nom1" };
 
+        /* Primer valor de una consulta, para verificar el estado de la base. */
+        static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
+
+        static object DatoDeVenta(int idVenta, string columna) =>
+            Valor("select " + columna + " from Ventas where IdVentas_ve = " + idVenta);
+
         static Carrito CarritoConDosArticulos()
         {
             var carrito = new Carrito();
@@ -274,7 +280,7 @@ namespace Negocio.Tests
             Assert.True(gestionCategorias.AgregarCategoria(new Categoria { Descripcion = "Monitores" }));
             Assert.True(gestionCategorias.VerificarCategoria(new Categoria { Descripcion = "Monitores" }));
             Assert.True(gestionCategorias.EliminarCategoria(new Categoria { IdCategoria = 9 }));
-            Assert.False(gestionCategorias.VerificarEstadoCat(new Categoria { IdCategoria = 9 }));
+            Assert.Equal(false, Valor("select Estado_ca from Categorias where IdCategoria_ca = 9"));
         }
 
         [Fact]
@@ -310,7 +316,7 @@ namespace Negocio.Tests
             Assert.Single(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
             Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta }).Rows.Count);
             Assert.Equal(8L, new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(14300m, gestionVentas.GetVenta(new Venta { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(14300m, DatoDeVenta(idVenta, "TotalVenta_ve"));
         }
 
         [Fact]
@@ -324,8 +330,8 @@ namespace Negocio.Tests
             carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
             int segunda = gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out error);
 
-            Assert.Equal(14300m, gestionVentas.GetVenta(new Venta { IdVenta = primera }).Rows[0]["TotalVenta_ve"]);
-            Assert.Equal(4750m, gestionVentas.GetVenta(new Venta { IdVenta = segunda }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(14300m, DatoDeVenta(primera, "TotalVenta_ve"));
+            Assert.Equal(4750m, DatoDeVenta(segunda, "TotalVenta_ve"));
         }
 
         static long Stock(string codigo)
@@ -378,7 +384,7 @@ namespace Negocio.Tests
             int segunda = gestionVentas.ConfirmarCompra(otroCliente, carrito, "Calle 9", "22", Datos.TarjetaDe(6), out error);
 
             Assert.Equal(primera + 1, segunda);
-            Assert.Equal(6L, gestionVentas.GetVenta(new Venta { IdVenta = segunda }).Rows[0]["IdUsuario_ve"]);
+            Assert.Equal(6L, DatoDeVenta(segunda, "IdUsuario_ve"));
             Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Venta { IdVenta = segunda }).Rows);
         }
 

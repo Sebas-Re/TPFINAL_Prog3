@@ -136,20 +136,17 @@ namespace Dao.Tests
         /* Una venta de Nom1 (id 5) con una unidad del artículo; devuelve el id de la venta. */
         static int Comprar(string codigo, int precio)
         {
-            var ventas = new DaoVentas();
-            ventas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 });
-            int id = ventas.IDultimaventa(new Venta()).IdVenta;
-            new DaoDetalleVentas().AgregarDetalleVenta(new DetalleVenta
+            Venta venta = new() { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 };
+            DetalleVenta detalle = new()
             {
-                IdDetalleVenta = id,
                 IdUsuario = 5,
                 CodigoArticulo = codigo,
                 Cantidad = 1,
                 Precio = precio,
                 DireccionEntrega = "Calle 1",
                 Contacto = "Yo"
-            });
-            return id;
+            };
+            return new DaoVentas().RegistrarCompra(venta, new[] { detalle });
         }
 
         [Fact]

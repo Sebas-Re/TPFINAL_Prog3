@@ -44,13 +44,6 @@ namespace Dao
             return tabla;
         }
 
-        public DataTable GetTablaUsuariosActualizar(Usuario usuario) //lo estaba usando para el griw para que los usuarios actualizen sus datos
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Usuarios", "select IdUsuario_us,Nombre_us,Contraseña_us,Email_us,Telefono_us from Usuarios where Nombre_us = @Nombre",
-                new SQLiteParameter("@Nombre", usuario.Nombre));
-            return tabla;
-        }
-
         public Boolean ExisteUsuario(Usuario usuario)
         {
             string consulta = TodoUsuarios + " where Nombre_us = @Nombre";

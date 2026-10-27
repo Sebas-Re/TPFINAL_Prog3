@@ -12,34 +12,9 @@ namespace Dao
 
         const string TodoVentas = "select * from Ventas";
 
-        public Venta ObtenerVenta(Venta venta) //devuelve un objeto cargado con la data q coincida con el id
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", TodoVentas + " where IdVentas_ve = @IdVenta", new SQLiteParameter("@IdVenta", venta.IdVenta));
-            DataRow fila = tabla.Rows[0];
-            venta.IdVenta = Convert.ToInt32(fila["IdVentas_ve"]);
-            venta.Usuario = new Usuario { IdUsuario = Convert.ToInt32(fila["IdUsuario_ve"]) };
-            venta.TotalVenta = Convert.ToDecimal(fila["TotalVenta_ve"]);
-            venta.MetodoPago = (bool)fila["Metodo_de_Pago_ve"];
-            venta.CodigoSeguridad = Convert.ToInt32(fila["Codigo_Seguridad_ve"]);
-            return venta;
-        }
-
-        public DataTable GetTablaVentas(Venta venta) //devuelve un datatable con los datos de la tabla
-        {
-            String NuevaConsul = TodoVentas + " where IdVentas_ve = @IdVenta";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdVenta", venta.IdVenta));
-            return tabla;
-        }
-
         public DataTable GetTablaVentas()
         {
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", TodoVentas);
-            return tabla;
-        }
-
-        public DataTable GetMaximoVenta()
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", TodoVentas + " where TotalVenta_ve = (select max(TotalVenta_ve) from Ventas)");
             return tabla;
         }
 
@@ -50,32 +25,8 @@ namespace Dao
             return tabla;
         }
 
-        /* Ojo: devuelve la última venta de cualquier usuario. Para registrar una
-           compra usar RegistrarCompra, que obtiene el id de su propio insert. */
-        public Venta IDultimaventa(Venta venta)
-        {
-            string NuevaConsulta = "select MAX(IdVentas_ve) from Ventas";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsulta);
-            venta.IdVenta = (int)Convert.ToInt64(tabla.Rows[0][0]);
-            return venta;
-        }
-
-        public Boolean ExisteVentas(Venta venta)
-        {
-            string consulta = TodoVentas + " where IdUsuario_ve = @IdVenta";
-            return _accesoDatos.existe(consulta, new SQLiteParameter("@IdVenta", venta.IdVenta));
-        }
-
         const string InsertarVenta =
             "insert into Ventas(IdUsuario_ve,Metodo_de_Pago_ve,Codigo_Seguridad_ve,FechaVenta_ve) values (@IDUSUARIO_VE,@METODODEPAGO_VE,@CODIGODESEGURIDAD_VE,datetime('now','localtime'))";
-
-        public int agregarVenta(Venta venta)
-        {
-            SQLiteCommand comando = new SQLiteCommand();
-            ArmarParametroVentaAgregar(ref comando, venta);
-            // ex sp_AgregarVenta
-            return _accesoDatos.EjecutarComando(comando, InsertarVenta);
-        }
 
         /* Registra la venta y sus detalles en una sola transacción y devuelve el id
            de la venta. Antes de cada detalle verifica que el artículo siga activo y

@@ -11,26 +11,6 @@ namespace Dao
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
         const string TodoTarjetas = "select * from Tarjetas ";
 
-        public Tarjeta ObtenerTarjeta(Tarjeta tarjeta) //Devuelve un objeto Tarjeta
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Tarjetas", TodoTarjetas + "where Num_Tarjeta_t = @NumTarjeta", new SQLiteParameter("@NumTarjeta", tarjeta.NumTarjeta));
-            tarjeta.Usuario.IdUsuario = Convert.ToInt32(tabla.Rows[0][0]);
-            tarjeta.TitularTarjeta = tabla.Rows[0][1].ToString();
-            tarjeta.NombreTarjeta = tabla.Rows[0][2].ToString();
-            tarjeta.TipoTarjeta = (bool)tabla.Rows[0][3];
-            tarjeta.NumTarjeta = Convert.ToInt64(tabla.Rows[0][4]);
-            tarjeta.FechaVencimiento = tabla.Rows[0][5].ToString();
-            tarjeta.CodigoSeguridad = Convert.ToInt32(tabla.Rows[0][6]);
-            return tarjeta;
-        }
-
-        public DataTable GetTablaTarjeta(Tarjeta tarjeta)//Devuelve una tarjeta
-        {
-            String NuevaConsul = TodoTarjetas + "where Num_Tarjeta_t = @NumTarjeta";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Tarjetas", NuevaConsul, new SQLiteParameter("@NumTarjeta", tarjeta.NumTarjeta));
-            return tabla;
-        }
-
         /* Lo que las páginas muestran de las tarjetas del usuario: sin el código de
            seguridad ni el número completo. Cada tarjeta se identifica por su rowid
            (IdTarjeta_t), porque la clave primaria de la tabla incluye el código. */

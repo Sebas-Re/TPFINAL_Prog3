@@ -14,14 +14,6 @@ namespace Dao
         const string InsertarDetalle =
             "insert into Detalle_Ventas(IdDetVenta_dv,IdUsuario_dv,CodArticulo_dv,Cantidad_dv,Precio_Unitario_dv,Direccion_de_Entrega,Contacto) values (@IDDETVENTA_DV,@IDUSUARIO_DV,@CODARTICULO_DV,@CANTIDAD_DV,@PRECIOUNITARIO_DV,@DIRECCIONENTREGA_DV,@CONTACTO)";
 
-        public int AgregarDetalleVenta(DetalleVenta detalleVenta)
-        {
-            SQLiteCommand comando = new SQLiteCommand();
-            ArmarParametroDetalleVentaAgregar(ref comando, detalleVenta);
-            // ex sp_AgregarDetalleVenta. Los triggers tr_SumaTotal y tr_ControlStock siguen en la base.
-            return _accesoDatos.EjecutarComando(comando, InsertarDetalle);
-        }
-
         /* Dentro de una transacción abierta en "conexion" (ver DaoVentas.RegistrarCompra). */
         internal int AgregarDetalleVenta(DetalleVenta detalleVenta, SQLiteConnection conexion)
         {
@@ -37,11 +29,6 @@ namespace Dao
         {
             String NuevaConsul = "select Descripcion_ar, CodArticulo_dv, Cantidad_dv, Precio_Unitario_dv, Direccion_de_Entrega, Contacto from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv where idDetVenta_dv = @IdVenta";
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdVenta", venta.IdVenta));
-            return tabla;
-        }
-        public DataTable GetMaximaCantidad()
-        {
-            DataTable tabla = _accesoDatos.ObtenerTabla("Detalle_Ventas", TodoDetalleVenta + "where Cantidad_dv = (select max(Cantidad_dv) from Detalle_Ventas)");
             return tabla;
         }
 

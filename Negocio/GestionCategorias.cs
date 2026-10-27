@@ -72,14 +72,6 @@ namespace Negocio
             }
         }
 
-        public bool VerificarEstadoCat(Categoria categoria)
-        {
-
-            bool IdCat = _daoCategorias.DevolverEstadoCat(categoria);
-            return IdCat;
-
-        }
-
         public bool VerificarCategoria(Categoria categoria)
         {
 
