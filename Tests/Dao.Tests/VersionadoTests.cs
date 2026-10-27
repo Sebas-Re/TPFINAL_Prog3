@@ -61,7 +61,7 @@ namespace Dao.Tests
         {
             AccesoDatos.CargarDatosDemo = true;
 
-            Assert.Equal(29, new DaoUsuarios().getTablaUsuarios().Rows.Count);
+            Assert.Equal(27, new DaoUsuarios().getTablaUsuarios().Rows.Count);
             Assert.True(Convert.ToInt64(Escalar("select count(*) from Ventas")) > 100);
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
             // Ninguna venta en el futuro ni fuera de los últimos 6 meses.
@@ -170,7 +170,7 @@ namespace Dao.Tests
             new DaoCategorias().getTablaCategorias();
             ReiniciarApp();
 
-            Assert.Equal(9, new DaoUsuarios().getTablaUsuarios().Rows.Count);
+            Assert.Equal(7, new DaoUsuarios().getTablaUsuarios().Rows.Count);
             Assert.Equal(AccesoDatos.VersionSchema, Convert.ToInt32(Escalar("pragma user_version")));
         }
     }

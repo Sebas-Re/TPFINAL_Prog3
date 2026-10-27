@@ -41,7 +41,7 @@ namespace Dao.Tests
         {
             Assert.False(File.Exists(AccesoDatos.RutaBaseDatos));
 
-            Assert.Equal(9, new DaoUsuarios().getTablaUsuarios().Rows.Count);
+            Assert.Equal(7, new DaoUsuarios().getTablaUsuarios().Rows.Count);
             Assert.Equal(8, new DaoCategorias().getTablaCategorias().Rows.Count);
             Assert.Equal(68, new DaoArticulos().getTablaArticulos().Rows.Count);
             Assert.True(File.Exists(AccesoDatos.RutaBaseDatos));
@@ -129,8 +129,8 @@ namespace Dao.Tests
 
             Assert.All(tabla.Rows.Cast<DataRow>(), fila => Assert.StartsWith("pbkdf2$", fila["Contraseña_us"].ToString()));
             Assert.DoesNotContain("ctr1", Guardada("Nom1"));
-            // admAmador y admNicolas tienen la misma contraseña, pero el salt hace distinto el hash.
-            Assert.NotEqual(Guardada("admAmador"), Guardada("admNicolas"));
+            // admAmador y admSebas tienen la misma contraseña, pero el salt hace distinto el hash.
+            Assert.NotEqual(Guardada("admAmador"), Guardada("admSebas"));
         }
 
         [Fact]

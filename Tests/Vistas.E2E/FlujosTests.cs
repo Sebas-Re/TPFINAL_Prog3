@@ -321,7 +321,7 @@ namespace Vistas.E2E
         [Fact]
         public async Task UnArticuloDadoDeBajaNoSeVendeHastaReactivarlo()
         {
-            await IniciarSesion("admNicolas", "admpsw2");
+            await IniciarSesion("admSebas", "admpsw2");
             Pagina articulos = await navegador.Abrir("AdminForms/AdminGestionArticulos.aspx");
             articulos = await navegador.Click(articulos, articulos.PorId("btnBuscarporCodigo"), Campos("txtIdArticulo", "pm9"));
 
@@ -340,13 +340,13 @@ namespace Vistas.E2E
         [Fact]
         public async Task LasPaginasDeAdministracionCargan()
         {
-            await IniciarSesion("admDiamela", "admpsw1");
+            await IniciarSesion("admSebas", "admpsw2");
 
             Pagina usuarios = await navegador.Abrir("AdminForms/AdminGestionUsuarios.aspx");
             Pagina reportes = await navegador.Abrir("AdminForms/ReportesAdmin.aspx");
             Pagina panel = await navegador.Abrir("AdminForms/AdminHome.aspx");
 
-            Assert.Contains("admSebasti", usuarios.Texto);
+            Assert.Contains("admAmador", usuarios.Texto);
             Assert.Contains("Artículos vendidos", reportes.Texto);
             Assert.Contains("Ingresos y pedidos por mes", panel.Texto);
         }
