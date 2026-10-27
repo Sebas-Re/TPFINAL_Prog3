@@ -1,7 +1,7 @@
 ﻿using System;
-using Entidades;
 using System.Data;
 using System.Data.SQLite;
+using Entidades;
 
 namespace Dao
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Data.SQLite;
 using System.IO;
-using Dao;
 using Entidades;
 using Xunit;
 

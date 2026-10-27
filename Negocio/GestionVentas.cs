@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Dao;
 using System.Data;
+using Dao;
 using Entidades;
 
 namespace Negocio

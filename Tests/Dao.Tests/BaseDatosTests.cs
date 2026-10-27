@@ -3,7 +3,6 @@ using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
-using Dao;
 using Entidades;
 using Negocio;
 using Xunit;

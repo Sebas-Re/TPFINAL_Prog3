@@ -1,0 +1,105 @@
+# Convenciones de código de C# de Microsoft
+# https://learn.microsoft.com/dotnet/csharp/fundamentals/coding-style/coding-conventions
+root = true
+
+[*]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cs,aspx,master,ascx,ashx}]
+indent_style = space
+indent_size = 4
+
+[*.{csproj,config,xml,json}]
+indent_style = space
+indent_size = 2
+
+[*.cs]
+# Usings: System primero, fuera del namespace, sin los que no se usan
+dotnet_diagnostic.IDE0005.severity = warning
+dotnet_sort_system_directives_first = true
+csharp_using_directive_placement = outside_namespace:suggestion
+
+# Alias del lenguaje (string, int) en vez de tipos del framework (String, Int32)
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = true:warning
+dotnet_diagnostic.IDE0049.severity = warning
+
+# Modificadores de acceso siempre explícitos
+dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
+dotnet_diagnostic.IDE0040.severity = warning
+
+# var solo cuando el tipo se ve en el lado derecho (new, cast)
+csharp_style_var_for_built_in_types = false:warning
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:warning
+dotnet_diagnostic.IDE0008.severity = warning
+
+# Llaves en línea propia (Allman) y siempre presentes
+csharp_new_line_before_open_brace = all
+csharp_prefer_braces = true:suggestion
+
+# ----- Nombres -----
+dotnet_diagnostic.IDE1006.severity = warning
+
+# Interfaces: IPascalCase
+dotnet_naming_rule.interfaces.symbols = interfaces
+dotnet_naming_rule.interfaces.style = prefijo_i
+dotnet_naming_rule.interfaces.severity = warning
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_style.prefijo_i.required_prefix = I
+dotnet_naming_style.prefijo_i.capitalization = pascal_case
+
+# Tipos, miembros no privados, constantes y propiedades: PascalCase
+dotnet_naming_rule.tipos_y_miembros.symbols = tipos_y_miembros
+dotnet_naming_rule.tipos_y_miembros.style = pascal
+dotnet_naming_rule.tipos_y_miembros.severity = warning
+dotnet_naming_symbols.tipos_y_miembros.applicable_kinds = class, struct, enum, delegate, method, property, event, namespace
+dotnet_naming_style.pascal.capitalization = pascal_case
+
+dotnet_naming_rule.constantes.symbols = constantes
+dotnet_naming_rule.constantes.style = pascal
+dotnet_naming_rule.constantes.severity = warning
+dotnet_naming_symbols.constantes.applicable_kinds = field
+dotnet_naming_symbols.constantes.required_modifiers = const
+
+# Campos estáticos privados: s_camelCase
+dotnet_naming_rule.campos_estaticos.symbols = campos_estaticos
+dotnet_naming_rule.campos_estaticos.style = prefijo_s
+dotnet_naming_rule.campos_estaticos.severity = warning
+dotnet_naming_symbols.campos_estaticos.applicable_kinds = field
+dotnet_naming_symbols.campos_estaticos.applicable_accessibilities = private
+dotnet_naming_symbols.campos_estaticos.required_modifiers = static
+dotnet_naming_style.prefijo_s.required_prefix = s_
+dotnet_naming_style.prefijo_s.capitalization = camel_case
+
+# Campos privados de instancia: _camelCase
+dotnet_naming_rule.campos_privados.symbols = campos_privados
+dotnet_naming_rule.campos_privados.style = guion_camel
+dotnet_naming_rule.campos_privados.severity = warning
+dotnet_naming_symbols.campos_privados.applicable_kinds = field
+dotnet_naming_symbols.campos_privados.applicable_accessibilities = private
+dotnet_naming_style.guion_camel.required_prefix = _
+dotnet_naming_style.guion_camel.capitalization = camel_case
+
+# Parámetros y variables locales: camelCase
+dotnet_naming_rule.parametros_y_locales.symbols = parametros_y_locales
+dotnet_naming_rule.parametros_y_locales.style = camel
+dotnet_naming_rule.parametros_y_locales.severity = warning
+dotnet_naming_symbols.parametros_y_locales.applicable_kinds = parameter, local, local_function
+dotnet_naming_style.camel.capitalization = camel_case
+
+# Código generado por Visual Studio: no se revisa
+[*.designer.cs]
+generated_code = true
+dotnet_diagnostic.IDE1006.severity = none
+
+# Handlers de eventos de WebForms: los genera el diseñador como control_Evento
+# (btnGuardar_Click) y los referencia el markup, así que conservan ese formato.
+[Vistas/**.aspx.cs]
+dotnet_naming_rule.handlers_webforms.symbols = handlers_webforms
+dotnet_naming_rule.handlers_webforms.style = cualquiera
+dotnet_naming_rule.handlers_webforms.severity = none
+dotnet_naming_symbols.handlers_webforms.applicable_kinds = method
+dotnet_naming_symbols.handlers_webforms.applicable_accessibilities = protected
+dotnet_naming_style.cualquiera.capitalization = camel_case

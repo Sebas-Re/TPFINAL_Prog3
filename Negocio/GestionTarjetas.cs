@@ -1,7 +1,7 @@
 ﻿using System;
-using Entidades;
-using Dao;
 using System.Data;
+using Dao;
+using Entidades;
 
 namespace Negocio
 {

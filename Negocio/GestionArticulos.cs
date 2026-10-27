@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Data;
-using Entidades;
+using System.Text.RegularExpressions;
 using Dao;
+using Entidades;
 
 namespace Negocio
 {

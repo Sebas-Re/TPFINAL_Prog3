@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Data;
-using Entidades;
 using Dao;
+using Entidades;
 
 namespace Negocio
 {
