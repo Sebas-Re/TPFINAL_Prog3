@@ -66,7 +66,7 @@ namespace Vistas
         {
             Tarjeta tarjeta = new Tarjeta
             {
-                Us = Sesion.Usuario,
+                Usuario = Sesion.Usuario,
                 IdTarjeta = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
             };
             if (gestarj.EliminarTarjeta(tarjeta))

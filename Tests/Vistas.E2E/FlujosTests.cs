@@ -70,7 +70,7 @@ namespace Vistas.E2E
             Pagina pagina = await IniciarSesion("Nom1", "incorrecta");
 
             Assert.EndsWith("/Inicio.aspx", pagina.Ruta);
-            Assert.Contains(pagina.Alertas, a => a.Contains("Usuario o contrasena incorrectos"));
+            Assert.Contains(pagina.Alertas, a => a.Contains("Usuario o contraseña incorrectos"));
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace Vistas.E2E
             string email = "cambiado" + azar.Next(100000, 999999) + "@test.com";
 
             Pagina sinClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email));
-            Assert.Contains(sinClave.Alertas, a => a.Contains("ingresá tu contrasena actual"));
+            Assert.Contains(sinClave.Alertas, a => a.Contains("ingresá tu contraseña actual"));
 
             Pagina conClave = await navegador.Enviar(cuenta, "btnGuardar", Campos("txtEmail", email, "txtContraseñaActual", "clave1"));
             Assert.Contains(conClave.Alertas, a => a.Contains("Guardamos tus cambios"));

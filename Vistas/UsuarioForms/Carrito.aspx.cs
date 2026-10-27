@@ -70,7 +70,7 @@ namespace Vistas
         {
             Tarjeta tarjeta = new Tarjeta
             {
-                Us = Sesion.Usuario,
+                Usuario = Sesion.Usuario,
                 NumTarjeta = Convert.ToInt64(txtNumeroTarjeta.Text),
                 TitularTarjeta = txtTarjetaTitular.Text.Trim(),
                 NombreTarjeta = txtNombreTarjeta.Text.Trim(),
