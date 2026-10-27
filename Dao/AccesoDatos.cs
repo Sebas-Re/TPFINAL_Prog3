@@ -39,9 +39,9 @@ namespace Dao
         private SQLiteConnection ObtenerConexion()
         {
             InicializarBaseDatos();
-            SQLiteConnection cn = new SQLiteConnection("Data Source=" + RutaBaseDatos + ";Foreign Keys=True");
-            cn.Open();
-            return cn;
+            SQLiteConnection conexion = new SQLiteConnection("Data Source=" + RutaBaseDatos + ";Foreign Keys=True");
+            conexion.Open();
+            return conexion;
         }
 
         /* Versión del schema, guardada en PRAGMA user_version. Una base nueva nace
@@ -86,24 +86,24 @@ namespace Dao
 
         private static void Migrar(string ruta)
         {
-            using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + ruta + ";Foreign Keys=True"))
+            using (SQLiteConnection conexion = new SQLiteConnection("Data Source=" + ruta + ";Foreign Keys=True"))
             {
-                cn.Open();
-                int version = Convert.ToInt32(EjecutarEscalar(cn, "pragma user_version"));
+                conexion.Open();
+                int version = Convert.ToInt32(EjecutarEscalar(conexion, "pragma user_version"));
                 for (int siguiente = version + 1; siguiente <= VersionSchema; siguiente++)
                 {
-                    using (SQLiteTransaction tx = cn.BeginTransaction())
+                    using (SQLiteTransaction transaccion = conexion.BeginTransaction())
                     {
                         foreach (string script in s_migraciones[siguiente - 1])
                         {
-                            EjecutarScript(cn, script);
+                            EjecutarScript(conexion, script);
                         }
                         if (siguiente == 4)
                         {
-                            HashearContraseñas(cn);
+                            HashearContraseñas(conexion);
                         }
-                        EjecutarEscalar(cn, "pragma user_version = " + siguiente);
-                        tx.Commit();
+                        EjecutarEscalar(conexion, "pragma user_version = " + siguiente);
+                        transaccion.Commit();
                     }
                 }
             }
@@ -116,21 +116,21 @@ namespace Dao
                una base a medio crear si algo falla. */
             string temporal = ruta + ".tmp";
             File.Delete(temporal);
-            using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + temporal + ";Foreign Keys=True"))
+            using (SQLiteConnection conexion = new SQLiteConnection("Data Source=" + temporal + ";Foreign Keys=True"))
             {
-                cn.Open();
-                using (SQLiteTransaction tx = cn.BeginTransaction())
+                conexion.Open();
+                using (SQLiteTransaction transaccion = conexion.BeginTransaction())
                 {
-                    EjecutarScript(cn, "schema.sql");
-                    EjecutarScript(cn, "seed.sql");
-                    EjecutarScript(cn, "articulos_detalle.sql");
+                    EjecutarScript(conexion, "schema.sql");
+                    EjecutarScript(conexion, "seed.sql");
+                    EjecutarScript(conexion, "articulos_detalle.sql");
                     if (CargarDatosDemo)
                     {
-                        EjecutarScript(cn, "demo.sql");
+                        EjecutarScript(conexion, "demo.sql");
                     }
-                    HashearContraseñas(cn);
-                    EjecutarEscalar(cn, "pragma user_version = " + VersionSchema);
-                    tx.Commit();
+                    HashearContraseñas(conexion);
+                    EjecutarEscalar(conexion, "pragma user_version = " + VersionSchema);
+                    transaccion.Commit();
                 }
             }
             SQLiteConnection.ClearAllPools();
@@ -138,62 +138,62 @@ namespace Dao
         }
 
         /* Los comandos se cierran siempre: uno abierto deja el archivo bloqueado. */
-        private static object EjecutarEscalar(SQLiteConnection cn, string sql)
+        private static object EjecutarEscalar(SQLiteConnection conexion, string sql)
         {
-            using (SQLiteCommand cmd = new SQLiteCommand(sql, cn))
+            using (SQLiteCommand comando = new SQLiteCommand(sql, conexion))
             {
-                return cmd.ExecuteScalar();
+                return comando.ExecuteScalar();
             }
         }
 
         /* Los scripts de datos traen las contraseñas en texto plano (son legibles
            para quien prueba el proyecto); acá se reemplazan por su hash. */
-        private static void HashearContraseñas(SQLiteConnection cn)
+        private static void HashearContraseñas(SQLiteConnection conexion)
         {
             DataTable usuarios = new DataTable();
-            using (SQLiteDataAdapter adp = new SQLiteDataAdapter("select IdUsuario_us, Contraseña_us from Usuarios", cn))
+            using (SQLiteDataAdapter adaptador = new SQLiteDataAdapter("select IdUsuario_us, Contraseña_us from Usuarios", conexion))
             {
-                adp.Fill(usuarios);
+                adaptador.Fill(usuarios);
             }
             foreach (DataRow fila in usuarios.Rows)
             {
                 string guardada = fila["Contraseña_us"].ToString();
                 if (Contrasenas.EstaHasheada(guardada)) continue;
-                using (SQLiteCommand cmd = new SQLiteCommand("update Usuarios set Contraseña_us = @Hash where IdUsuario_us = @Id", cn))
+                using (SQLiteCommand comando = new SQLiteCommand("update Usuarios set Contraseña_us = @Hash where IdUsuario_us = @Id", conexion))
                 {
-                    cmd.Parameters.AddWithValue("@Hash", Contrasenas.Hashear(guardada));
-                    cmd.Parameters.AddWithValue("@Id", fila["IdUsuario_us"]);
-                    cmd.ExecuteNonQuery();
+                    comando.Parameters.AddWithValue("@Hash", Contrasenas.Hashear(guardada));
+                    comando.Parameters.AddWithValue("@Id", fila["IdUsuario_us"]);
+                    comando.ExecuteNonQuery();
                 }
             }
         }
 
-        private static void EjecutarScript(SQLiteConnection cn, string nombre)
+        private static void EjecutarScript(SQLiteConnection conexion, string nombre)
         {
             using (Stream recurso = typeof(AccesoDatos).Assembly.GetManifestResourceStream("Dao.Sql." + nombre))
             using (StreamReader lector = new StreamReader(recurso, Encoding.UTF8))
-            using (SQLiteCommand cmd = new SQLiteCommand(lector.ReadToEnd(), cn))
+            using (SQLiteCommand comando = new SQLiteCommand(lector.ReadToEnd(), conexion))
             {
-                cmd.ExecuteNonQuery();
+                comando.ExecuteNonQuery();
             }
         }
 
-        private static SQLiteCommand ArmarComando(string consultaSql, SQLiteConnection cn, SQLiteParameter[] parametros)
+        private static SQLiteCommand ArmarComando(string consultaSql, SQLiteConnection conexion, SQLiteParameter[] parametros)
         {
-            SQLiteCommand cmd = new SQLiteCommand(consultaSql, cn);
-            cmd.Parameters.AddRange(parametros);
-            return cmd;
+            SQLiteCommand comando = new SQLiteCommand(consultaSql, conexion);
+            comando.Parameters.AddRange(parametros);
+            return comando;
         }
 
         public DataTable ObtenerTabla(string nombreTabla, string sql, params SQLiteParameter[] parametros)
         {
-            DataSet ds = new DataSet();
+            DataSet datos = new DataSet();
             using (SQLiteConnection conexion = ObtenerConexion())
-            using (SQLiteDataAdapter adp = new SQLiteDataAdapter(ArmarComando(sql, conexion, parametros)))
+            using (SQLiteDataAdapter adaptador = new SQLiteDataAdapter(ArmarComando(sql, conexion, parametros)))
             {
-                adp.Fill(ds, nombreTabla);
+                adaptador.Fill(datos, nombreTabla);
             }
-            return ds.Tables[nombreTabla];
+            return datos.Tables[nombreTabla];
         }
 
         /* Reemplaza a EjecutarProcedimientoAlmacenado: SQLite no tiene stored
@@ -215,10 +215,10 @@ namespace Dao
         public T EnTransaccion<T>(Func<SQLiteConnection, T> trabajo)
         {
             using (SQLiteConnection conexion = ObtenerConexion())
-            using (SQLiteTransaction tx = conexion.BeginTransaction())
+            using (SQLiteTransaction transaccion = conexion.BeginTransaction())
             {
                 T resultado = trabajo(conexion);
-                tx.Commit();
+                transaccion.Commit();
                 return resultado; // si "trabajo" lanza una excepción, el Dispose hace rollback
             }
         }
@@ -226,8 +226,8 @@ namespace Dao
         public bool Existe(string consulta, params SQLiteParameter[] parametros)
         {
             using (SQLiteConnection conexion = ObtenerConexion())
-            using (SQLiteCommand cmd = ArmarComando(consulta, conexion, parametros))
-            using (SQLiteDataReader datos = cmd.ExecuteReader())
+            using (SQLiteCommand comando = ArmarComando(consulta, conexion, parametros))
+            using (SQLiteDataReader datos = comando.ExecuteReader())
             {
                 return datos.Read();
             }
@@ -236,8 +236,8 @@ namespace Dao
         public int ObtenerMaximo(string consulta, params SQLiteParameter[] parametros)
         {
             using (SQLiteConnection conexion = ObtenerConexion())
-            using (SQLiteCommand cmd = ArmarComando(consulta, conexion, parametros))
-            using (SQLiteDataReader datos = cmd.ExecuteReader())
+            using (SQLiteCommand comando = ArmarComando(consulta, conexion, parametros))
+            using (SQLiteDataReader datos = comando.ExecuteReader())
             {
                 return datos.Read() ? Convert.ToInt32(datos[0].ToString()) : 0;
             }

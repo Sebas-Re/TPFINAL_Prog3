@@ -57,10 +57,10 @@ namespace Dao
 
         private static void VerificarStock(SQLiteConnection conexion, DetalleVenta detalle)
         {
-            using (SQLiteCommand cmd = new SQLiteCommand("select Descripcion_ar, Stock_ar, Estado_ar from Articulos where CodArticulo_ar = @Codigo", conexion))
+            using (SQLiteCommand comandoStock = new SQLiteCommand("select Descripcion_ar, Stock_ar, Estado_ar from Articulos where CodArticulo_ar = @Codigo", conexion))
             {
-                cmd.Parameters.AddWithValue("@Codigo", detalle.CodigoArticulo);
-                using (SQLiteDataReader fila = cmd.ExecuteReader())
+                comandoStock.Parameters.AddWithValue("@Codigo", detalle.CodigoArticulo);
+                using (SQLiteDataReader fila = comandoStock.ExecuteReader())
                 {
                     if (!fila.Read() || !fila.GetBoolean(2))
                     {

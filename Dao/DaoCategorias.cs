@@ -19,9 +19,8 @@ namespace Dao
         {
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroCategoriaModificar(comando, categoria);
-            AccesoDatos ad = new AccesoDatos();
             // ex sp_ModificarCategoria
-            int filasActualizadas = ad.EjecutarComando(comando,
+            int filasActualizadas = _accesoDatos.EjecutarComando(comando,
                 "update Categorias set Descripcion_ca = @DESCRIPCION_CA, Estado_ca = @ESTADO_CA where IdCategoria_ca = @IDCATEGORIA_CA");
             return filasActualizadas == 1;
         }

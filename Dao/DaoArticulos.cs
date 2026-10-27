@@ -52,9 +52,8 @@ namespace Dao
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametrosArticuloAgregar(comando, articulo);
             comando.Parameters.Add("@Estado", DbType.Boolean).Value = articulo.Estado;
-            AccesoDatos ad = new AccesoDatos();
             // ex sp_ModificarArticulo (que no actualizaba el estado: no había forma de reactivar un artículo)
-            int filasActualizadas = ad.EjecutarComando(comando,
+            int filasActualizadas = _accesoDatos.EjecutarComando(comando,
                 "update Articulos set Categoria_ar = @Categoria, Descripcion_ar = @Descripcion, Stock_ar = @Stock, PrecioUnitario_ar = @PrecioUnitario, Imagen = @ImagenURL, Estado_ar = @Estado where CodArticulo_ar = @CodArticulo");
             return filasActualizadas == 1;
         }
