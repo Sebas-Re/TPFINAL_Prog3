@@ -1,5 +1,5 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
+using System.Data.Common;
 using Dao;
 using Entidades;
 
@@ -11,21 +11,14 @@ namespace Negocio
 
         public DataTable GetTablaTarjetasUsuario(Usuario us)
         {
-            DataTable Tarjetas = _daoTarjetas.ObtenerTarjetasUsuario(us);
-            return Tarjetas;
+            DataTable tarjetas = _daoTarjetas.ObtenerTarjetasUsuario(us);
+            return tarjetas;
         }
 
         public bool EliminarTarjeta(Tarjeta tarjeta)
         {
 
-            if (_daoTarjetas.EliminarTarjeta(tarjeta) == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoTarjetas.EliminarTarjeta(tarjeta) == 1;
         }
 
         public bool AgregarTarjeta(Tarjeta tarjeta)
@@ -38,7 +31,7 @@ namespace Negocio
             {
                 return _daoTarjetas.AgregarTarjeta(tarjeta) == 1;
             }
-            catch (Exception)
+            catch (DbException)
             {
                 // Tarjeta vencida o repetida para el usuario (restricciones de la base).
                 return false;

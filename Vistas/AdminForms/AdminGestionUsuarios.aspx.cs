@@ -66,7 +66,7 @@ namespace Vistas.AdminForms
         protected void gvUsuarios_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvUsuarios.Rows[e.RowIndex];
-            Usuario actual = us.get(new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
+            Usuario actual = us.Obtener(new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
             string nuevaContraseña = ((TextBox)fila.FindControl("txt_eit_passUs")).Text;
             Usuario usuario = new Usuario
             {
@@ -102,7 +102,7 @@ namespace Vistas.AdminForms
                 MostrarMensaje("No podés desactivar tu propia cuenta.", TipoMensaje.Aviso);
                 return;
             }
-            us.EliminarUsuario(ref usuario);
+            us.EliminarUsuario(usuario);
             MostrarMensaje("Usuario desactivado.", TipoMensaje.Exito);
             CargarGvUsuarios();
         }

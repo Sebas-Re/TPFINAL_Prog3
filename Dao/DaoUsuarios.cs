@@ -8,7 +8,7 @@ namespace Dao
     public class DaoUsuarios
     {
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
-        const string TodoUsuarios = "select * from Usuarios";
+        private const string TodoUsuarios = "select * from Usuarios";
 
         public Usuario ObtenerUsuario(Usuario usuario)
         {
@@ -25,17 +25,17 @@ namespace Dao
 
         public DataTable GetTablaUsuario(Usuario usuario)
         {
-            String NuevaConsul = TodoUsuarios + " where IdUsuario_us = @IdUsuario";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Usuarios", NuevaConsul, new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
+            string consulta = TodoUsuarios + " where IdUsuario_us = @IdUsuario";
+            DataTable tabla = _accesoDatos.ObtenerTabla("Usuarios", consulta, new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
             return tabla;
         }
 
-        public int DevolverIDusuario(Usuario usuario)
+        public int DevolverIdUsuario(Usuario usuario)
         {
-            String NuevaConsul = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Usuarios", NuevaConsul, new SQLiteParameter("@Nombre", usuario.Nombre));
-            int ID = (int)Convert.ToInt64(tabla.Rows[0][0]);
-            return ID;
+            string consulta = "select IdUsuario_us from Usuarios where Nombre_us = @Nombre";
+            DataTable tabla = _accesoDatos.ObtenerTabla("Usuarios", consulta, new SQLiteParameter("@Nombre", usuario.Nombre));
+            int id = (int)Convert.ToInt64(tabla.Rows[0][0]);
+            return id;
         }
 
         public DataTable GetTablaUsuarios()
@@ -44,28 +44,28 @@ namespace Dao
             return tabla;
         }
 
-        public Boolean ExisteUsuario(Usuario usuario)
+        public bool ExisteUsuario(Usuario usuario)
         {
             string consulta = TodoUsuarios + " where Nombre_us = @Nombre";
-            return _accesoDatos.existe(consulta, new SQLiteParameter("@Nombre", usuario.Nombre));
+            return _accesoDatos.Existe(consulta, new SQLiteParameter("@Nombre", usuario.Nombre));
         }
 
-        public Boolean ExisteUsuarioModificar(Usuario usuario)
+        public bool ExisteUsuarioModificar(Usuario usuario)
         {
             string consulta = TodoUsuarios + " where Nombre_us = @Nombre and IdUsuario_us <> @IdUsuario";
-            return _accesoDatos.existe(consulta, new SQLiteParameter("@Nombre", usuario.Nombre), new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
+            return _accesoDatos.Existe(consulta, new SQLiteParameter("@Nombre", usuario.Nombre), new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
         }
 
-        public Boolean ExisteEmailUsuario(Usuario usuario)
+        public bool ExisteEmailUsuario(Usuario usuario)
         {
             string consulta = TodoUsuarios + " where Email_us = @Email";
-            return _accesoDatos.existe(consulta, new SQLiteParameter("@Email", usuario.Email));
+            return _accesoDatos.Existe(consulta, new SQLiteParameter("@Email", usuario.Email));
         }
 
-        public Boolean ExisteEmailUsuarioModificar(Usuario usuario)
+        public bool ExisteEmailUsuarioModificar(Usuario usuario)
         {
             string consulta = TodoUsuarios + " where Email_us = @Email and IdUsuario_us <> @IdUsuario";
-            return _accesoDatos.existe(consulta, new SQLiteParameter("@Email", usuario.Email), new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
+            return _accesoDatos.Existe(consulta, new SQLiteParameter("@Email", usuario.Email), new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
         }
 
         /* Credenciales de un usuario activo: id, hash de la contraseña y tipo. */
@@ -77,7 +77,7 @@ namespace Dao
         }
 
         /* Las contraseñas se guardan hasheadas: se compara en código, no en el where. */
-        public Boolean ExisteUsuarioLogin(Usuario usuario)
+        public bool ExisteUsuarioLogin(Usuario usuario)
         {
             DataRow fila = ObtenerCredenciales(usuario);
             if (fila == null)
@@ -102,10 +102,10 @@ namespace Dao
             return fila != null && Contrasenas.Verificar(usuario.Contrasena, fila["Contraseña_us"].ToString()) && (bool)fila["Tipo_us"];
         }
 
-        public int EliminarUsuario(ref Usuario usuario)
+        public int EliminarUsuario(Usuario usuario)
         {
             SQLiteCommand comando = new SQLiteCommand();
-            ArmarParametroUsuariosEliminar(ref comando, ref usuario);
+            ArmarParametroUsuariosEliminar(comando, usuario);
             // ex sp_EliminarUsuariosAdmin
             return _accesoDatos.EjecutarComando(comando, "update Usuarios set Estado_us = 0 where IdUsuario_us = @IdUsuario_us");
         }
@@ -113,7 +113,7 @@ namespace Dao
         public int AgregarUsuario(Usuario usuario)
         {
             SQLiteCommand comando = new SQLiteCommand();
-            ArmarParametroUsuariosAgregar(ref comando, usuario);
+            ArmarParametroUsuariosAgregar(comando, usuario);
             // ex sp_AgregarUsuario
             return _accesoDatos.EjecutarComando(comando,
                 "insert into Usuarios(Nombre_us,Contraseña_us,Email_us,Telefono_us,Tipo_us,Estado_us,FechaAlta_us) values (@NOMBRE_US,@CONTRASENA_US,@EMAIL_US,@TELEFONO_US,@TIPO_US,1,datetime('now','localtime'))");
@@ -122,43 +122,32 @@ namespace Dao
         public int ActualizarUsuario(Usuario usuario)
         {
             SQLiteCommand comando = new SQLiteCommand();
-            ArmarParametroUsuariosAgregar(ref comando, usuario);
-            ArmarParametroUsuariosModificar(ref comando, usuario);
+            ArmarParametroUsuariosAgregar(comando, usuario);
+            ArmarParametroUsuariosModificar(comando, usuario);
             // ex sp_ModificarUsuario
             return _accesoDatos.EjecutarComando(comando,
                 "update Usuarios set Nombre_us = @NOMBRE_US, Contraseña_us = coalesce(@CONTRASENA_US, Contraseña_us), Email_us = @EMAIL_US, Telefono_us = @TELEFONO_US, Tipo_us = @TIPO_US, Estado_us = @Estado_us where IdUsuario_us = @Id_Usuario_us");
         }
 
-        private void ArmarParametroUsuariosEliminar(ref SQLiteCommand comando, ref Usuario usuario)
+        private void ArmarParametroUsuariosEliminar(SQLiteCommand comando, Usuario usuario)
         {
-            SQLiteParameter Parametros = new SQLiteParameter();
-            Parametros = comando.Parameters.Add("@IdUsuario_us", DbType.Int64);
-            Parametros.Value = usuario.IdUsuario;
+            comando.Parameters.Add("@IdUsuario_us", DbType.Int64).Value = usuario.IdUsuario;
         }
 
-        private void ArmarParametroUsuariosAgregar(ref SQLiteCommand comando, Usuario usuario)
+        private void ArmarParametroUsuariosAgregar(SQLiteCommand comando, Usuario usuario)
         {
-            SQLiteParameter Parametros = new SQLiteParameter();
-            Parametros = comando.Parameters.Add("@NOMBRE_US", DbType.String);
-            Parametros.Value = usuario.Nombre;
+            comando.Parameters.Add("@NOMBRE_US", DbType.String).Value = usuario.Nombre;
             // Vacía = no cambiarla (al modificar); se guarda solo el hash.
-            Parametros = comando.Parameters.Add("@CONTRASENA_US", DbType.String);
-            Parametros.Value = string.IsNullOrEmpty(usuario.Contrasena) ? (object)DBNull.Value : Contrasenas.Hashear(usuario.Contrasena);
-            Parametros = comando.Parameters.Add("@EMAIL_US", DbType.String);
-            Parametros.Value = usuario.Email;
-            Parametros = comando.Parameters.Add("@TELEFONO_US", DbType.String);
-            Parametros.Value = usuario.Telefono;
-            Parametros = comando.Parameters.Add("@TIPO_US", DbType.Boolean);
-            Parametros.Value = usuario.Tipo;
+            comando.Parameters.Add("@CONTRASENA_US", DbType.String).Value = string.IsNullOrEmpty(usuario.Contrasena) ? (object)DBNull.Value : Contrasenas.Hashear(usuario.Contrasena);
+            comando.Parameters.Add("@EMAIL_US", DbType.String).Value = usuario.Email;
+            comando.Parameters.Add("@TELEFONO_US", DbType.String).Value = usuario.Telefono;
+            comando.Parameters.Add("@TIPO_US", DbType.Boolean).Value = usuario.Tipo;
         }
 
-        private void ArmarParametroUsuariosModificar(ref SQLiteCommand comando, Usuario usuario)
+        private void ArmarParametroUsuariosModificar(SQLiteCommand comando, Usuario usuario)
         {
-            SQLiteParameter Parametros = new SQLiteParameter();
-            Parametros = comando.Parameters.Add("@Id_Usuario_us", DbType.Int64);
-            Parametros.Value = usuario.IdUsuario;
-            Parametros = comando.Parameters.Add("@Estado_us", DbType.Boolean);
-            Parametros.Value = usuario.Estado;
+            comando.Parameters.Add("@Id_Usuario_us", DbType.Int64).Value = usuario.IdUsuario;
+            comando.Parameters.Add("@Estado_us", DbType.Boolean).Value = usuario.Estado;
         }
     }
 }

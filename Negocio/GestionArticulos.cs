@@ -21,26 +21,19 @@ namespace Negocio
 
         public DataTable GetReporteArticulos()
         {
-            return _daoArticulos.GetTablaReporteArtiuculos();
+            return _daoArticulos.GetTablaReporteArticulos();
         }
 
-        public DataTable GetArticuloCOD(Articulo articulo) //Devuelve un Articulo
+        public DataTable GetArticuloPorCodigo(Articulo articulo) //Devuelve un Articulo
         {
-            return _daoArticulos.GetTablaArticuloCOD(articulo);
+            return _daoArticulos.GetTablaArticuloPorCodigo(articulo);
         }
 
 
         public bool EliminarArticulo(Articulo articulo)
         {
             int eliminado = _daoArticulos.EliminarArticulo(articulo);
-            if (eliminado == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return eliminado == 1;
         }
 
         /* Código de 1 a 4 letras o números, como los de los datos de prueba. */
@@ -72,14 +65,7 @@ namespace Negocio
                 return false;
             }
             bool eliminado = _daoArticulos.ActualizarArticulo(articulo);
-            if (eliminado)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return eliminado;
 
 
         }
@@ -95,53 +81,25 @@ namespace Negocio
             {
                 cantFilas = _daoArticulos.AgregarArticulo(articulo);
             }
-            if (cantFilas == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return cantFilas == 1;
         }
 
         public bool ExisteArticulo(Articulo articulo)
         {
 
-            if (_daoArticulos.ExisteArticulo(articulo))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoArticulos.ExisteArticulo(articulo);
         }
 
         public bool ExisteDescripcionArticulo(Articulo articulo)
         {
 
-            if (_daoArticulos.ExisteArticuloDescripcion(articulo))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoArticulos.ExisteArticuloDescripcion(articulo);
         }
 
         public bool ExisteDescripcionArticuloModificar(Articulo articulo)
         {
 
-            if (_daoArticulos.ExisteArticuloDescripcionModificar(articulo))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoArticulos.ExisteArticuloDescripcionModificar(articulo);
         }
     }
 }

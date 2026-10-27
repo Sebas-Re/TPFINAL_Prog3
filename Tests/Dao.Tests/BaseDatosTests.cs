@@ -175,7 +175,7 @@ namespace Dao.Tests
 
             Assert.True(gestion.AgregarUsuario(nuevo));
             Assert.False(gestion.AgregarUsuario(nuevo));
-            nuevo.IdUsuario = gestion.DevolverIDusuario(nuevo);
+            nuevo.IdUsuario = gestion.DevolverIdUsuario(nuevo);
             Assert.Equal(10, nuevo.IdUsuario);
 
             nuevo.Email = "otro@mail.com";
@@ -191,7 +191,7 @@ namespace Dao.Tests
         {
             var usuario = new Usuario { IdUsuario = 5 };
 
-            Assert.Equal(1, new DaoUsuarios().EliminarUsuario(ref usuario));
+            Assert.Equal(1, new DaoUsuarios().EliminarUsuario(usuario));
             Assert.False(new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario = 5 }).Estado);
         }
 
@@ -231,7 +231,7 @@ namespace Dao.Tests
             Assert.True(daoArticulos.ExisteArticuloDescripcionModificar(new Articulo { CodigoArticulo = "gb1", Descripcion = "Monitor 24'' LG" }));
 
             Assert.Equal(1, daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "mn1" }));
-            Assert.False((bool)daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "mn1" }).Rows[0]["Estado_ar"]);
+            Assert.False((bool)daoArticulos.GetTablaArticuloPorCodigo(new Articulo { CodigoArticulo = "mn1" }).Rows[0]["Estado_ar"]);
         }
 
         [Fact]
@@ -250,7 +250,7 @@ namespace Dao.Tests
             };
 
             Assert.True(daoArticulos.ActualizarArticulo(articulo));
-            Assert.Equal(3L, daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Categoria_ar"]);
+            Assert.Equal(3L, daoArticulos.GetTablaArticuloPorCodigo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Categoria_ar"]);
         }
 
         [Fact]
@@ -270,7 +270,7 @@ namespace Dao.Tests
             };
 
             Assert.True(daoArticulos.ActualizarArticulo(articulo));
-            Assert.True((bool)daoArticulos.GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Estado_ar"]);
+            Assert.True((bool)daoArticulos.GetTablaArticuloPorCodigo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Estado_ar"]);
         }
 
         [Fact]
@@ -295,13 +295,13 @@ namespace Dao.Tests
         {
             int idVenta = Comprar(new DetalleVenta { CodigoArticulo = "gb1", Cantidad = 2, Precio = 3500 });
 
-            Assert.Equal(8L, new DaoArticulos().GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
+            Assert.Equal(8L, new DaoArticulos().GetTablaArticuloPorCodigo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
             Assert.Equal(7000m, Valor("select TotalVenta_ve from Ventas where IdVentas_ve = " + idVenta));
             Assert.IsType<DateTime>(Valor("select FechaVenta_ve from Ventas where IdVentas_ve = " + idVenta));
             Assert.Single(new DaoDetalleVentas().GetTablaIdVentaUsuario(new Venta { IdVenta = idVenta }).Rows);
 
             // El reporte de artículos vendidos (SQL traducido de T-SQL) corre en SQLite.
-            Assert.Single(new DaoArticulos().GetTablaReporteArtiuculos().Rows);
+            Assert.Single(new DaoArticulos().GetTablaReporteArticulos().Rows);
         }
 
         [Fact]

@@ -20,14 +20,7 @@ namespace Negocio
         public bool EliminarCategoria(Categoria categoria)
         {
             int eliminado = _daoCategorias.EliminarCategoria(categoria);
-            if (eliminado == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return eliminado == 1;
         }
 
         public bool AgregarCategoria(Categoria categoria)
@@ -35,54 +28,26 @@ namespace Negocio
             int cantFilas = 0;
             cantFilas = _daoCategorias.AgregarCategoria(categoria);
 
-            if (cantFilas == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return cantFilas == 1;
         }
 
         public bool ActualizarCategoria(Categoria categoria)
         {
             bool eliminado = _daoCategorias.ActualizarCategoria(categoria);
-            if (eliminado)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return eliminado;
         }
 
 
         public bool ExisteCategoriaModificar(Categoria categoria)
         {
 
-            if (_daoCategorias.ExisteCategoriaModificar(categoria))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoCategorias.ExisteCategoriaModificar(categoria);
         }
 
         public bool VerificarCategoria(Categoria categoria)
         {
 
-            if (_daoCategorias.ExisteCategoriaDescripcion(categoria))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoCategorias.ExisteCategoriaDescripcion(categoria);
         }
 
     }

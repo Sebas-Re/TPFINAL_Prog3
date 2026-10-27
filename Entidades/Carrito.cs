@@ -9,26 +9,26 @@ namespace Entidades
     [Serializable]
     public class Carrito
     {
-        readonly List<ItemCarrito> items = new List<ItemCarrito>();
+        private readonly List<ItemCarrito> _items = new List<ItemCarrito>();
 
         public IList<ItemCarrito> Items
         {
-            get { return items.AsReadOnly(); }
+            get { return _items.AsReadOnly(); }
         }
 
         public bool Vacio
         {
-            get { return items.Count == 0; }
+            get { return _items.Count == 0; }
         }
 
         public int CantidadUnidades
         {
-            get { return items.Sum(i => i.Cantidad); }
+            get { return _items.Sum(i => i.Cantidad); }
         }
 
         public decimal Total
         {
-            get { return items.Sum(i => i.Subtotal); }
+            get { return _items.Sum(i => i.Subtotal); }
         }
 
         /* Suma una unidad del artículo. Devuelve false si no queda stock
@@ -43,7 +43,7 @@ namespace Entidades
             }
             if (item == null)
             {
-                items.Add(new ItemCarrito { CodArticulo = codArticulo, Descripcion = descripcion, PrecioUnitario = precioUnitario, Cantidad = 1 });
+                _items.Add(new ItemCarrito { CodArticulo = codArticulo, Descripcion = descripcion, PrecioUnitario = precioUnitario, Cantidad = 1 });
             }
             else
             {
@@ -54,17 +54,17 @@ namespace Entidades
 
         public bool Quitar(string codArticulo)
         {
-            return items.RemoveAll(i => MismoCodigo(i.CodArticulo, codArticulo)) > 0;
+            return _items.RemoveAll(i => MismoCodigo(i.CodArticulo, codArticulo)) > 0;
         }
 
         public void Vaciar()
         {
-            items.Clear();
+            _items.Clear();
         }
 
         private ItemCarrito Buscar(string codArticulo)
         {
-            return items.FirstOrDefault(i => MismoCodigo(i.CodArticulo, codArticulo));
+            return _items.FirstOrDefault(i => MismoCodigo(i.CodArticulo, codArticulo));
         }
 
         private static bool MismoCodigo(string a, string b)

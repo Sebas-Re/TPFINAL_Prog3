@@ -10,7 +10,7 @@ namespace Negocio
        días completos e incluyen hoy: "últimos 30 días" = hoy y los 29 anteriores. */
     public class GestionMetricas
     {
-        static readonly CultureInfo Cultura = new CultureInfo("es-AR");
+        private static readonly CultureInfo s_cultura = new CultureInfo("es-AR");
         private readonly DaoMetricas _daoMetricas = new DaoMetricas();
 
         /* Últimos "dias" días contra los "dias" días anteriores. */
@@ -64,7 +64,7 @@ namespace Negocio
             {
                 DataRow fila;
                 porDia.TryGetValue(dia.ToString("yyyy-MM-dd"), out fila);
-                serie.Agregar(dia.ToString("dd/MM", Cultura),
+                serie.Agregar(dia.ToString("dd/MM", s_cultura),
                     fila == null ? 0 : Convert.ToDecimal(fila["Ingresos"]),
                     fila == null ? 0 : Convert.ToDecimal(fila["Pedidos"]));
             }
@@ -137,7 +137,7 @@ namespace Negocio
             {
                 DataRow fila;
                 porMes.TryGetValue(mes.ToString("yyyy-MM"), out fila);
-                serie.Agregar(Cultura.TextInfo.ToTitleCase(mes.ToString("MMM yy", Cultura).Replace(".", "")),
+                serie.Agregar(s_cultura.TextInfo.ToTitleCase(mes.ToString("MMM yy", s_cultura).Replace(".", "")),
                     fila == null ? 0 : Convert.ToDecimal(fila[columna]),
                     fila == null || columna2 == null ? 0 : Convert.ToDecimal(fila[columna2]));
             }

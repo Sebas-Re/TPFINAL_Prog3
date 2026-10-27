@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using Entidades;
@@ -10,7 +9,7 @@ namespace Dao
     {
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
 
-        const string TodoVentas = "select * from Ventas";
+        private const string TodoVentas = "select * from Ventas";
 
         public DataTable GetTablaVentas()
         {
@@ -20,12 +19,12 @@ namespace Dao
 
         public DataTable GetTablaIdUsuario(Usuario usuario)
         {
-            String NuevaConsul = TodoVentas + " where IdUsuario_ve = @IdUsuario";
-            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
+            string consulta = TodoVentas + " where IdUsuario_ve = @IdUsuario";
+            DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", consulta, new SQLiteParameter("@IdUsuario", usuario.IdUsuario));
             return tabla;
         }
 
-        const string InsertarVenta =
+        private const string InsertarVenta =
             "insert into Ventas(IdUsuario_ve,Metodo_de_Pago_ve,Codigo_Seguridad_ve,FechaVenta_ve) values (@IDUSUARIO_VE,@METODODEPAGO_VE,@CODIGODESEGURIDAD_VE,datetime('now','localtime'))";
 
         /* Registra la venta y sus detalles en una sola transacción y devuelve el id
@@ -38,7 +37,7 @@ namespace Dao
             return _accesoDatos.EnTransaccion(conexion =>
             {
                 SQLiteCommand comando = new SQLiteCommand(InsertarVenta, conexion);
-                ArmarParametroVentaAgregar(ref comando, venta);
+                ArmarParametroVentaAgregar(comando, venta);
                 using (comando)
                 {
                     comando.ExecuteNonQuery();
@@ -76,15 +75,11 @@ namespace Dao
             }
         }
 
-        private void ArmarParametroVentaAgregar(ref SQLiteCommand comando, Venta venta)
+        private void ArmarParametroVentaAgregar(SQLiteCommand comando, Venta venta)
         {
-            SQLiteParameter Parametros = new SQLiteParameter();
-            Parametros = comando.Parameters.Add("@IDUSUARIO_VE", DbType.Int64);
-            Parametros.Value = venta.Usuario.IdUsuario;
-            Parametros = comando.Parameters.Add("@METODODEPAGO_VE", DbType.Boolean);
-            Parametros.Value = venta.MetodoPago;
-            Parametros = comando.Parameters.Add("@CODIGODESEGURIDAD_VE", DbType.Int32);
-            Parametros.Value = venta.CodigoSeguridad;
+            comando.Parameters.Add("@IDUSUARIO_VE", DbType.Int64).Value = venta.Usuario.IdUsuario;
+            comando.Parameters.Add("@METODODEPAGO_VE", DbType.Boolean).Value = venta.MetodoPago;
+            comando.Parameters.Add("@CODIGODESEGURIDAD_VE", DbType.Int32).Value = venta.CodigoSeguridad;
         }
     }
 }

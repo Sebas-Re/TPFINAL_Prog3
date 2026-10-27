@@ -108,7 +108,7 @@ namespace Vistas
                 cantidad = Math.Max(1, Math.Min(cantidad, 99));
             }
             // Precio y stock se leen de la base, no de lo que muestra la página.
-            DataTable tabla = gestart.GetArticuloCOD(new Articulo { CodigoArticulo = e.CommandArgument.ToString() });
+            DataTable tabla = gestart.GetArticuloPorCodigo(new Articulo { CodigoArticulo = e.CommandArgument.ToString() });
             if (tabla.Rows.Count == 0 || !(bool)tabla.Rows[0]["Estado_ar"])
             {
                 MostrarMensaje("El producto ya no está disponible.", TipoMensaje.Error);

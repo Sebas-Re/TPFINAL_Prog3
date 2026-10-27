@@ -7,19 +7,19 @@ namespace Negocio
 {
     public class GestionVentas
     {
-        private readonly DaoVentas daoVentas = new DaoVentas();
-        private readonly DaoTarjetas daoTarjetas = new DaoTarjetas();
+        private readonly DaoVentas _daoVentas = new DaoVentas();
+        private readonly DaoTarjetas _daoTarjetas = new DaoTarjetas();
 
 
         public DataTable GetVentas()
         {
-            return daoVentas.GetTablaVentas();
+            return _daoVentas.GetTablaVentas();
         }
 
         public DataTable FiltrarIdUsuario(Usuario usuario)
         {
             //  return daou.GetTablaUsuario(usuario);
-            return daoVentas.GetTablaIdUsuario(usuario);
+            return _daoVentas.GetTablaIdUsuario(usuario);
         }
 
 
@@ -43,7 +43,7 @@ namespace Negocio
             }
 
             // El medio de pago se toma de la base, no de lo que mande la página.
-            Tarjeta tarjeta = daoTarjetas.ObtenerTarjetaVigente(usuario, idTarjeta);
+            Tarjeta tarjeta = _daoTarjetas.ObtenerTarjetaVigente(usuario, idTarjeta);
             if (tarjeta == null)
             {
                 error = "Elegí una de tus tarjetas guardadas que no esté vencida.";
@@ -68,7 +68,7 @@ namespace Negocio
             // Venta y detalles van juntos: si algo falla no queda una compra a medias.
             try
             {
-                return daoVentas.RegistrarCompra(venta, detalles);
+                return _daoVentas.RegistrarCompra(venta, detalles);
             }
             catch (StockInsuficienteException ex)
             {

@@ -13,14 +13,14 @@ namespace Dao
     {
         private readonly AccesoDatos _accesoDatos = new AccesoDatos();
 
-        const string Lineas =
+        private const string Lineas =
             "with lineas as (" +
             " select v.IdVentas_ve, v.IdUsuario_ve, v.FechaVenta_ve, v.Metodo_de_Pago_ve, d.CodArticulo_dv, d.Cantidad_dv," +
             " d.Cantidad_dv * d.Precio_Unitario_dv as Importe" +
             " from Ventas v inner join Detalle_Ventas d on d.IdDetVenta_dv = v.IdVentas_ve" +
             " where v.FechaVenta_ve >= datetime('now','localtime','start of day',@Inicio) and v.FechaVenta_ve < datetime('now','localtime','start of day',@Fin)) ";
 
-        static SQLiteParameter[] Periodo(int inicio, int fin, params SQLiteParameter[] otros)
+        private static SQLiteParameter[] Periodo(int inicio, int fin, params SQLiteParameter[] otros)
         {
             SQLiteParameter[] parametros = new SQLiteParameter[otros.Length + 2];
             parametros[0] = new SQLiteParameter("@Inicio", inicio.ToString("+0;-0") + " days");

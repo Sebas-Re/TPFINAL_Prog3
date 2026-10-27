@@ -27,7 +27,7 @@ namespace Vistas
 
         private void CargarDatosUsuario()
         {
-            Usuario usuario = gestus.get(new Usuario { IdUsuario = Sesion.Usuario.IdUsuario });
+            Usuario usuario = gestus.Obtener(new Usuario { IdUsuario = Sesion.Usuario.IdUsuario });
             txtNombre.Text = usuario.Nombre;
             txtEmail.Text = usuario.Email;
             txtTelefono.Text = usuario.Telefono;

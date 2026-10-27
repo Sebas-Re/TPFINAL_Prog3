@@ -56,7 +56,7 @@ namespace Vistas.AdminForms
         {
             gvArticulos.DataSource = FiltroCodigo == ""
                 ? gestart.GetArticulos()
-                : gestart.GetArticuloCOD(new Articulo { CodigoArticulo = FiltroCodigo });
+                : gestart.GetArticuloPorCodigo(new Articulo { CodigoArticulo = FiltroCodigo });
             gvArticulos.DataBind();
         }
 

@@ -54,7 +54,7 @@ dotnet_naming_style.prefijo_i.capitalization = pascal_case
 dotnet_naming_rule.tipos_y_miembros.symbols = tipos_y_miembros
 dotnet_naming_rule.tipos_y_miembros.style = pascal
 dotnet_naming_rule.tipos_y_miembros.severity = warning
-dotnet_naming_symbols.tipos_y_miembros.applicable_kinds = class, struct, enum, delegate, method, property, event, namespace
+dotnet_naming_symbols.tipos_y_miembros.applicable_kinds = class, struct, enum, delegate, method, local_function, property, event, namespace
 dotnet_naming_style.pascal.capitalization = pascal_case
 
 dotnet_naming_rule.constantes.symbols = constantes
@@ -86,7 +86,7 @@ dotnet_naming_style.guion_camel.capitalization = camel_case
 dotnet_naming_rule.parametros_y_locales.symbols = parametros_y_locales
 dotnet_naming_rule.parametros_y_locales.style = camel
 dotnet_naming_rule.parametros_y_locales.severity = warning
-dotnet_naming_symbols.parametros_y_locales.applicable_kinds = parameter, local, local_function
+dotnet_naming_symbols.parametros_y_locales.applicable_kinds = parameter, local
 dotnet_naming_style.camel.capitalization = camel_case
 
 # Código generado por Visual Studio: no se revisa

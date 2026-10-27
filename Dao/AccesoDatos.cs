@@ -8,27 +8,27 @@ namespace Dao
 {
     public class AccesoDatos
     {
-        const String NombreArchivo = "PCbooster.db";
-        static readonly object bloqueoInicializacion = new object();
-        static String rutaInicializada;
+        private const string NombreArchivo = "PCbooster.db";
+        private static readonly object s_bloqueoInicializacion = new object();
+        private static string s_rutaInicializada;
 
-        public const String VariableEntorno = "PCBOOSTER_DB";
+        public const string VariableEntorno = "PCBOOSTER_DB";
 
         /* Ruta del archivo SQLite. Los tests la redirigen. */
-        public static String RutaBaseDatos { get; set; } = RutaPorDefecto();
+        public static string RutaBaseDatos { get; set; } = RutaPorDefecto();
 
         /* La variable de entorno PCBOOSTER_DB, si está definida (la usan los tests
            E2E para levantar el sitio con una base temporal). Si no, App_Data
            (ASP.NET define "DataDirectory") o la carpeta del ejecutable. */
-        public static String RutaPorDefecto()
+        public static string RutaPorDefecto()
         {
-            String desdeEntorno = Environment.GetEnvironmentVariable(VariableEntorno);
-            if (!String.IsNullOrWhiteSpace(desdeEntorno))
+            string desdeEntorno = Environment.GetEnvironmentVariable(VariableEntorno);
+            if (!string.IsNullOrWhiteSpace(desdeEntorno))
             {
                 return desdeEntorno;
             }
             return Path.Combine(
-                AppDomain.CurrentDomain.GetData("DataDirectory") as String ?? AppDomain.CurrentDomain.BaseDirectory,
+                AppDomain.CurrentDomain.GetData("DataDirectory") as string ?? AppDomain.CurrentDomain.BaseDirectory,
                 NombreArchivo);
         }
 
@@ -49,12 +49,12 @@ namespace Dao
         public const int VersionSchema = 4;
 
         /* Scripts que llevan una base de la versión N-1 a la N (índice 0 = versión 1). */
-        static readonly String[][] Migraciones =
+        private static readonly string[][] s_migraciones =
         {
             new[] { "migracion_1.sql" },
             new[] { "migracion_2.sql", "articulos_detalle.sql" },
             new[] { "migracion_3.sql" },
-            new String[0] // versión 4: hash de contraseñas (HashearContraseñas, no se puede hacer en SQL)
+            new string[0] // versión 4: hash de contraseñas (HashearContraseñas, no se puede hacer en SQL)
         };
 
         /* Al crear una base nueva, cargar también el historial de demo (Sql/demo.sql:
@@ -67,11 +67,11 @@ namespace Dao
            le aplican las migraciones pendientes. */
         private static void InicializarBaseDatos()
         {
-            String ruta = RutaBaseDatos;
-            if (ruta == rutaInicializada) return;
-            lock (bloqueoInicializacion)
+            string ruta = RutaBaseDatos;
+            if (ruta == s_rutaInicializada) return;
+            lock (s_bloqueoInicializacion)
             {
-                if (ruta == rutaInicializada) return;
+                if (ruta == s_rutaInicializada) return;
                 if (!File.Exists(ruta))
                 {
                     CrearBaseDatos(ruta);
@@ -80,11 +80,11 @@ namespace Dao
                 {
                     Migrar(ruta);
                 }
-                rutaInicializada = ruta;
+                s_rutaInicializada = ruta;
             }
         }
 
-        private static void Migrar(String ruta)
+        private static void Migrar(string ruta)
         {
             using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + ruta + ";Foreign Keys=True"))
             {
@@ -94,7 +94,7 @@ namespace Dao
                 {
                     using (SQLiteTransaction tx = cn.BeginTransaction())
                     {
-                        foreach (String script in Migraciones[siguiente - 1])
+                        foreach (string script in s_migraciones[siguiente - 1])
                         {
                             EjecutarScript(cn, script);
                         }
@@ -109,12 +109,12 @@ namespace Dao
             }
         }
 
-        private static void CrearBaseDatos(String ruta)
+        private static void CrearBaseDatos(string ruta)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(ruta));
             /* Se arma en un archivo temporal y se mueve al final, para no dejar
                una base a medio crear si algo falla. */
-            String temporal = ruta + ".tmp";
+            string temporal = ruta + ".tmp";
             File.Delete(temporal);
             using (SQLiteConnection cn = new SQLiteConnection("Data Source=" + temporal + ";Foreign Keys=True"))
             {
@@ -138,7 +138,7 @@ namespace Dao
         }
 
         /* Los comandos se cierran siempre: uno abierto deja el archivo bloqueado. */
-        private static object EjecutarEscalar(SQLiteConnection cn, String sql)
+        private static object EjecutarEscalar(SQLiteConnection cn, string sql)
         {
             using (SQLiteCommand cmd = new SQLiteCommand(sql, cn))
             {
@@ -157,7 +157,7 @@ namespace Dao
             }
             foreach (DataRow fila in usuarios.Rows)
             {
-                String guardada = fila["Contraseña_us"].ToString();
+                string guardada = fila["Contraseña_us"].ToString();
                 if (Contrasenas.EstaHasheada(guardada)) continue;
                 using (SQLiteCommand cmd = new SQLiteCommand("update Usuarios set Contraseña_us = @Hash where IdUsuario_us = @Id", cn))
                 {
@@ -168,7 +168,7 @@ namespace Dao
             }
         }
 
-        private static void EjecutarScript(SQLiteConnection cn, String nombre)
+        private static void EjecutarScript(SQLiteConnection cn, string nombre)
         {
             using (Stream recurso = typeof(AccesoDatos).Assembly.GetManifestResourceStream("Dao.Sql." + nombre))
             using (StreamReader lector = new StreamReader(recurso, Encoding.UTF8))
@@ -178,34 +178,34 @@ namespace Dao
             }
         }
 
-        private static SQLiteCommand ArmarComando(String consultaSql, SQLiteConnection cn, SQLiteParameter[] parametros)
+        private static SQLiteCommand ArmarComando(string consultaSql, SQLiteConnection cn, SQLiteParameter[] parametros)
         {
             SQLiteCommand cmd = new SQLiteCommand(consultaSql, cn);
             cmd.Parameters.AddRange(parametros);
             return cmd;
         }
 
-        public DataTable ObtenerTabla(String NombreTabla, String Sql, params SQLiteParameter[] parametros)
+        public DataTable ObtenerTabla(string nombreTabla, string sql, params SQLiteParameter[] parametros)
         {
             DataSet ds = new DataSet();
-            using (SQLiteConnection Conexion = ObtenerConexion())
-            using (SQLiteDataAdapter adp = new SQLiteDataAdapter(ArmarComando(Sql, Conexion, parametros)))
+            using (SQLiteConnection conexion = ObtenerConexion())
+            using (SQLiteDataAdapter adp = new SQLiteDataAdapter(ArmarComando(sql, conexion, parametros)))
             {
-                adp.Fill(ds, NombreTabla);
+                adp.Fill(ds, nombreTabla);
             }
-            return ds.Tables[NombreTabla];
+            return ds.Tables[nombreTabla];
         }
 
         /* Reemplaza a EjecutarProcedimientoAlmacenado: SQLite no tiene stored
            procedures, así que cada DAO manda el SQL que antes vivía en el SP. */
-        public int EjecutarComando(SQLiteCommand Comando, String Sql)
+        public int EjecutarComando(SQLiteCommand comando, string sql)
         {
-            using (SQLiteConnection Conexion = ObtenerConexion())
+            using (SQLiteConnection conexion = ObtenerConexion())
             {
-                Comando.Connection = Conexion;
-                Comando.CommandType = CommandType.Text;
-                Comando.CommandText = Sql;
-                return Comando.ExecuteNonQuery();
+                comando.Connection = conexion;
+                comando.CommandType = CommandType.Text;
+                comando.CommandText = sql;
+                return comando.ExecuteNonQuery();
             }
         }
 
@@ -214,29 +214,29 @@ namespace Dao
            otra escritura concurrente espera hasta que esta termine. */
         public T EnTransaccion<T>(Func<SQLiteConnection, T> trabajo)
         {
-            using (SQLiteConnection Conexion = ObtenerConexion())
-            using (SQLiteTransaction tx = Conexion.BeginTransaction())
+            using (SQLiteConnection conexion = ObtenerConexion())
+            using (SQLiteTransaction tx = conexion.BeginTransaction())
             {
-                T resultado = trabajo(Conexion);
+                T resultado = trabajo(conexion);
                 tx.Commit();
                 return resultado; // si "trabajo" lanza una excepción, el Dispose hace rollback
             }
         }
 
-        public Boolean existe(String consulta, params SQLiteParameter[] parametros)
+        public bool Existe(string consulta, params SQLiteParameter[] parametros)
         {
-            using (SQLiteConnection Conexion = ObtenerConexion())
-            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
+            using (SQLiteConnection conexion = ObtenerConexion())
+            using (SQLiteCommand cmd = ArmarComando(consulta, conexion, parametros))
             using (SQLiteDataReader datos = cmd.ExecuteReader())
             {
                 return datos.Read();
             }
         }
 
-        public int ObtenerMaximo(String consulta, params SQLiteParameter[] parametros)
+        public int ObtenerMaximo(string consulta, params SQLiteParameter[] parametros)
         {
-            using (SQLiteConnection Conexion = ObtenerConexion())
-            using (SQLiteCommand cmd = ArmarComando(consulta, Conexion, parametros))
+            using (SQLiteConnection conexion = ObtenerConexion())
+            using (SQLiteCommand cmd = ArmarComando(consulta, conexion, parametros))
             using (SQLiteDataReader datos = cmd.ExecuteReader())
             {
                 return datos.Read() ? Convert.ToInt32(datos[0].ToString()) : 0;

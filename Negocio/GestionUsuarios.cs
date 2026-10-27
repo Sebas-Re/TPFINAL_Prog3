@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data;
 using Dao;
 using Entidades;
@@ -48,19 +49,19 @@ namespace Negocio
         public const int MaxIntentosFallidos = 5;
         public static TimeSpan DuracionBloqueo { get; set; } = TimeSpan.FromMinutes(5);
 
-        class Intentos
+        private class Intentos
         {
             public int Fallidos;
             public DateTime Ultimo;
         }
 
-        static readonly ConcurrentDictionary<string, Intentos> intentosFallidos =
+        private static readonly ConcurrentDictionary<string, Intentos> s_intentosFallidos =
             new ConcurrentDictionary<string, Intentos>(StringComparer.OrdinalIgnoreCase);
 
         public bool LoginBloqueado(string nombre)
         {
             Intentos intentos;
-            if (nombre == null || !intentosFallidos.TryGetValue(nombre, out intentos))
+            if (nombre == null || !s_intentosFallidos.TryGetValue(nombre, out intentos))
             {
                 return false;
             }
@@ -70,21 +71,21 @@ namespace Negocio
             }
         }
 
-        static void RegistrarFallo(string nombre)
+        private static void RegistrarFallo(string nombre)
         {
             // Que nombres inventados no hagan crecer el diccionario sin límite.
-            if (intentosFallidos.Count > 10000)
+            if (s_intentosFallidos.Count > 10000)
             {
-                foreach (var par in intentosFallidos)
+                foreach (KeyValuePair<string, Intentos> par in s_intentosFallidos)
                 {
                     if (DateTime.UtcNow - par.Value.Ultimo >= DuracionBloqueo)
                     {
                         Intentos descartado;
-                        intentosFallidos.TryRemove(par.Key, out descartado);
+                        s_intentosFallidos.TryRemove(par.Key, out descartado);
                     }
                 }
             }
-            Intentos intentos = intentosFallidos.GetOrAdd(nombre, _ => new Intentos());
+            Intentos intentos = s_intentosFallidos.GetOrAdd(nombre, _ => new Intentos());
             lock (intentos)
             {
                 // Pasado el bloqueo se vuelve a empezar la cuenta.
@@ -113,8 +114,8 @@ namespace Negocio
                 return null;
             }
             Intentos anteriores;
-            intentosFallidos.TryRemove(nombre, out anteriores);
-            credenciales.IdUsuario = DevolverIDusuario(credenciales);
+            s_intentosFallidos.TryRemove(nombre, out anteriores);
+            credenciales.IdUsuario = DevolverIdUsuario(credenciales);
             credenciales.Tipo = VerificarTipoUsuario(credenciales);
             return credenciales;
         }
@@ -125,28 +126,21 @@ namespace Negocio
             return tipo;
         }
 
-        public int DevolverIDusuario(Usuario usuario)
+        public int DevolverIdUsuario(Usuario usuario)
         {
-            int ID = _daoUsuarios.DevolverIDusuario(usuario);
-            return ID;
+            int id = _daoUsuarios.DevolverIdUsuario(usuario);
+            return id;
         }
 
-        public Usuario get(Usuario usuario)
+        public Usuario Obtener(Usuario usuario)
         {
             return _daoUsuarios.ObtenerUsuario(usuario);
         }
 
-        public bool EliminarUsuario(ref Usuario usuario)
+        public bool EliminarUsuario(Usuario usuario)
         {
-            int op = _daoUsuarios.EliminarUsuario(ref usuario);
-            if (op == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            int op = _daoUsuarios.EliminarUsuario(usuario);
+            return op == 1;
         }
 
         public bool AgregarUsuario(Usuario usuario)
@@ -165,66 +159,31 @@ namespace Negocio
                 return false;
             }
 
-            if (cantFilas == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return cantFilas == 1;
         }
 
         public bool VerificarNombre(Usuario usuario)
         {
 
-            if (_daoUsuarios.ExisteUsuario(usuario) == false)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoUsuarios.ExisteUsuario(usuario) == false;
         }
 
         public bool VerificarNombreModificar(Usuario usuario)
         {
 
-            if (_daoUsuarios.ExisteUsuarioModificar(usuario) == false)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoUsuarios.ExisteUsuarioModificar(usuario) == false;
         }
 
         public bool VerificarEmail(Usuario usuario)
         {
 
-            if (_daoUsuarios.ExisteEmailUsuario(usuario) == false)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoUsuarios.ExisteEmailUsuario(usuario) == false;
         }
 
         public bool VerificarEmailModificar(Usuario usuario)
         {
 
-            if (_daoUsuarios.ExisteEmailUsuarioModificar(usuario) == false)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _daoUsuarios.ExisteEmailUsuarioModificar(usuario) == false;
         }
 
 
@@ -253,7 +212,7 @@ namespace Negocio
                     return "Para cambiar el nombre, el e-mail o la contraseña, ingresá tu contraseña actual correcta.";
                 }
                 Intentos anteriores;
-                intentosFallidos.TryRemove(actual.Nombre, out anteriores);
+                s_intentosFallidos.TryRemove(actual.Nombre, out anteriores);
             }
 
             cambios.Tipo = actual.Tipo;
@@ -270,21 +229,14 @@ namespace Negocio
         }
 
         /* Contrasena vacía o null = conservar la actual. */
-        public bool ActualizarUsuario(Usuario Usuario)
+        public bool ActualizarUsuario(Usuario usuario)
         {
-            if (!string.IsNullOrEmpty(Usuario.Contrasena) && !ContraseñaValida(Usuario.Contrasena))
+            if (!string.IsNullOrEmpty(usuario.Contrasena) && !ContraseñaValida(usuario.Contrasena))
             {
                 return false;
             }
-            int FilasInsertadas = _daoUsuarios.ActualizarUsuario(Usuario);
-            if (FilasInsertadas == 1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            int filasActualizadas = _daoUsuarios.ActualizarUsuario(usuario);
+            return filasActualizadas == 1;
         }
 
 

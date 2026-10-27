@@ -117,7 +117,7 @@ namespace Negocio.Tests
             var gestionUsuarios = new GestionUsuarios();
             var cliente = Cliente;
 
-            Assert.True(gestionUsuarios.EliminarUsuario(ref cliente));
+            Assert.True(gestionUsuarios.EliminarUsuario(cliente));
 
             Assert.Null(gestionUsuarios.Login("Nom1", "ctr1"));
         }
@@ -143,7 +143,7 @@ namespace Negocio.Tests
             Assert.False(gestionUsuarios.AgregarUsuario(corta));
             Assert.True(gestionUsuarios.VerificarNombre(corta)); // no se creó
 
-            var cliente = new GestionUsuarios().get(Cliente);
+            var cliente = new GestionUsuarios().Obtener(Cliente);
             cliente.Contrasena = "123";
             Assert.False(gestionUsuarios.ActualizarUsuario(cliente));
             cliente.Contrasena = "";
@@ -163,11 +163,11 @@ namespace Negocio.Tests
 
             Assert.Contains("contraseña actual", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com"), ""));
             Assert.Contains("contraseña actual", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(nombre: "Intruso"), "incorrecta"));
-            Assert.Equal("ema4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Email);
-            Assert.Equal("Nom4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Nombre);
+            Assert.Equal("ema4", gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 }).Email);
+            Assert.Equal("Nom4", gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 }).Nombre);
 
             Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com", nombre: "Nom4b"), "ctr4"));
-            var guardado = gestionUsuarios.get(new Usuario { IdUsuario = 8 });
+            var guardado = gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 });
             Assert.Equal("nuevo@mail.com", guardado.Email);
             Assert.Equal("Nom4b", guardado.Nombre);
             Assert.False(guardado.Tipo);
@@ -180,7 +180,7 @@ namespace Negocio.Tests
             var gestionUsuarios = new GestionUsuarios();
 
             Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(telefono: "1199887766"), ""));
-            Assert.Equal("1199887766", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Telefono);
+            Assert.Equal("1199887766", gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 }).Telefono);
         }
 
         [Fact]
@@ -207,7 +207,7 @@ namespace Negocio.Tests
 
             Assert.Contains("Demasiados intentos", gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "robado@mail.com"), "ctr4"));
             Assert.True(gestionUsuarios.LoginBloqueado("Nom4"));
-            Assert.Equal("ema4", gestionUsuarios.get(new Usuario { IdUsuario = 8 }).Email);
+            Assert.Equal("ema4", gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 }).Email);
 
             GestionUsuarios.DuracionBloqueo = TimeSpan.Zero;
             try
@@ -315,7 +315,7 @@ namespace Negocio.Tests
             Assert.True(idVenta > 0);
             Assert.Single(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
             Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta }).Rows.Count);
-            Assert.Equal(8L, new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
+            Assert.Equal(8L, new GestionArticulos().GetArticuloPorCodigo(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
             Assert.Equal(14300m, DatoDeVenta(idVenta, "TotalVenta_ve"));
         }
 
@@ -336,7 +336,7 @@ namespace Negocio.Tests
 
         static long Stock(string codigo)
         {
-            return Convert.ToInt64(new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = codigo }).Rows[0]["Stock_ar"]);
+            return Convert.ToInt64(new GestionArticulos().GetArticuloPorCodigo(new Articulo { CodigoArticulo = codigo }).Rows[0]["Stock_ar"]);
         }
 
         [Fact]

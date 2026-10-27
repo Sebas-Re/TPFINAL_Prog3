@@ -8,9 +8,9 @@ namespace Dao
        la cantidad de iteraciones sin invalidar las contraseñas existentes. */
     public static class Contrasenas
     {
-        const string Prefijo = "pbkdf2$";
-        const int BytesSalt = 16;
-        const int BytesHash = 32;
+        private const string Prefijo = "pbkdf2$";
+        private const int BytesSalt = 16;
+        private const int BytesHash = 32;
 
         /* Los tests la bajan para no tardar en cada base que crean. */
         public static int Iteraciones { get; set; } = 100000;
@@ -55,7 +55,7 @@ namespace Dao
             return valor != null && valor.StartsWith(Prefijo, StringComparison.Ordinal);
         }
 
-        static byte[] Derivar(string contraseña, byte[] salt, int iteraciones)
+        private static byte[] Derivar(string contraseña, byte[] salt, int iteraciones)
         {
             using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(contraseña, salt, iteraciones, HashAlgorithmName.SHA256))
             {
@@ -63,7 +63,7 @@ namespace Dao
             }
         }
 
-        static bool IgualesEnTiempoConstante(byte[] a, byte[] b)
+        private static bool IgualesEnTiempoConstante(byte[] a, byte[] b)
         {
             int diferencia = a.Length ^ b.Length;
             for (int i = 0; i < a.Length && i < b.Length; i++)
