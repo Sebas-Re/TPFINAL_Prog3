@@ -56,8 +56,12 @@ dkms.conf
 Vistas/App_Data/
 # Paquetes NuGet: Visual Studio los restaura desde packages.config
 packages/
-# Salida del proyecto de tests
-Tests/**/bin/
-Tests/**/obj/
-# Configuración de Visual Studio
+# Salida de compilación de todos los proyectos (incluye Vistas/bin/roslyn, que el
+# paquete Microsoft.CodeDom.Providers.DotNetCompilerPlatform copia al compilar)
+[Bb]in/
+[Oo]bj/
+# Configuración local de Visual Studio (el puerto de IIS Express está en Vistas.csproj
+# y la página de inicio en Web.config, así que no hace falta para correr el sitio)
 .vs/
+*.user
+*.suo
