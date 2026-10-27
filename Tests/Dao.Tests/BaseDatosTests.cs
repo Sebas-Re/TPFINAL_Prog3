@@ -207,8 +207,8 @@ namespace Dao.Tests
                 Categoria = new Categoria { IdCategoria = 1 },
                 Descripcion = "Monitor 24'' LG",
                 Stock = 10,
-                PrecioUnitario = 1500.5f,
-                ImagenURL = "~/Imagenes_ar/mn1.png"
+                PrecioUnitario = 1500.5m,
+                ImagenUrl = "~/Imagenes_ar/mn1.png"
             };
 
             Assert.Equal(1, daoArticulos.AgregarArticulo(articulo));
@@ -236,7 +236,7 @@ namespace Dao.Tests
                 Descripcion = "Gabinete Gamemax",
                 Stock = 10,
                 PrecioUnitario = 3500,
-                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png",
+                ImagenUrl = "~/Imagenes_ar/Gabinete/gb1.png",
                 Estado = true
             };
 
@@ -252,8 +252,8 @@ namespace Dao.Tests
             Assert.Equal(2, articulo.Categoria.IdCategoria);
             Assert.Equal("Gabinete Gamemax", articulo.Descripcion);
             Assert.Equal(10, articulo.Stock);
-            Assert.Equal(3500f, articulo.PrecioUnitario);
-            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", articulo.ImagenURL);
+            Assert.Equal(3500m, articulo.PrecioUnitario);
+            Assert.Equal("~/Imagenes_ar/Gabinete/gb1.png", articulo.ImagenUrl);
             Assert.True(articulo.Estado);
         }
 
@@ -270,13 +270,13 @@ namespace Dao.Tests
         public void ObtenerVentaCargaTodosLosCampos()
         {
             var daoVentas = new DaoVentas();
-            daoVentas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 456 });
-            int id = daoVentas.IDultimaventa(new Ventas()).IdVenta;
+            daoVentas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 456 });
+            int id = daoVentas.IDultimaventa(new Venta()).IdVenta;
 
-            var venta = daoVentas.ObtenerVenta(new Ventas { IdVenta = id });
+            var venta = daoVentas.ObtenerVenta(new Venta { IdVenta = id });
 
             Assert.Equal(5, venta.Usuario.IdUsuario);
-            Assert.Equal(0f, venta.TotalVenta);
+            Assert.Equal(0m, venta.TotalVenta);
             Assert.True(venta.MetodoPago);
             Assert.Equal(456, venta.CodigoSeguridad);
         }
@@ -293,7 +293,7 @@ namespace Dao.Tests
                 Descripcion = "Gabinete Gamemax",
                 Stock = 10,
                 PrecioUnitario = 3500,
-                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png",
+                ImagenUrl = "~/Imagenes_ar/Gabinete/gb1.png",
                 Estado = true
             };
 
@@ -324,9 +324,9 @@ namespace Dao.Tests
             var ventas = new DaoVentas();
             var detalle = new DaoDetalleVentas();
 
-            Assert.Equal(1, ventas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 }));
-            int idVenta = ventas.IDultimaventa(new Ventas()).IdVenta;
-            Assert.Equal(1, detalle.AgregarDetalleVenta(new DetalleVentas
+            Assert.Equal(1, ventas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 }));
+            int idVenta = ventas.IDultimaventa(new Venta()).IdVenta;
+            Assert.Equal(1, detalle.AgregarDetalleVenta(new DetalleVenta
             {
                 IdDetalleVenta = idVenta,
                 IdUsuario = 5,
@@ -338,9 +338,9 @@ namespace Dao.Tests
             }));
 
             Assert.Equal(8L, new DaoArticulos().GetTablaArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(7000m, ventas.GetTablaVentas(new Ventas { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
-            Assert.IsType<DateTime>(ventas.GetTablaVentas(new Ventas { IdVenta = idVenta }).Rows[0]["FechaVenta_ve"]);
-            Assert.Single(detalle.GetTablaIdVentaUsuario(new Ventas { IdVenta = idVenta }).Rows);
+            Assert.Equal(7000m, ventas.GetTablaVentas(new Venta { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
+            Assert.IsType<DateTime>(ventas.GetTablaVentas(new Venta { IdVenta = idVenta }).Rows[0]["FechaVenta_ve"]);
+            Assert.Single(detalle.GetTablaIdVentaUsuario(new Venta { IdVenta = idVenta }).Rows);
 
             // Reportes: verifican que el SQL traducido de T-SQL corre en SQLite.
             var daoArticulos = new DaoArticulos();

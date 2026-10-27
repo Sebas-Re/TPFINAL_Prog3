@@ -12,19 +12,19 @@ namespace Dao
 
         const string TodoVentas = "select * from Ventas";
 
-        public Ventas ObtenerVenta(Ventas venta) //devuelve un objeto cargado con la data q coincida con el id
+        public Venta ObtenerVenta(Venta venta) //devuelve un objeto cargado con la data q coincida con el id
         {
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", TodoVentas + " where IdVentas_ve = @IdVenta", new SQLiteParameter("@IdVenta", venta.IdVenta));
             DataRow fila = tabla.Rows[0];
             venta.IdVenta = Convert.ToInt32(fila["IdVentas_ve"]);
             venta.Usuario = new Usuario { IdUsuario = Convert.ToInt32(fila["IdUsuario_ve"]) };
-            venta.TotalVenta = Convert.ToSingle(fila["TotalVenta_ve"]);
+            venta.TotalVenta = Convert.ToDecimal(fila["TotalVenta_ve"]);
             venta.MetodoPago = (bool)fila["Metodo_de_Pago_ve"];
             venta.CodigoSeguridad = Convert.ToInt32(fila["Codigo_Seguridad_ve"]);
             return venta;
         }
 
-        public DataTable GetTablaVentas(Ventas venta) //devuelve un datatable con los datos de la tabla
+        public DataTable GetTablaVentas(Venta venta) //devuelve un datatable con los datos de la tabla
         {
             String NuevaConsul = TodoVentas + " where IdVentas_ve = @IdVenta";
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdVenta", venta.IdVenta));
@@ -52,7 +52,7 @@ namespace Dao
 
         /* Ojo: devuelve la última venta de cualquier usuario. Para registrar una
            compra usar RegistrarCompra, que obtiene el id de su propio insert. */
-        public Ventas IDultimaventa(Ventas venta)
+        public Venta IDultimaventa(Venta venta)
         {
             string NuevaConsulta = "select MAX(IdVentas_ve) from Ventas";
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsulta);
@@ -60,7 +60,7 @@ namespace Dao
             return venta;
         }
 
-        public Boolean ExisteVentas(Ventas venta)
+        public Boolean ExisteVentas(Venta venta)
         {
             string consulta = TodoVentas + " where IdUsuario_ve = @IdVenta";
             return _accesoDatos.existe(consulta, new SQLiteParameter("@IdVenta", venta.IdVenta));
@@ -69,7 +69,7 @@ namespace Dao
         const string InsertarVenta =
             "insert into Ventas(IdUsuario_ve,Metodo_de_Pago_ve,Codigo_Seguridad_ve,FechaVenta_ve) values (@IDUSUARIO_VE,@METODODEPAGO_VE,@CODIGODESEGURIDAD_VE,datetime('now','localtime'))";
 
-        public int agregarVenta(Ventas venta)
+        public int agregarVenta(Venta venta)
         {
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroVentaAgregar(ref comando, venta);
@@ -82,7 +82,7 @@ namespace Dao
            con stock; si no, lanza StockInsuficienteException y no queda nada guardado.
            El id sale de last_insert_rowid() de esta conexión: no se confunde con una
            venta que otro usuario registre al mismo tiempo (como pasaba con MAX). */
-        public int RegistrarCompra(Ventas venta, IList<DetalleVentas> detalles)
+        public int RegistrarCompra(Venta venta, IList<DetalleVenta> detalles)
         {
             return _accesoDatos.EnTransaccion(conexion =>
             {
@@ -95,7 +95,7 @@ namespace Dao
                 int idVenta = (int)conexion.LastInsertRowId;
 
                 DaoDetalleVentas daoDetalle = new DaoDetalleVentas();
-                foreach (DetalleVentas detalle in detalles)
+                foreach (DetalleVenta detalle in detalles)
                 {
                     VerificarStock(conexion, detalle);
                     detalle.IdDetalleVenta = idVenta;
@@ -105,7 +105,7 @@ namespace Dao
             });
         }
 
-        private static void VerificarStock(SQLiteConnection conexion, DetalleVentas detalle)
+        private static void VerificarStock(SQLiteConnection conexion, DetalleVenta detalle)
         {
             using (SQLiteCommand cmd = new SQLiteCommand("select Descripcion_ar, Stock_ar, Estado_ar from Articulos where CodArticulo_ar = @Codigo", conexion))
             {
@@ -125,7 +125,7 @@ namespace Dao
             }
         }
 
-        private void ArmarParametroVentaAgregar(ref SQLiteCommand comando, Ventas venta)
+        private void ArmarParametroVentaAgregar(ref SQLiteCommand comando, Venta venta)
         {
             SQLiteParameter Parametros = new SQLiteParameter();
             Parametros = comando.Parameters.Add("@IDUSUARIO_VE", DbType.Int64);

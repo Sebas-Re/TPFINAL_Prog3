@@ -14,7 +14,7 @@ namespace Dao
         const string InsertarDetalle =
             "insert into Detalle_Ventas(IdDetVenta_dv,IdUsuario_dv,CodArticulo_dv,Cantidad_dv,Precio_Unitario_dv,Direccion_de_Entrega,Contacto) values (@IDDETVENTA_DV,@IDUSUARIO_DV,@CODARTICULO_DV,@CANTIDAD_DV,@PRECIOUNITARIO_DV,@DIRECCIONENTREGA_DV,@CONTACTO)";
 
-        public int AgregarDetalleVenta(DetalleVentas detalleVenta)
+        public int AgregarDetalleVenta(DetalleVenta detalleVenta)
         {
             SQLiteCommand comando = new SQLiteCommand();
             ArmarParametroDetalleVentaAgregar(ref comando, detalleVenta);
@@ -23,7 +23,7 @@ namespace Dao
         }
 
         /* Dentro de una transacción abierta en "conexion" (ver DaoVentas.RegistrarCompra). */
-        internal int AgregarDetalleVenta(DetalleVentas detalleVenta, SQLiteConnection conexion)
+        internal int AgregarDetalleVenta(DetalleVenta detalleVenta, SQLiteConnection conexion)
         {
             SQLiteCommand comando = new SQLiteCommand(InsertarDetalle, conexion);
             ArmarParametroDetalleVentaAgregar(ref comando, detalleVenta);
@@ -33,7 +33,7 @@ namespace Dao
             }
         }
 
-        public DataTable GetTablaIdVentaUsuario(Ventas venta)
+        public DataTable GetTablaIdVentaUsuario(Venta venta)
         {
             String NuevaConsul = "select Descripcion_ar, CodArticulo_dv, Cantidad_dv, Precio_Unitario_dv, Direccion_de_Entrega, Contacto from Detalle_Ventas inner join Articulos on CodArticulo_ar = CodArticulo_dv where idDetVenta_dv = @IdVenta";
             DataTable tabla = _accesoDatos.ObtenerTabla("Ventas", NuevaConsul, new SQLiteParameter("@IdVenta", venta.IdVenta));
@@ -45,7 +45,7 @@ namespace Dao
             return tabla;
         }
 
-        private void ArmarParametroDetalleVentaAgregar(ref SQLiteCommand comando, DetalleVentas detalleVenta)
+        private void ArmarParametroDetalleVentaAgregar(ref SQLiteCommand comando, DetalleVenta detalleVenta)
         {
             SQLiteParameter Parametros = new SQLiteParameter();
             Parametros = comando.Parameters.Add("@IDDETVENTA_DV", DbType.Int64);

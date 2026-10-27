@@ -135,7 +135,7 @@ namespace Vistas.AdminForms
         {
             int idVenta = Convert.ToInt32(gvVentas.DataKeys[e.NewSelectedIndex].Value);
             gvVentas.SelectedIndex = e.NewSelectedIndex;
-            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta });
+            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
             gvDetallesVenta.DataBind();
             lblTituloDetalle.Text = "Detalle de la venta N° " + idVenta;
             pnlDetalle.Visible = true;

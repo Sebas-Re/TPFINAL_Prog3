@@ -67,7 +67,7 @@ namespace Negocio
 
         public bool ActualizarArticulo(Articulo articulo)
         {
-            if (!ImagenValida(articulo.ImagenURL))
+            if (!ImagenValida(articulo.ImagenUrl))
             {
                 return false;
             }
@@ -87,7 +87,7 @@ namespace Negocio
         public bool AgregarArticulo(Articulo articulo)
         {
             int cantFilas = 0;
-            if (!CodigoValido(articulo.CodigoArticulo) || !ImagenValida(articulo.ImagenURL))
+            if (!CodigoValido(articulo.CodigoArticulo) || !ImagenValida(articulo.ImagenUrl))
             {
                 return false;
             }

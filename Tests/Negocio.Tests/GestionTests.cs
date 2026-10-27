@@ -225,7 +225,7 @@ namespace Negocio.Tests
                 Descripcion = "Otro gabinete",
                 Stock = 1,
                 PrecioUnitario = 100,
-                ImagenURL = "~/Imagenes_ar/Gabinete/gb1.png"
+                ImagenUrl = "~/Imagenes_ar/Gabinete/gb1.png"
             };
 
             Assert.False(gestionArticulos.AgregarArticulo(repetido));
@@ -257,7 +257,7 @@ namespace Negocio.Tests
                 Descripcion = "Nuevo " + codigo,
                 Stock = 1,
                 PrecioUnitario = 100,
-                ImagenURL = imagen,
+                ImagenUrl = imagen,
                 Estado = true
             };
 
@@ -308,9 +308,9 @@ namespace Negocio.Tests
             Assert.Null(error);
             Assert.True(idVenta > 0);
             Assert.Single(gestionVentas.FiltrarIdUsuario(Cliente).Rows);
-            Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta }).Rows.Count);
+            Assert.Equal(2, new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta }).Rows.Count);
             Assert.Equal(8L, new GestionArticulos().GetArticuloCOD(new Articulo { CodigoArticulo = "gb1" }).Rows[0]["Stock_ar"]);
-            Assert.Equal(14300m, gestionVentas.GetVenta(new Ventas { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(14300m, gestionVentas.GetVenta(new Venta { IdVenta = idVenta }).Rows[0]["TotalVenta_ve"]);
         }
 
         [Fact]
@@ -324,8 +324,8 @@ namespace Negocio.Tests
             carrito.Agregar("gb2", "Gabinete Aerocool", 4750m, 100);
             int segunda = gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out error);
 
-            Assert.Equal(14300m, gestionVentas.GetVenta(new Ventas { IdVenta = primera }).Rows[0]["TotalVenta_ve"]);
-            Assert.Equal(4750m, gestionVentas.GetVenta(new Ventas { IdVenta = segunda }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(14300m, gestionVentas.GetVenta(new Venta { IdVenta = primera }).Rows[0]["TotalVenta_ve"]);
+            Assert.Equal(4750m, gestionVentas.GetVenta(new Venta { IdVenta = segunda }).Rows[0]["TotalVenta_ve"]);
         }
 
         static long Stock(string codigo)
@@ -378,8 +378,8 @@ namespace Negocio.Tests
             int segunda = gestionVentas.ConfirmarCompra(otroCliente, carrito, "Calle 9", "22", Datos.TarjetaDe(6), out error);
 
             Assert.Equal(primera + 1, segunda);
-            Assert.Equal(6L, gestionVentas.GetVenta(new Ventas { IdVenta = segunda }).Rows[0]["IdUsuario_ve"]);
-            Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Ventas { IdVenta = segunda }).Rows);
+            Assert.Equal(6L, gestionVentas.GetVenta(new Venta { IdVenta = segunda }).Rows[0]["IdUsuario_ve"]);
+            Assert.Single(new GestionDetalleVenta().GetTablaDetalleComprasUsuario(new Venta { IdVenta = segunda }).Rows);
         }
 
         [Fact]

@@ -6,8 +6,8 @@
         public Categoria Categoria { get; set; }
         public string Descripcion { get; set; }
         public int Stock { get; set; }
-        public float PrecioUnitario { get; set; }
-        public string ImagenURL { get; set; }
+        public decimal PrecioUnitario { get; set; }
+        public string ImagenUrl { get; set; }
         public bool Estado { get; set; }
     }
 }

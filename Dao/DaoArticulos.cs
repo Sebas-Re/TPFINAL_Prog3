@@ -19,8 +19,8 @@ namespace Dao
             articulo.Categoria = new Categoria { IdCategoria = Convert.ToInt32(tabla.Rows[0][1]) };
             articulo.Descripcion = tabla.Rows[0][2].ToString();
             articulo.Stock = Convert.ToInt32(tabla.Rows[0][3]);
-            articulo.PrecioUnitario = Convert.ToSingle(tabla.Rows[0][4]);
-            articulo.ImagenURL = tabla.Rows[0][5].ToString();
+            articulo.PrecioUnitario = Convert.ToDecimal(tabla.Rows[0][4]);
+            articulo.ImagenUrl = tabla.Rows[0][5].ToString();
             articulo.Estado = (bool)tabla.Rows[0][6];
             return articulo;
         }
@@ -184,7 +184,7 @@ namespace Dao
             Parametros = comando.Parameters.Add("@PrecioUnitario", DbType.Decimal);
             Parametros.Value = articulo.PrecioUnitario;
             Parametros = comando.Parameters.Add("@ImagenURL", DbType.String);
-            Parametros.Value = articulo.ImagenURL;
+            Parametros.Value = articulo.ImagenUrl;
         }
     }
 }

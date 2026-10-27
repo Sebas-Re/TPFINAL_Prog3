@@ -16,7 +16,7 @@ namespace Negocio
             return daoVentas.GetTablaVentas();
         }
 
-        public DataTable GetVenta(Ventas venta)
+        public DataTable GetVenta(Venta venta)
         {
             return daoVentas.GetTablaVentas(venta);
         }
@@ -55,16 +55,16 @@ namespace Negocio
                 return 0;
             }
 
-            Ventas venta = new Ventas { Usuario = usuario, MetodoPago = tarjeta.TipoTarjeta, CodigoSeguridad = tarjeta.CodigoSeguridad };
-            List<DetalleVentas> detalles = new List<DetalleVentas>();
+            Venta venta = new Venta { Usuario = usuario, MetodoPago = tarjeta.TipoTarjeta, CodigoSeguridad = tarjeta.CodigoSeguridad };
+            List<DetalleVenta> detalles = new List<DetalleVenta>();
             foreach (ItemCarrito item in carrito.Items)
             {
-                detalles.Add(new DetalleVentas
+                detalles.Add(new DetalleVenta
                 {
                     IdUsuario = usuario.IdUsuario,
                     CodigoArticulo = item.CodArticulo,
                     Cantidad = item.Cantidad,
-                    Precio = (float)item.PrecioUnitario,
+                    Precio = item.PrecioUnitario,
                     DireccionEntrega = direccion,
                     Contacto = contacto
                 });

@@ -54,7 +54,7 @@ namespace Vistas
 
         private void MostrarDetalle(int idVenta)
         {
-            DataTable detalle = gestDetVen.GetTablaDetalleComprasUsuario(new Ventas { IdVenta = idVenta });
+            DataTable detalle = gestDetVen.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
             gvDetalleCompras.DataSource = detalle;
             gvDetalleCompras.DataBind();
             gvDetalleCompras.Visible = true;

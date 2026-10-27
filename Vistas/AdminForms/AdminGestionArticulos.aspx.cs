@@ -116,12 +116,12 @@ namespace Vistas.AdminForms
                 Categoria = new Categoria { IdCategoria = Convert.ToInt32(((DropDownList)fila.FindControl("ddl_et_Categoria")).SelectedValue) },
                 Descripcion = ((TextBox)fila.FindControl("txt_et_Descripcion")).Text.Trim(),
                 Stock = Convert.ToInt32(((TextBox)fila.FindControl("txt_et_Stock")).Text),
-                PrecioUnitario = (float)Convert.ToDouble(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
-                ImagenURL = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim(),
+                PrecioUnitario = Convert.ToDecimal(((TextBox)fila.FindControl("txt_et_PrecioUnitario")).Text),
+                ImagenUrl = ((TextBox)fila.FindControl("txt_et_Imagen")).Text.Trim(),
                 Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
             };
 
-            if (!GestionArticulos.ImagenValida(art.ImagenURL))
+            if (!GestionArticulos.ImagenValida(art.ImagenUrl))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;
@@ -169,8 +169,8 @@ namespace Vistas.AdminForms
                 Categoria = new Categoria { IdCategoria = Convert.ToInt32(ddlCategoria.SelectedValue) },
                 Descripcion = txtDescripcion.Text.Trim(),
                 Stock = Convert.ToInt32(txtStock.Text),
-                PrecioUnitario = (float)Convert.ToDouble(txtPrecio_Unitario.Text),
-                ImagenURL = txtImagen.Text.Trim(),
+                PrecioUnitario = Convert.ToDecimal(txtPrecio_Unitario.Text),
+                ImagenUrl = txtImagen.Text.Trim(),
                 Estado = true
             };
 
@@ -179,7 +179,7 @@ namespace Vistas.AdminForms
                 MostrarMensaje("El código tiene que tener de 1 a 4 letras o números.", TipoMensaje.Error);
                 return;
             }
-            if (!GestionArticulos.ImagenValida(art.ImagenURL))
+            if (!GestionArticulos.ImagenValida(art.ImagenUrl))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;

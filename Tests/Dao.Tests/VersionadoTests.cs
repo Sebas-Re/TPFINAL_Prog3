@@ -137,9 +137,9 @@ namespace Dao.Tests
         static int Comprar(string codigo, int precio)
         {
             var ventas = new DaoVentas();
-            ventas.agregarVenta(new Ventas { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 });
-            int id = ventas.IDultimaventa(new Ventas()).IdVenta;
-            new DaoDetalleVentas().AgregarDetalleVenta(new DetalleVentas
+            ventas.agregarVenta(new Venta { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 });
+            int id = ventas.IDultimaventa(new Venta()).IdVenta;
+            new DaoDetalleVentas().AgregarDetalleVenta(new DetalleVenta
             {
                 IdDetalleVenta = id,
                 IdUsuario = 5,
