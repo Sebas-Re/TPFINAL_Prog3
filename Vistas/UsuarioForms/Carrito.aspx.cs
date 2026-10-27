@@ -8,8 +8,8 @@ namespace Vistas
 {
     public partial class Carrito : PaginaBase
     {
-        GestionVentas gestven = new GestionVentas();
-        GestionTarjetas gestcard = new GestionTarjetas();
+        private readonly GestionVentas _gestionVentas = new GestionVentas();
+        private readonly GestionTarjetas _gestionTarjetas = new GestionTarjetas();
 
         protected override NivelAcceso Acceso
         {
@@ -38,7 +38,7 @@ namespace Vistas
         /* El valor de cada opción es el id de la tarjeta: el código de seguridad no sale del servidor. */
         private void CargarTarjetas()
         {
-            DataTable tarjetas = gestcard.GetTablaTarjetasUsuario(Sesion.Usuario);
+            DataTable tarjetas = _gestionTarjetas.GetTablaTarjetasUsuario(Sesion.Usuario);
             ddlTarjetas.Items.Clear();
             ddlTarjetas.Items.Add(new ListItem("Elegí una tarjeta", ""));
             foreach (DataRow fila in tarjetas.Rows)
@@ -79,7 +79,7 @@ namespace Vistas
                 CodigoSeguridad = Convert.ToInt32(txtCodSeguridad.Text)
             };
 
-            if (gestcard.AgregarTarjeta(tarjeta))
+            if (_gestionTarjetas.AgregarTarjeta(tarjeta))
             {
                 MostrarMensaje("Tarjeta guardada. Ya podés elegirla como medio de pago.", TipoMensaje.Exito);
                 LimpiarCamposTarjeta();
@@ -97,7 +97,7 @@ namespace Vistas
             long idTarjeta;
             long.TryParse(ddlTarjetas.SelectedValue, out idTarjeta);
             string error;
-            int idVenta = gestven.ConfirmarCompra(Sesion.Usuario, Sesion.Carrito, txtDireccionDeEntrega.Text.Trim(), txtContacto.Text.Trim(),
+            int idVenta = _gestionVentas.ConfirmarCompra(Sesion.Usuario, Sesion.Carrito, txtDireccionDeEntrega.Text.Trim(), txtContacto.Text.Trim(),
                 idTarjeta, out error);
 
             if (idVenta == 0)

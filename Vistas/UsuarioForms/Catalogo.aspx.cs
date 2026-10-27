@@ -12,10 +12,10 @@ namespace Vistas
 {
     public partial class Catalogo : PaginaBase
     {
-        const int ArticulosPorPagina = 12;
+        private const int ArticulosPorPagina = 12;
 
-        GestionArticulos gestart = new GestionArticulos();
-        GestionCategorias gescat = new GestionCategorias();
+        private readonly GestionArticulos _gestionArticulos = new GestionArticulos();
+        private readonly GestionCategorias _gestionCategorias = new GestionCategorias();
 
         protected override NivelAcceso Acceso
         {
@@ -24,7 +24,7 @@ namespace Vistas
 
         /* Filtros y página vienen por querystring: las URLs se pueden compartir
            y el botón "Atrás" del navegador funciona. */
-        int? CategoriaSeleccionada
+        private int? CategoriaSeleccionada
         {
             get
             {
@@ -33,12 +33,12 @@ namespace Vistas
             }
         }
 
-        string Busqueda
+        private string Busqueda
         {
             get { return (Request.QueryString["q"] ?? "").Trim(); }
         }
 
-        int PaginaActual
+        private int PaginaActual
         {
             get
             {
@@ -65,7 +65,7 @@ namespace Vistas
 
         private void CargarCategorias()
         {
-            DataView activas = gescat.GetCategorias().DefaultView;
+            DataView activas = _gestionCategorias.GetCategorias().DefaultView;
             activas.RowFilter = "Estado_ca = true";
             rptCategorias.DataSource = activas;
             rptCategorias.DataBind();
@@ -74,7 +74,7 @@ namespace Vistas
         private void CargarArticulos()
         {
             // La búsqueda tiene prioridad sobre la categoría, como en los links de la página.
-            DataTable articulos = gestart.GetArticulosCatalogo(Busqueda, Busqueda != "" ? null : CategoriaSeleccionada);
+            DataTable articulos = _gestionArticulos.GetArticulosCatalogo(Busqueda, Busqueda != "" ? null : CategoriaSeleccionada);
             lblResultado.Text = Busqueda != ""
                 ? string.Format("Resultados para \"{0}\": {1}", HttpUtility.HtmlEncode(Busqueda), articulos.Rows.Count)
                 : articulos.Rows.Count + " productos";
@@ -108,7 +108,7 @@ namespace Vistas
                 cantidad = Math.Max(1, Math.Min(cantidad, 99));
             }
             // Precio y stock se leen de la base, no de lo que muestra la página.
-            DataTable tabla = gestart.GetArticuloPorCodigo(new Articulo { CodigoArticulo = e.CommandArgument.ToString() });
+            DataTable tabla = _gestionArticulos.GetArticuloPorCodigo(new Articulo { CodigoArticulo = e.CommandArgument.ToString() });
             if (tabla.Rows.Count == 0 || !(bool)tabla.Rows[0]["Estado_ar"])
             {
                 MostrarMensaje("El producto ya no está disponible.", TipoMensaje.Error);

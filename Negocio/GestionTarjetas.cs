@@ -9,9 +9,9 @@ namespace Negocio
     {
         private readonly DaoTarjetas _daoTarjetas = new DaoTarjetas();
 
-        public DataTable GetTablaTarjetasUsuario(Usuario us)
+        public DataTable GetTablaTarjetasUsuario(Usuario usuario)
         {
-            DataTable tarjetas = _daoTarjetas.ObtenerTarjetasUsuario(us);
+            DataTable tarjetas = _daoTarjetas.ObtenerTarjetasUsuario(usuario);
             return tarjetas;
         }
 

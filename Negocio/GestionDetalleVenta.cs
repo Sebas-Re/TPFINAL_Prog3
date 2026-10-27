@@ -10,10 +10,10 @@ namespace Negocio
 
 
 
-        public DataTable GetTablaDetalleComprasUsuario(Venta ven)
+        public DataTable GetTablaDetalleComprasUsuario(Venta venta)
         {
-            DataTable dv = _daoDetalleVentas.GetTablaIdVentaUsuario(ven);
-            return dv;
+            DataTable detalles = _daoDetalleVentas.GetTablaIdVentaUsuario(venta);
+            return detalles;
         }
 
     }

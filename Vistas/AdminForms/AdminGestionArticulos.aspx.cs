@@ -9,9 +9,9 @@ namespace Vistas.AdminForms
 {
     public partial class AdminGestionArticulos : PaginaBase
     {
-        GestionArticulos gestart = new GestionArticulos();
-        GestionCategorias gcat = new GestionCategorias();
-        DataTable categorias;
+        private readonly GestionArticulos _gestionArticulos = new GestionArticulos();
+        private readonly GestionCategorias _gestionCategorias = new GestionCategorias();
+        private DataTable _categorias;
 
         protected override NivelAcceso Acceso
         {
@@ -19,7 +19,7 @@ namespace Vistas.AdminForms
         }
 
         /* Código buscado; vacío = todos los artículos. Se conserva entre postbacks. */
-        string FiltroCodigo
+        private string FiltroCodigo
         {
             get { return (string)ViewState["FiltroCodigo"] ?? ""; }
             set { ViewState["FiltroCodigo"] = value; }
@@ -27,7 +27,7 @@ namespace Vistas.AdminForms
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            categorias = gcat.GetCategorias();
+            _categorias = _gestionCategorias.GetCategorias();
             if (!IsPostBack)
             {
                 ddlCategoria.DataSource = CategoriasActivas();
@@ -39,13 +39,13 @@ namespace Vistas.AdminForms
 
         private DataView CategoriasActivas()
         {
-            DataView activas = new DataView(categorias) { RowFilter = "Estado_ca = true", Sort = "Descripcion_ca" };
+            DataView activas = new DataView(_categorias) { RowFilter = "Estado_ca = true", Sort = "Descripcion_ca" };
             return activas;
         }
 
         protected string NombreCategoria(object idCategoria)
         {
-            DataRow[] fila = categorias.Select("IdCategoria_ca = " + Convert.ToInt64(idCategoria));
+            DataRow[] fila = _categorias.Select("IdCategoria_ca = " + Convert.ToInt64(idCategoria));
             return fila.Length > 0 ? fila[0]["Descripcion_ca"].ToString() : "—";
         }
 
@@ -55,8 +55,8 @@ namespace Vistas.AdminForms
         private void CargarGvArticulos()
         {
             gvArticulos.DataSource = FiltroCodigo == ""
-                ? gestart.GetArticulos()
-                : gestart.GetArticuloPorCodigo(new Articulo { CodigoArticulo = FiltroCodigo });
+                ? _gestionArticulos.GetArticulos()
+                : _gestionArticulos.GetArticuloPorCodigo(new Articulo { CodigoArticulo = FiltroCodigo });
             gvArticulos.DataBind();
         }
 
@@ -105,12 +105,12 @@ namespace Vistas.AdminForms
             CargarGvArticulos();
         }
 
-        const string ErrorImagen = "La imagen tiene que ser una ruta del sitio (~/Imagenes_ar/...) o una dirección http(s).";
+        private const string ErrorImagen = "La imagen tiene que ser una ruta del sitio (~/Imagenes_ar/...) o una dirección http(s).";
 
         protected void gvArticulos_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvArticulos.Rows[e.RowIndex];
-            Articulo art = new Articulo
+            Articulo articulo = new Articulo
             {
                 CodigoArticulo = gvArticulos.DataKeys[e.RowIndex].Value.ToString(),
                 Categoria = new Categoria { IdCategoria = Convert.ToInt32(((DropDownList)fila.FindControl("ddl_et_Categoria")).SelectedValue) },
@@ -121,19 +121,19 @@ namespace Vistas.AdminForms
                 Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddl_et_Estado")).SelectedValue)
             };
 
-            if (!GestionArticulos.ImagenValida(art.ImagenUrl))
+            if (!GestionArticulos.ImagenValida(articulo.ImagenUrl))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;
             }
-            if (gestart.ExisteDescripcionArticuloModificar(art))
+            if (_gestionArticulos.ExisteDescripcionArticuloModificar(articulo))
             {
                 MostrarMensaje("Ya existe otro artículo con esa descripción.", TipoMensaje.Error);
                 return;
             }
-            if (gestart.ActualizarArticulo(art))
+            if (_gestionArticulos.ActualizarArticulo(articulo))
             {
-                MostrarMensaje("Artículo " + art.CodigoArticulo + " modificado.", TipoMensaje.Exito);
+                MostrarMensaje("Artículo " + articulo.CodigoArticulo + " modificado.", TipoMensaje.Exito);
             }
             else
             {
@@ -145,10 +145,10 @@ namespace Vistas.AdminForms
 
         protected void gvArticulos_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            Articulo art = new Articulo { CodigoArticulo = gvArticulos.DataKeys[e.RowIndex].Value.ToString() };
-            if (gestart.EliminarArticulo(art))
+            Articulo articulo = new Articulo { CodigoArticulo = gvArticulos.DataKeys[e.RowIndex].Value.ToString() };
+            if (_gestionArticulos.EliminarArticulo(articulo))
             {
-                MostrarMensaje("Artículo " + art.CodigoArticulo + " dado de baja.", TipoMensaje.Exito);
+                MostrarMensaje("Artículo " + articulo.CodigoArticulo + " dado de baja.", TipoMensaje.Exito);
             }
             gvArticulos.EditIndex = -1;
             CargarGvArticulos();
@@ -163,7 +163,7 @@ namespace Vistas.AdminForms
 
         protected void btnAgregarArticulo_Click(object sender, EventArgs e)
         {
-            Articulo art = new Articulo
+            Articulo articulo = new Articulo
             {
                 CodigoArticulo = txtCodArticulo.Text.Trim(),
                 Categoria = new Categoria { IdCategoria = Convert.ToInt32(ddlCategoria.SelectedValue) },
@@ -174,32 +174,32 @@ namespace Vistas.AdminForms
                 Estado = true
             };
 
-            if (!GestionArticulos.CodigoValido(art.CodigoArticulo))
+            if (!GestionArticulos.CodigoValido(articulo.CodigoArticulo))
             {
                 MostrarMensaje("El código tiene que tener de 1 a 4 letras o números.", TipoMensaje.Error);
                 return;
             }
-            if (!GestionArticulos.ImagenValida(art.ImagenUrl))
+            if (!GestionArticulos.ImagenValida(articulo.ImagenUrl))
             {
                 MostrarMensaje(ErrorImagen, TipoMensaje.Error);
                 return;
             }
-            if (gestart.ExisteArticulo(art))
+            if (_gestionArticulos.ExisteArticulo(articulo))
             {
-                MostrarMensaje("Ya existe un artículo con el código " + art.CodigoArticulo + ".", TipoMensaje.Error);
+                MostrarMensaje("Ya existe un artículo con el código " + articulo.CodigoArticulo + ".", TipoMensaje.Error);
                 return;
             }
-            if (gestart.ExisteDescripcionArticulo(art))
+            if (_gestionArticulos.ExisteDescripcionArticulo(articulo))
             {
                 MostrarMensaje("Ya existe un artículo con esa descripción.", TipoMensaje.Error);
                 return;
             }
-            if (!gestart.AgregarArticulo(art))
+            if (!_gestionArticulos.AgregarArticulo(articulo))
             {
                 MostrarMensaje("No se pudo agregar el artículo.", TipoMensaje.Error);
                 return;
             }
-            MostrarMensaje("Artículo " + art.CodigoArticulo + " agregado.", TipoMensaje.Exito);
+            MostrarMensaje("Artículo " + articulo.CodigoArticulo + " agregado.", TipoMensaje.Exito);
             LimpiarCampoArticulo();
             CargarGvArticulos();
         }
@@ -218,14 +218,14 @@ namespace Vistas.AdminForms
         //-------------------------------------------------------------------------
         private void CargarGvCategorias()
         {
-            gvCategorias.DataSource = categorias;
+            gvCategorias.DataSource = _categorias;
             gvCategorias.DataBind();
         }
 
         /* Después de modificar categorías se recargan también los desplegables de artículos. */
         private void RecargarCategorias()
         {
-            categorias = gcat.GetCategorias();
+            _categorias = _gestionCategorias.GetCategorias();
             CargarGvCategorias();
             ddlCategoria.DataSource = CategoriasActivas();
             ddlCategoria.DataBind();
@@ -234,15 +234,15 @@ namespace Vistas.AdminForms
 
         protected void btnAgregarCategoria_Click(object sender, EventArgs e)
         {
-            Categoria cat = new Categoria { Descripcion = txtDescripcioncat.Text.Trim() };
-            if (gcat.VerificarCategoria(cat))
+            Categoria categoria = new Categoria { Descripcion = txtDescripcioncat.Text.Trim() };
+            if (_gestionCategorias.VerificarCategoria(categoria))
             {
                 MostrarMensaje("Ya existe una categoría con ese nombre.", TipoMensaje.Error);
                 return;
             }
-            if (gcat.AgregarCategoria(cat))
+            if (_gestionCategorias.AgregarCategoria(categoria))
             {
-                MostrarMensaje("Categoría \"" + cat.Descripcion + "\" agregada.", TipoMensaje.Exito);
+                MostrarMensaje("Categoría \"" + categoria.Descripcion + "\" agregada.", TipoMensaje.Exito);
                 txtDescripcioncat.Text = "";
                 RecargarCategorias();
             }
@@ -263,19 +263,19 @@ namespace Vistas.AdminForms
         protected void gvCategorias_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvCategorias.Rows[e.RowIndex];
-            Categoria cat = new Categoria
+            Categoria categoria = new Categoria
             {
                 IdCategoria = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value),
                 Descripcion = ((TextBox)fila.FindControl("txt_eit_Decripcion")).Text.Trim(),
                 Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstadoCat")).SelectedValue)
             };
 
-            if (gcat.ExisteCategoriaModificar(cat))
+            if (_gestionCategorias.ExisteCategoriaModificar(categoria))
             {
                 MostrarMensaje("Ya existe otra categoría con ese nombre.", TipoMensaje.Error);
                 return;
             }
-            gcat.ActualizarCategoria(cat);
+            _gestionCategorias.ActualizarCategoria(categoria);
             MostrarMensaje("Categoría modificada.", TipoMensaje.Exito);
             gvCategorias.EditIndex = -1;
             RecargarCategorias();
@@ -283,8 +283,8 @@ namespace Vistas.AdminForms
 
         protected void gvCategorias_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
-            Categoria cat = new Categoria { IdCategoria = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value) };
-            gcat.EliminarCategoria(cat);
+            Categoria categoria = new Categoria { IdCategoria = Convert.ToInt32(gvCategorias.DataKeys[e.RowIndex].Value) };
+            _gestionCategorias.EliminarCategoria(categoria);
             MostrarMensaje("Categoría desactivada.", TipoMensaje.Exito);
             gvCategorias.EditIndex = -1;
             RecargarCategorias();

@@ -9,14 +9,14 @@ namespace Vistas.AdminForms
 {
     public partial class ReportesAdmin : PaginaBase
     {
-        static readonly int[] PeriodosDisponibles = { 7, 30, 90, 180 };
-        const int CantidadTopProductos = 10;
-        const int CantidadTopClientes = 8;
+        private static readonly int[] s_periodosDisponibles = { 7, 30, 90, 180 };
+        private const int CantidadTopProductos = 10;
+        private const int CantidadTopClientes = 8;
 
-        GestionDetalleVenta gestDetVen = new GestionDetalleVenta();
-        GestionVentas gestven = new GestionVentas();
-        GestionArticulos gestart = new GestionArticulos();
-        GestionMetricas metricas = new GestionMetricas();
+        private readonly GestionDetalleVenta _gestionDetalleVenta = new GestionDetalleVenta();
+        private readonly GestionVentas _gestionVentas = new GestionVentas();
+        private readonly GestionArticulos _gestionArticulos = new GestionArticulos();
+        private readonly GestionMetricas _gestionMetricas = new GestionMetricas();
 
         protected string GraficoDias { get; private set; }
         protected string GraficoProductos { get; private set; }
@@ -33,12 +33,12 @@ namespace Vistas.AdminForms
             get
             {
                 int dias;
-                return int.TryParse(Request.QueryString["dias"], out dias) && PeriodosDisponibles.Contains(dias) ? dias : 30;
+                return int.TryParse(Request.QueryString["dias"], out dias) && s_periodosDisponibles.Contains(dias) ? dias : 30;
             }
         }
 
         /* Usuario filtrado en ventas; 0 = todas. Se conserva entre postbacks. */
-        int FiltroUsuario
+        private int FiltroUsuario
         {
             get { return (int?)ViewState["FiltroUsuario"] ?? 0; }
             set { ViewState["FiltroUsuario"] = value; }
@@ -50,7 +50,7 @@ namespace Vistas.AdminForms
             CargarMetricas();
             if (!IsPostBack)
             {
-                rptPeriodos.DataSource = PeriodosDisponibles;
+                rptPeriodos.DataSource = s_periodosDisponibles;
                 rptPeriodos.DataBind();
                 CargarGvVentas();
                 CargarReporteArticulos();
@@ -63,30 +63,30 @@ namespace Vistas.AdminForms
         private void CargarMetricas()
         {
             string comparacion = "vs. " + Dias + " días anteriores";
-            Comparativa comparativa = metricas.Comparar(Dias);
+            Comparativa comparativa = _gestionMetricas.Comparar(Dias);
             litIndicadores.Text = Indicador.Resumen(comparativa, comparacion)
                 + Indicador.Html("Unidades vendidas", comparativa.Actual.Unidades.ToString("N0"),
                     Comparativa.Variacion(comparativa.Actual.Unidades, comparativa.Anterior.Unidades), "bi-box-seam", "info", comparacion);
             lblRecompra.Text = comparativa.Actual.TasaRecompra.ToString("0") + "%";
 
-            Serie dias = metricas.IngresosPorDia(Dias);
+            Serie dias = _gestionMetricas.IngresosPorDia(Dias);
             GraficoDias = new Grafico("line", dias.Etiquetas)
                 .Serie("Ingresos", dias.Valores, Grafico.Formato.Moneda)
                 .Serie("Pedidos", dias.Valores2, Grafico.Formato.Numero, "bar", ejeDerecho: true)
                 .Json();
 
-            Serie productos = metricas.TopProductos(Dias, CantidadTopProductos);
+            Serie productos = _gestionMetricas.TopProductos(Dias, CantidadTopProductos);
             GraficoProductos = new Grafico("bar", productos.Etiquetas)
                 .Serie("Unidades", productos.Valores, Grafico.Formato.Numero)
                 .Horizontal()
                 .Json();
 
-            Serie pagos = metricas.MetodosDePago(Dias);
+            Serie pagos = _gestionMetricas.MetodosDePago(Dias);
             GraficoPagos = new Grafico("doughnut", pagos.Etiquetas)
                 .Serie("Pedidos", pagos.Valores, Grafico.Formato.Numero)
                 .Json();
 
-            gvTopClientes.DataSource = metricas.TopClientes(Dias, CantidadTopClientes);
+            gvTopClientes.DataSource = _gestionMetricas.TopClientes(Dias, CantidadTopClientes);
             gvTopClientes.DataBind();
         }
 
@@ -96,8 +96,8 @@ namespace Vistas.AdminForms
         private void CargarGvVentas()
         {
             DataTable ventas = FiltroUsuario == 0
-                ? gestven.GetVentas()
-                : gestven.FiltrarIdUsuario(new Usuario { IdUsuario = FiltroUsuario });
+                ? _gestionVentas.GetVentas()
+                : _gestionVentas.FiltrarIdUsuario(new Usuario { IdUsuario = FiltroUsuario });
             DataView recientes = ventas.DefaultView;
             recientes.Sort = "IdVentas_ve DESC";
             gvVentas.DataSource = recientes;
@@ -135,7 +135,7 @@ namespace Vistas.AdminForms
         {
             int idVenta = Convert.ToInt32(gvVentas.DataKeys[e.NewSelectedIndex].Value);
             gvVentas.SelectedIndex = e.NewSelectedIndex;
-            gvDetallesVenta.DataSource = gestDetVen.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
+            gvDetallesVenta.DataSource = _gestionDetalleVenta.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
             gvDetallesVenta.DataBind();
             lblTituloDetalle.Text = "Detalle de la venta N° " + idVenta;
             pnlDetalle.Visible = true;
@@ -146,7 +146,7 @@ namespace Vistas.AdminForms
         //-------------------------------------------------------------------------
         private void CargarReporteArticulos()
         {
-            DataView reporte = gestart.GetReporteArticulos().DefaultView;
+            DataView reporte = _gestionArticulos.GetReporteArticulos().DefaultView;
             reporte.Sort = ddlOrdenador.SelectedValue;
             string codigo = txtCodArticulo.Text.Trim();
             if (codigo != "")

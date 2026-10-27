@@ -8,8 +8,8 @@ namespace Vistas
 {
     public partial class EdicionDatosUsuario : PaginaBase
     {
-        GestionTarjetas gestarj = new GestionTarjetas();
-        GestionUsuarios gestus = new GestionUsuarios();
+        private readonly GestionTarjetas _gestionTarjetas = new GestionTarjetas();
+        private readonly GestionUsuarios _gestionUsuarios = new GestionUsuarios();
 
         protected override NivelAcceso Acceso
         {
@@ -27,7 +27,7 @@ namespace Vistas
 
         private void CargarDatosUsuario()
         {
-            Usuario usuario = gestus.Obtener(new Usuario { IdUsuario = Sesion.Usuario.IdUsuario });
+            Usuario usuario = _gestionUsuarios.Obtener(new Usuario { IdUsuario = Sesion.Usuario.IdUsuario });
             txtNombre.Text = usuario.Nombre;
             txtEmail.Text = usuario.Email;
             txtTelefono.Text = usuario.Telefono;
@@ -35,7 +35,7 @@ namespace Vistas
 
         private void CargarTarjetas()
         {
-            DataTable tarjetas = gestarj.GetTablaTarjetasUsuario(Sesion.Usuario);
+            DataTable tarjetas = _gestionTarjetas.GetTablaTarjetasUsuario(Sesion.Usuario);
             gvTarjetas.DataSource = tarjetas;
             gvTarjetas.DataBind();
             lblSinTarjetas.Visible = tarjetas.Rows.Count == 0;
@@ -52,7 +52,7 @@ namespace Vistas
                 Telefono = txtTelefono.Text.Trim()
             };
 
-            string error = gestus.ActualizarDatosPropios(usuario, txtContraseñaActual.Text);
+            string error = _gestionUsuarios.ActualizarDatosPropios(usuario, txtContraseñaActual.Text);
             if (error != null)
             {
                 MostrarMensaje(error, TipoMensaje.Error);
@@ -69,7 +69,7 @@ namespace Vistas
                 Usuario = Sesion.Usuario,
                 IdTarjeta = Convert.ToInt64(gvTarjetas.DataKeys[e.RowIndex].Value)
             };
-            if (gestarj.EliminarTarjeta(tarjeta))
+            if (_gestionTarjetas.EliminarTarjeta(tarjeta))
             {
                 MostrarMensaje("Eliminaste la tarjeta.", TipoMensaje.Exito);
             }

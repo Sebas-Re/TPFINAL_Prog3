@@ -13,32 +13,32 @@ namespace Vistas
             public const string Numero = "numero";
         }
 
-        readonly string tipo;
-        readonly IList<string> etiquetas;
-        readonly List<object> series = new List<object>();
-        bool horizontal;
+        private readonly string _tipo;
+        private readonly IList<string> _etiquetas;
+        private readonly List<object> _series = new List<object>();
+        private bool _horizontal;
 
         public Grafico(string tipo, IList<string> etiquetas)
         {
-            this.tipo = tipo;
-            this.etiquetas = etiquetas;
+            _tipo = tipo;
+            _etiquetas = etiquetas;
         }
 
         public Grafico Serie(string nombre, IList<decimal> valores, string formato, string tipoSerie = null, bool ejeDerecho = false)
         {
-            series.Add(new { nombre, valores, formato, tipo = tipoSerie, ejeDerecho });
+            _series.Add(new { nombre, valores, formato, tipo = tipoSerie, ejeDerecho });
             return this;
         }
 
         public Grafico Horizontal()
         {
-            horizontal = true;
+            _horizontal = true;
             return this;
         }
 
         public string Json()
         {
-            return new JavaScriptSerializer().Serialize(new { tipo, etiquetas, series, horizontal });
+            return new JavaScriptSerializer().Serialize(new { tipo = _tipo, etiquetas = _etiquetas, series = _series, horizontal = _horizontal });
         }
     }
 }

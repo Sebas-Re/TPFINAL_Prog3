@@ -9,8 +9,8 @@ namespace Vistas
 {
     public partial class HistorialCompras : PaginaBase
     {
-        GestionVentas gestven = new GestionVentas();
-        GestionDetalleVenta gestDetVen = new GestionDetalleVenta();
+        private readonly GestionVentas _gestionVentas = new GestionVentas();
+        private readonly GestionDetalleVenta _gestionDetalleVenta = new GestionDetalleVenta();
 
         protected override NivelAcceso Acceso
         {
@@ -23,7 +23,7 @@ namespace Vistas
             {
                 return;
             }
-            gvUsuarioCompras.DataSource = gestven.FiltrarIdUsuario(Sesion.Usuario);
+            gvUsuarioCompras.DataSource = _gestionVentas.FiltrarIdUsuario(Sesion.Usuario);
             gvUsuarioCompras.DataBind();
 
             bool tieneCompras = gvUsuarioCompras.Rows.Count > 0;
@@ -54,7 +54,7 @@ namespace Vistas
 
         private void MostrarDetalle(int idVenta)
         {
-            DataTable detalle = gestDetVen.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
+            DataTable detalle = _gestionDetalleVenta.GetTablaDetalleComprasUsuario(new Venta { IdVenta = idVenta });
             gvDetalleCompras.DataSource = detalle;
             gvDetalleCompras.DataBind();
             gvDetalleCompras.Visible = true;

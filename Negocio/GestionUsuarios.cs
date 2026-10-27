@@ -139,8 +139,8 @@ namespace Negocio
 
         public bool EliminarUsuario(Usuario usuario)
         {
-            int op = _daoUsuarios.EliminarUsuario(usuario);
-            return op == 1;
+            int filasAfectadas = _daoUsuarios.EliminarUsuario(usuario);
+            return filasAfectadas == 1;
         }
 
         public bool AgregarUsuario(Usuario usuario)

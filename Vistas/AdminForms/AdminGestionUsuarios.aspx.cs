@@ -7,7 +7,7 @@ namespace Vistas.AdminForms
 {
     public partial class AdminGestionUsuarios : PaginaBase
     {
-        GestionUsuarios us = new GestionUsuarios();
+        private readonly GestionUsuarios _gestionUsuarios = new GestionUsuarios();
 
         protected override NivelAcceso Acceso
         {
@@ -15,7 +15,7 @@ namespace Vistas.AdminForms
         }
 
         /* ID buscado; 0 = todos los usuarios. Se conserva entre postbacks. */
-        int FiltroId
+        private int FiltroId
         {
             get { return (int?)ViewState["FiltroId"] ?? 0; }
             set { ViewState["FiltroId"] = value; }
@@ -31,7 +31,7 @@ namespace Vistas.AdminForms
 
         private void CargarGvUsuarios()
         {
-            gvUsuarios.DataSource = FiltroId == 0 ? us.GetUsuarios() : us.GetTabla(new Usuario { IdUsuario = FiltroId });
+            gvUsuarios.DataSource = FiltroId == 0 ? _gestionUsuarios.GetUsuarios() : _gestionUsuarios.GetTabla(new Usuario { IdUsuario = FiltroId });
             gvUsuarios.DataBind();
         }
 
@@ -66,7 +66,7 @@ namespace Vistas.AdminForms
         protected void gvUsuarios_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             GridViewRow fila = gvUsuarios.Rows[e.RowIndex];
-            Usuario actual = us.Obtener(new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
+            Usuario actual = _gestionUsuarios.Obtener(new Usuario { IdUsuario = Convert.ToInt32(gvUsuarios.DataKeys[e.RowIndex].Value) });
             string nuevaContraseña = ((TextBox)fila.FindControl("txt_eit_passUs")).Text;
             Usuario usuario = new Usuario
             {
@@ -79,12 +79,12 @@ namespace Vistas.AdminForms
                 Estado = Convert.ToBoolean(((DropDownList)fila.FindControl("ddlEditEstado")).SelectedValue)
             };
 
-            if (!us.VerificarNombreModificar(usuario) || !us.VerificarEmailModificar(usuario))
+            if (!_gestionUsuarios.VerificarNombreModificar(usuario) || !_gestionUsuarios.VerificarEmailModificar(usuario))
             {
                 MostrarMensaje("El nombre o el e-mail ya los usa otra cuenta.", TipoMensaje.Error);
                 return;
             }
-            if (!us.ActualizarUsuario(usuario))
+            if (!_gestionUsuarios.ActualizarUsuario(usuario))
             {
                 MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo modificar el usuario.", TipoMensaje.Error);
                 return;
@@ -102,7 +102,7 @@ namespace Vistas.AdminForms
                 MostrarMensaje("No podés desactivar tu propia cuenta.", TipoMensaje.Aviso);
                 return;
             }
-            us.EliminarUsuario(usuario);
+            _gestionUsuarios.EliminarUsuario(usuario);
             MostrarMensaje("Usuario desactivado.", TipoMensaje.Exito);
             CargarGvUsuarios();
         }
@@ -118,12 +118,12 @@ namespace Vistas.AdminForms
                 Tipo = Convert.ToBoolean(ddlTipoUs.SelectedValue)
             };
 
-            if (!us.VerificarNombre(usuario) || !us.VerificarEmail(usuario))
+            if (!_gestionUsuarios.VerificarNombre(usuario) || !_gestionUsuarios.VerificarEmail(usuario))
             {
                 MostrarMensaje("No se pudo agregar: el nombre o el e-mail ya están en uso.", TipoMensaje.Error);
                 return;
             }
-            if (!us.AgregarUsuario(usuario))
+            if (!_gestionUsuarios.AgregarUsuario(usuario))
             {
                 MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo agregar el usuario.", TipoMensaje.Error);
                 return;

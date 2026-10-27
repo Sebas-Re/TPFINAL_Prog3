@@ -6,7 +6,7 @@ namespace Vistas
 {
     public partial class RegistroUsuario : PaginaBase
     {
-        GestionUsuarios us = new GestionUsuarios();
+        private readonly GestionUsuarios _gestionUsuarios = new GestionUsuarios();
 
         protected override NivelAcceso Acceso
         {
@@ -28,23 +28,23 @@ namespace Vistas
                 Tipo = false
             };
 
-            if (!us.VerificarNombre(usuario))
+            if (!_gestionUsuarios.VerificarNombre(usuario))
             {
                 MostrarMensaje("Ese nombre de usuario ya está en uso. Probá con otro.", TipoMensaje.Error);
                 return;
             }
-            if (!us.VerificarEmail(usuario))
+            if (!_gestionUsuarios.VerificarEmail(usuario))
             {
                 MostrarMensaje("Ya existe una cuenta con ese e-mail.", TipoMensaje.Error);
                 return;
             }
-            if (!us.AgregarUsuario(usuario))
+            if (!_gestionUsuarios.AgregarUsuario(usuario))
             {
                 MostrarMensaje(ErrorContraseña(usuario.Contrasena) ?? "No se pudo crear la cuenta. Intentá nuevamente.", TipoMensaje.Error);
                 return;
             }
 
-            Sesion.Iniciar(us.Login(usuario.Nombre, usuario.Contrasena));
+            Sesion.Iniciar(_gestionUsuarios.Login(usuario.Nombre, usuario.Contrasena));
             RedirigirConMensaje("~/UsuarioForms/Catalogo.aspx", "¡Bienvenido/a, " + usuario.Nombre + "! Tu cuenta ya está lista.", TipoMensaje.Exito);
         }
     }

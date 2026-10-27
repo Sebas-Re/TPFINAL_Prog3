@@ -6,7 +6,7 @@ namespace Vistas
 {
     public partial class Inicio : PaginaBase
     {
-        GestionUsuarios us = new GestionUsuarios();
+        private readonly GestionUsuarios _gestionUsuarios = new GestionUsuarios();
 
         protected override NivelAcceso Acceso
         {
@@ -24,8 +24,8 @@ namespace Vistas
         protected void btnIniciarSesion_Click(object sender, EventArgs e)
         {
             string nombre = txtUsuario.Text.Trim();
-            Usuario usuario = us.Login(nombre, txtContraseña.Text);
-            if (usuario == null && us.LoginBloqueado(nombre))
+            Usuario usuario = _gestionUsuarios.Login(nombre, txtContraseña.Text);
+            if (usuario == null && _gestionUsuarios.LoginBloqueado(nombre))
             {
                 MostrarMensaje("Demasiados intentos fallidos. Esperá unos minutos y volvé a probar.", TipoMensaje.Error);
                 return;

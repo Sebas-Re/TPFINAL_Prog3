@@ -10,13 +10,13 @@ namespace Vistas
        su carrito y un mensaje "flash" que sobrevive a un Response.Redirect. */
     public static class Sesion
     {
-        const string ClaveUsuario = "Usuario";
-        const string ClaveCarrito = "Carrito";
-        const string ClaveMensaje = "MensajeFlash";
-        const string ClaveToken = "TokenAutenticacion";
-        const string CookieToken = "PCBooster.Auth";
+        private const string ClaveUsuario = "Usuario";
+        private const string ClaveCarrito = "Carrito";
+        private const string ClaveMensaje = "MensajeFlash";
+        private const string ClaveToken = "TokenAutenticacion";
+        private const string CookieToken = "PCBooster.Auth";
 
-        static HttpSessionState Actual
+        private static HttpSessionState Actual
         {
             get { return HttpContext.Current.Session; }
         }
@@ -99,7 +99,7 @@ namespace Vistas
             });
         }
 
-        static bool IgualesEnTiempoConstante(string a, string b)
+        private static bool IgualesEnTiempoConstante(string a, string b)
         {
             int diferencia = a.Length ^ b.Length;
             for (int i = 0; i < a.Length && i < b.Length; i++)
