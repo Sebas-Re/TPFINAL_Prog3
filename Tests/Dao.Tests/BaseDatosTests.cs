@@ -16,11 +16,11 @@ namespace Dao.Tests
        una base nueva, creada desde el schema y los datos de prueba embebidos. */
     public class BaseDatosTests : IDisposable
     {
-        readonly string carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-tests-" + Guid.NewGuid().ToString("N"));
+        private readonly string _carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-tests-" + Guid.NewGuid().ToString("N"));
 
         public BaseDatosTests()
         {
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "App_Data", "PCbooster.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "App_Data", "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
             Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
@@ -30,16 +30,16 @@ namespace Dao.Tests
             SQLiteConnection.ClearAllPools();
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            try { Directory.Delete(carpeta, true); } catch (IOException) { }
+            try { Directory.Delete(_carpeta, true); } catch (IOException) { }
         }
 
-        static Usuario Usuario(string nombre, string contrasena) => new() { Nombre = nombre, Contrasena = contrasena };
+        private static Usuario Usuario(string nombre, string contrasena) => new() { Nombre = nombre, Contrasena = contrasena };
 
         /* Primer valor de una consulta, para verificar el estado de la base. */
-        static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
+        private static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
 
         /* Registra una venta de Nom1 (id 5) con los detalles dados, como una compra real. */
-        static int Comprar(params DetalleVenta[] detalles)
+        private static int Comprar(params DetalleVenta[] detalles)
         {
             Venta venta = new() { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 123 };
             foreach (DetalleVenta detalle in detalles)
@@ -66,7 +66,7 @@ namespace Dao.Tests
         [Fact]
         public void LaRutaPorDefectoRespetaLaVariableDeEntorno()
         {
-            string ruta = Path.Combine(carpeta, "desde-entorno.db");
+            string ruta = Path.Combine(_carpeta, "desde-entorno.db");
             Environment.SetEnvironmentVariable(AccesoDatos.VariableEntorno, ruta);
             try
             {
@@ -94,7 +94,7 @@ namespace Dao.Tests
 
             // Cambiar de ruta y volver obliga a repetir el chequeo de inicialización.
             string original = AccesoDatos.RutaBaseDatos;
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "otra.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "otra.db");
             Assert.Equal(8, new DaoCategorias().GetTablaCategorias().Rows.Count);
             AccesoDatos.RutaBaseDatos = original;
             Assert.Equal(9, new DaoCategorias().GetTablaCategorias().Rows.Count);
@@ -103,8 +103,8 @@ namespace Dao.Tests
         [Fact]
         public void LosTiposSeMapeanComoEnSqlServer()
         {
-            var tabla = new DaoUsuarios().GetTablaUsuarios();
-            var articulos = new DaoArticulos().GetTablaArticulos();
+            DataTable tabla = new DaoUsuarios().GetTablaUsuarios();
+            DataTable articulos = new DaoArticulos().GetTablaArticulos();
 
             Assert.Equal(typeof(bool), tabla.Columns["Tipo_us"].DataType);
             Assert.Equal(typeof(decimal), articulos.Columns["PrecioUnitario_ar"].DataType);
@@ -136,7 +136,7 @@ namespace Dao.Tests
         [Fact]
         public void LasContraseñasSeGuardanHasheadasYConSalt()
         {
-            var tabla = new AccesoDatos().ObtenerTabla("Usuarios", "select Nombre_us, Contraseña_us from Usuarios");
+            DataTable tabla = new AccesoDatos().ObtenerTabla("Usuarios", "select Nombre_us, Contraseña_us from Usuarios");
             string Guardada(string nombre) => tabla.Select("Nombre_us = '" + nombre + "'")[0]["Contraseña_us"].ToString();
 
             Assert.All(tabla.Rows.Cast<DataRow>(), fila => Assert.StartsWith("pbkdf2$", fila["Contraseña_us"].ToString()));
@@ -149,7 +149,7 @@ namespace Dao.Tests
         public void ModificarUnUsuarioSinContraseñaConservaLaActual()
         {
             var daoUsuarios = new DaoUsuarios();
-            var nom1 = daoUsuarios.ObtenerUsuario(new Usuario { IdUsuario = 5 });
+            Usuario nom1 = daoUsuarios.ObtenerUsuario(new Usuario { IdUsuario = 5 });
 
             nom1.Contrasena = null;
             Assert.Equal(1, daoUsuarios.ActualizarUsuario(nom1));
@@ -181,7 +181,7 @@ namespace Dao.Tests
             nuevo.Email = "otro@mail.com";
             nuevo.Estado = true;
             Assert.True(gestion.ActualizarUsuario(nuevo));
-            var guardado = new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario = nuevo.IdUsuario });
+            Usuario guardado = new DaoUsuarios().ObtenerUsuario(new Usuario { IdUsuario = nuevo.IdUsuario });
             Assert.Equal("otro@mail.com", guardado.Email);
             Assert.True(guardado.Estado);
         }
@@ -280,7 +280,7 @@ namespace Dao.Tests
             daoArticulos.EliminarArticulo(new Articulo { CodigoArticulo = "gb1" });
             new DaoCategorias().EliminarCategoria(new Categoria { IdCategoria = 1 }); // Fuente: 9 artículos
 
-            var catalogo = daoArticulos.GetTablaArticulosCatalogo(null, null);
+            DataTable catalogo = daoArticulos.GetTablaArticulosCatalogo(null, null);
 
             Assert.Equal(68 - 1 - 9, catalogo.Rows.Count);
             Assert.DoesNotContain(catalogo.Rows.Cast<DataRow>(), f => (string)f["CodArticulo_ar"] == "gb1" || (long)f["Categoria_ar"] == 1);
@@ -325,7 +325,7 @@ namespace Dao.Tests
 
             // Un número de 16 dígitos se guarda completo (antes se truncaba a int).
             Assert.Equal(4567123412340012L, Valor("select Num_Tarjeta_t from Tarjetas where Id_TarjetaUsuario_t = 5"));
-            var tabla = daoTarjetas.ObtenerTarjetasUsuario(new Usuario { IdUsuario = 5 });
+            DataTable tabla = daoTarjetas.ObtenerTarjetasUsuario(new Usuario { IdUsuario = 5 });
             Assert.Equal("Crédito", tabla.Rows[0]["Tipo_Tarjeta_t"]);
             Assert.Equal("0012", tabla.Rows[0]["Num_Tarjeta_t"]);
             Assert.Equal(new DateTime(2099, 12, 1), tabla.Rows[0]["Fecha_Vencimiento_t"]);
@@ -357,7 +357,7 @@ namespace Dao.Tests
                 CodigoSeguridad = 111
             };
 
-            var error = Assert.Throws<SQLiteException>(() => new DaoTarjetas().AgregarTarjeta(vencida));
+            SQLiteException error = Assert.Throws<SQLiteException>(() => new DaoTarjetas().AgregarTarjeta(vencida));
             Assert.Contains("vencida", error.Message);
         }
     }

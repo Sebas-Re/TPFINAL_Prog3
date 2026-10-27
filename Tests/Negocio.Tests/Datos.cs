@@ -1,16 +1,17 @@
 using System;
+using System.Data;
 using Entidades;
 
 namespace Negocio.Tests
 {
-    static class Datos
+    internal static class Datos
     {
         /* Id de una tarjeta vigente del usuario; la guarda si todavía no tiene. */
         public static long TarjetaDe(int idUsuario)
         {
             var gestionTarjetas = new GestionTarjetas();
             var usuario = new Usuario { IdUsuario = idUsuario };
-            var tarjetas = gestionTarjetas.GetTablaTarjetasUsuario(usuario);
+            DataTable tarjetas = gestionTarjetas.GetTablaTarjetasUsuario(usuario);
             if (tarjetas.Rows.Count == 0)
             {
                 gestionTarjetas.AgregarTarjeta(new Tarjeta

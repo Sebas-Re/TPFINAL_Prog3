@@ -18,16 +18,16 @@ namespace Vistas.E2E
     public sealed class Navegador : IDisposable
     {
         // __doPostBack('target','arg') o, si el link valida, WebForm_PostBackOptions("target", "arg", ...).
-        static readonly Regex DoPostBack = new(@"__doPostBack\('(?<target>[^']*)','(?<arg>[^']*)'\)|WebForm_PostBackOptions\(""(?<target>[^""]*)"", ""(?<arg>[^""]*)""");
+        private static readonly Regex s_doPostBack = new(@"__doPostBack\('(?<target>[^']*)','(?<arg>[^']*)'\)|WebForm_PostBackOptions\(""(?<target>[^""]*)"", ""(?<arg>[^""]*)""");
 
-        readonly HttpClient cliente;
-        readonly Uri direccion;
-        readonly CookieContainer cookies = new();
+        private readonly HttpClient _cliente;
+        private readonly Uri _direccion;
+        private readonly CookieContainer _cookies = new();
 
         public Navegador(Uri direccion)
         {
-            this.direccion = direccion;
-            cliente = new HttpClient(new HttpClientHandler { CookieContainer = cookies, AllowAutoRedirect = true })
+            _direccion = direccion;
+            _cliente = new HttpClient(new HttpClientHandler { CookieContainer = _cookies, AllowAutoRedirect = true })
             {
                 Timeout = TimeSpan.FromSeconds(30)
             };
@@ -35,30 +35,30 @@ namespace Vistas.E2E
 
         public Cookie Cookie(string nombre)
         {
-            return cookies.GetCookies(direccion)[nombre];
+            return _cookies.GetCookies(_direccion)[nombre];
         }
 
         /* La respuesta sin procesar, para revisar headers. */
         public Task<HttpResponseMessage> Pedir(string ruta)
         {
-            return cliente.GetAsync(new Uri(direccion, ruta));
+            return _cliente.GetAsync(new Uri(_direccion, ruta));
         }
 
         public void PonerCookie(string nombre, string valor)
         {
-            cookies.Add(direccion, new Cookie(nombre, valor));
+            _cookies.Add(_direccion, new Cookie(nombre, valor));
         }
 
         public async Task<Pagina> Abrir(string ruta)
         {
-            return await Leer(await cliente.GetAsync(new Uri(direccion, ruta)));
+            return await Leer(await _cliente.GetAsync(new Uri(_direccion, ruta)));
         }
 
         /* Hace click en un botón (input submit) identificado por su ID de servidor. */
         public Task<Pagina> Enviar(Pagina pagina, string idBoton, IDictionary<string, string> campos = null)
         {
             IElement boton = pagina.Control(idBoton);
-            var valores = ValoresDelFormulario(pagina, campos);
+            Dictionary<string, string> valores = ValoresDelFormulario(pagina, campos);
             valores[boton.GetAttribute("name")] = boton.GetAttribute("value");
             return Postear(pagina, valores);
         }
@@ -66,12 +66,12 @@ namespace Vistas.E2E
         /* Hace click en un LinkButton (o cualquier link "javascript:__doPostBack"). */
         public Task<Pagina> Click(Pagina pagina, IElement link, IDictionary<string, string> campos = null)
         {
-            Match postback = DoPostBack.Match(WebUtility.HtmlDecode(link.GetAttribute("href") ?? ""));
+            Match postback = s_doPostBack.Match(WebUtility.HtmlDecode(link.GetAttribute("href") ?? ""));
             if (!postback.Success)
             {
                 throw new InvalidOperationException("El link no hace postback: " + link.OuterHtml);
             }
-            var valores = ValoresDelFormulario(pagina, campos);
+            Dictionary<string, string> valores = ValoresDelFormulario(pagina, campos);
             valores["__EVENTTARGET"] = postback.Groups["target"].Value;
             valores["__EVENTARGUMENT"] = postback.Groups["arg"].Value;
             return Postear(pagina, valores);
@@ -81,7 +81,7 @@ namespace Vistas.E2E
         {
             IHtmlFormElement form = pagina.Documento.Forms[0];
             Uri accion = new Uri(pagina.Url, WebUtility.HtmlDecode(form.GetAttribute("action")));
-            return await Leer(await cliente.PostAsync(accion, new FormUrlEncodedContent(valores)));
+            return await Leer(await _cliente.PostAsync(accion, new FormUrlEncodedContent(valores)));
         }
 
         /* Lo que el navegador mandaría: campos de texto, ocultos, selects y los
@@ -107,7 +107,7 @@ namespace Vistas.E2E
             }
             if (campos != null)
             {
-                foreach (var campo in campos)
+                foreach (KeyValuePair<string, string> campo in campos)
                 {
                     valores[pagina.Control(campo.Key).GetAttribute("name")] = campo.Value;
                 }
@@ -133,7 +133,7 @@ namespace Vistas.E2E
 
         public void Dispose()
         {
-            cliente.Dispose();
+            _cliente.Dispose();
         }
     }
 

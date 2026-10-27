@@ -13,11 +13,11 @@ namespace Negocio.Tests
     /* Reglas de negocio contra una base SQLite temporal con los datos de prueba. */
     public class GestionTests : IDisposable
     {
-        readonly string carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-negocio-" + Guid.NewGuid().ToString("N"));
+        private readonly string _carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-negocio-" + Guid.NewGuid().ToString("N"));
 
         public GestionTests()
         {
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
             Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
@@ -27,18 +27,18 @@ namespace Negocio.Tests
             SQLiteConnection.ClearAllPools();
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            try { Directory.Delete(carpeta, true); } catch (IOException) { }
+            try { Directory.Delete(_carpeta, true); } catch (IOException) { }
         }
 
-        static Usuario Cliente => new Usuario { IdUsuario = 5, Nombre = "Nom1" };
+        private static Usuario Cliente => new Usuario { IdUsuario = 5, Nombre = "Nom1" };
 
         /* Primer valor de una consulta, para verificar el estado de la base. */
-        static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
+        private static object Valor(string sql) => new AccesoDatos().ObtenerTabla("Consulta", sql).Rows[0][0];
 
-        static object DatoDeVenta(int idVenta, string columna) =>
+        private static object DatoDeVenta(int idVenta, string columna) =>
             Valor("select " + columna + " from Ventas where IdVentas_ve = " + idVenta);
 
-        static Carrito CarritoConDosArticulos()
+        private static Carrito CarritoConDosArticulos()
         {
             var carrito = new Carrito();
             carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 10);
@@ -52,8 +52,8 @@ namespace Negocio.Tests
         {
             var gestionUsuarios = new GestionUsuarios();
 
-            var admin = gestionUsuarios.Login("admAmador", "admpsw2");
-            var cliente = gestionUsuarios.Login("Nom1", "ctr1");
+            Usuario admin = gestionUsuarios.Login("admAmador", "admpsw2");
+            Usuario cliente = gestionUsuarios.Login("Nom1", "ctr1");
 
             Assert.Equal(1, admin.IdUsuario);
             Assert.True(admin.Tipo);
@@ -115,7 +115,7 @@ namespace Negocio.Tests
         public void UnUsuarioDesactivadoNoPuedeIniciarSesion()
         {
             var gestionUsuarios = new GestionUsuarios();
-            var cliente = Cliente;
+            Usuario cliente = Cliente;
 
             Assert.True(gestionUsuarios.EliminarUsuario(cliente));
 
@@ -143,7 +143,7 @@ namespace Negocio.Tests
             Assert.False(gestionUsuarios.AgregarUsuario(corta));
             Assert.True(gestionUsuarios.VerificarNombre(corta)); // no se creó
 
-            var cliente = new GestionUsuarios().Obtener(Cliente);
+            Usuario cliente = new GestionUsuarios().Obtener(Cliente);
             cliente.Contrasena = "123";
             Assert.False(gestionUsuarios.ActualizarUsuario(cliente));
             cliente.Contrasena = "";
@@ -151,7 +151,7 @@ namespace Negocio.Tests
             Assert.NotNull(gestionUsuarios.Login("Nom1", "ctr1"));
         }
 
-        static Usuario CambiosDeNom4(string email = "ema4", string nombre = "Nom4", string nueva = "", string telefono = "23456")
+        private static Usuario CambiosDeNom4(string email = "ema4", string nombre = "Nom4", string nueva = "", string telefono = "23456")
         {
             return new Usuario { IdUsuario = 8, Nombre = nombre, Email = email, Contrasena = nueva, Telefono = telefono };
         }
@@ -167,7 +167,7 @@ namespace Negocio.Tests
             Assert.Equal("Nom4", gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 }).Nombre);
 
             Assert.Null(gestionUsuarios.ActualizarDatosPropios(CambiosDeNom4(email: "nuevo@mail.com", nombre: "Nom4b"), "ctr4"));
-            var guardado = gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 });
+            Usuario guardado = gestionUsuarios.Obtener(new Usuario { IdUsuario = 8 });
             Assert.Equal("nuevo@mail.com", guardado.Email);
             Assert.Equal("Nom4b", guardado.Nombre);
             Assert.False(guardado.Tipo);
@@ -334,7 +334,7 @@ namespace Negocio.Tests
             Assert.Equal(4750m, DatoDeVenta(segunda, "TotalVenta_ve"));
         }
 
-        static long Stock(string codigo)
+        private static long Stock(string codigo)
         {
             return Convert.ToInt64(new GestionArticulos().GetArticuloPorCodigo(new Articulo { CodigoArticulo = codigo }).Rows[0]["Stock_ar"]);
         }
@@ -365,7 +365,7 @@ namespace Negocio.Tests
         public void NoSePuedeComprarUnArticuloDadoDeBaja()
         {
             var gestionVentas = new GestionVentas();
-            var carrito = CarritoConDosArticulos();
+            Carrito carrito = CarritoConDosArticulos();
             new GestionArticulos().EliminarArticulo(new Articulo { CodigoArticulo = "fnt1" });
 
             Assert.Equal(0, gestionVentas.ConfirmarCompra(Cliente, carrito, "Calle 123", "11", Datos.TarjetaDe(5), out string error));

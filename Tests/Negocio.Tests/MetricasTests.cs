@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -10,12 +11,12 @@ namespace Negocio.Tests
 {
     public class MetricasTests : IDisposable
     {
-        readonly string carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-metricas-" + Guid.NewGuid().ToString("N"));
-        readonly GestionMetricas metricas = new GestionMetricas();
+        private readonly string _carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-metricas-" + Guid.NewGuid().ToString("N"));
+        private readonly GestionMetricas _gestionMetricas = new GestionMetricas();
 
         public MetricasTests()
         {
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
             Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
@@ -26,11 +27,11 @@ namespace Negocio.Tests
             SQLiteConnection.ClearAllPools();
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            try { Directory.Delete(carpeta, true); } catch (IOException) { }
+            try { Directory.Delete(_carpeta, true); } catch (IOException) { }
         }
 
         /* Nom1 compra 2 Gabinete Gamemax ($3.500) y 1 Fuente Deepcool ($7.300) con crédito. */
-        static void Comprar(int idUsuario = 5)
+        private static void Comprar(int idUsuario = 5)
         {
             var carrito = new Carrito();
             carrito.Agregar("gb1", "Gabinete Gamemax", 3500m, 10);
@@ -46,15 +47,15 @@ namespace Negocio.Tests
             Comprar();
             new GestionUsuarios().AgregarUsuario(new Usuario { Nombre = "nuevo", Contrasena = "clave1", Email = "n@x.com", Telefono = "1" });
 
-            Comparativa c = metricas.Comparar(30);
+            Comparativa comparativa = _gestionMetricas.Comparar(30);
 
-            Assert.Equal(14300m, c.Actual.Ingresos);
-            Assert.Equal(1, c.Actual.Pedidos);
-            Assert.Equal(3, c.Actual.Unidades);
-            Assert.Equal(14300m, c.Actual.TicketPromedio);
-            Assert.Equal(1, c.Actual.ClientesNuevos); // los usuarios del seed tienen 210 días
-            Assert.Equal(0m, c.Anterior.Ingresos);
-            Assert.Null(Comparativa.Variacion(c.Actual.Ingresos, c.Anterior.Ingresos));
+            Assert.Equal(14300m, comparativa.Actual.Ingresos);
+            Assert.Equal(1, comparativa.Actual.Pedidos);
+            Assert.Equal(3, comparativa.Actual.Unidades);
+            Assert.Equal(14300m, comparativa.Actual.TicketPromedio);
+            Assert.Equal(1, comparativa.Actual.ClientesNuevos); // los usuarios del seed tienen 210 días
+            Assert.Equal(0m, comparativa.Anterior.Ingresos);
+            Assert.Null(Comparativa.Variacion(comparativa.Actual.Ingresos, comparativa.Anterior.Ingresos));
         }
 
         [Fact]
@@ -64,11 +65,11 @@ namespace Negocio.Tests
             Comprar(5);
             Comprar(6);
 
-            ResumenPeriodo r = metricas.Comparar(7).Actual;
+            ResumenPeriodo resumen = _gestionMetricas.Comparar(7).Actual;
 
-            Assert.Equal(2, r.Compradores);
-            Assert.Equal(1, r.CompradoresRecurrentes);
-            Assert.Equal(50m, r.TasaRecompra);
+            Assert.Equal(2, resumen.Compradores);
+            Assert.Equal(1, resumen.CompradoresRecurrentes);
+            Assert.Equal(50m, resumen.TasaRecompra);
         }
 
         [Fact]
@@ -76,8 +77,8 @@ namespace Negocio.Tests
         {
             Comprar();
 
-            Serie meses = metricas.IngresosPorMes(6);
-            Serie dias = metricas.IngresosPorDia(30);
+            Serie meses = _gestionMetricas.IngresosPorMes(6);
+            Serie dias = _gestionMetricas.IngresosPorDia(30);
 
             Assert.Equal(6, meses.Etiquetas.Count);
             Assert.Equal(new[] { 0m, 0m, 0m, 0m, 0m, 14300m }, meses.Valores);
@@ -92,9 +93,9 @@ namespace Negocio.Tests
         {
             Comprar();
 
-            Serie categorias = metricas.IngresosPorCategoria(30);
-            Serie productos = metricas.TopProductos(30, 5);
-            Serie pagos = metricas.MetodosDePago(30);
+            Serie categorias = _gestionMetricas.IngresosPorCategoria(30);
+            Serie productos = _gestionMetricas.TopProductos(30, 5);
+            Serie pagos = _gestionMetricas.MetodosDePago(30);
 
             Assert.Equal(new[] { "Fuente", "Gabinete" }, categorias.Etiquetas);
             Assert.Equal(new[] { 7300m, 7000m }, categorias.Valores);
@@ -109,7 +110,7 @@ namespace Negocio.Tests
         {
             new GestionArticulos().EliminarArticulo(new Articulo { CodigoArticulo = "gb8" });
 
-            var tabla = metricas.StockBajo(10);
+            DataTable tabla = _gestionMetricas.StockBajo(10);
             var codigos = tabla.Rows.Cast<System.Data.DataRow>().Select(f => f["Codigo"].ToString()).ToList();
 
             Assert.Contains("pdv4", codigos);
@@ -122,14 +123,14 @@ namespace Negocio.Tests
         {
             AccesoDatos.CargarDatosDemo = true;
 
-            decimal ingresos180 = metricas.Comparar(180).Actual.Ingresos;
-            decimal ingresos30 = metricas.Comparar(30).Actual.Ingresos;
+            decimal ingresos180 = _gestionMetricas.Comparar(180).Actual.Ingresos;
+            decimal ingresos30 = _gestionMetricas.Comparar(30).Actual.Ingresos;
 
             Assert.True(ingresos180 > 0);
-            Assert.Equal(ingresos180, metricas.IngresosPorCategoria(180).Valores.Sum());
-            Assert.Equal(ingresos30, metricas.IngresosPorDia(30).Valores.Sum());
-            Assert.All(metricas.IngresosPorMes(6).Valores.Take(5), v => Assert.True(v > 0));
-            Assert.True(metricas.ClientesNuevosPorMes(6).Valores.Sum() > 0);
+            Assert.Equal(ingresos180, _gestionMetricas.IngresosPorCategoria(180).Valores.Sum());
+            Assert.Equal(ingresos30, _gestionMetricas.IngresosPorDia(30).Valores.Sum());
+            Assert.All(_gestionMetricas.IngresosPorMes(6).Valores.Take(5), v => Assert.True(v > 0));
+            Assert.True(_gestionMetricas.ClientesNuevosPorMes(6).Valores.Sum() > 0);
         }
 
         [Fact]

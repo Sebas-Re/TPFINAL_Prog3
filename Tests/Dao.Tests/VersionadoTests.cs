@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using Entidades;
@@ -9,11 +10,11 @@ namespace Dao.Tests
     /* Creación de la base con el historial de demo y migración de bases viejas. */
     public class VersionadoTests : IDisposable
     {
-        readonly string carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-version-" + Guid.NewGuid().ToString("N"));
+        private readonly string _carpeta = Path.Combine(Path.GetTempPath(), "pcbooster-version-" + Guid.NewGuid().ToString("N"));
 
         public VersionadoTests()
         {
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "PCbooster.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "PCbooster.db");
             AccesoDatos.CargarDatosDemo = false;
             Contrasenas.Iteraciones = 1000; // el hash real tarda ~250 ms por usuario
         }
@@ -24,17 +25,17 @@ namespace Dao.Tests
             SQLiteConnection.ClearAllPools();
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            try { Directory.Delete(carpeta, true); } catch (IOException) { }
+            try { Directory.Delete(_carpeta, true); } catch (IOException) { }
         }
 
-        object Escalar(string sql)
+        private object Escalar(string sql)
         {
             using var conexion = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos);
             conexion.Open();
             return new SQLiteCommand(sql, conexion).ExecuteScalar();
         }
 
-        void Ejecutar(string sql)
+        private void Ejecutar(string sql)
         {
             using (var conexion = new SQLiteConnection("Data Source=" + AccesoDatos.RutaBaseDatos))
             {
@@ -45,10 +46,10 @@ namespace Dao.Tests
         }
 
         /* Obliga a AccesoDatos a volver a revisar el archivo, como al reiniciar la app. */
-        void ReiniciarApp()
+        private void ReiniciarApp()
         {
             string ruta = AccesoDatos.RutaBaseDatos;
-            AccesoDatos.RutaBaseDatos = Path.Combine(carpeta, "otra.db");
+            AccesoDatos.RutaBaseDatos = Path.Combine(_carpeta, "otra.db");
             new DaoCategorias().GetTablaCategorias();
             AccesoDatos.RutaBaseDatos = ruta;
         }
@@ -93,7 +94,7 @@ namespace Dao.Tests
         [Fact]
         public void TodosLosArticulosDePruebaTienenDetalle()
         {
-            var catalogo = new DaoArticulos().GetTablaArticulosCatalogo(null, null);
+            DataTable catalogo = new DaoArticulos().GetTablaArticulosCatalogo(null, null);
 
             Assert.Equal(68, catalogo.Rows.Count);
             foreach (System.Data.DataRow fila in catalogo.Rows)
@@ -128,13 +129,13 @@ namespace Dao.Tests
             Assert.Equal(3500m, Total(primera));
         }
 
-        decimal Total(int idVenta)
+        private decimal Total(int idVenta)
         {
             return Convert.ToDecimal(Escalar("select TotalVenta_ve from Ventas where IdVentas_ve = " + idVenta));
         }
 
         /* Una venta de Nom1 (id 5) con una unidad del artículo; devuelve el id de la venta. */
-        static int Comprar(string codigo, int precio)
+        private static int Comprar(string codigo, int precio)
         {
             Venta venta = new() { Usuario = new Usuario { IdUsuario = 5 }, MetodoPago = true, CodigoSeguridad = 1 };
             DetalleVenta detalle = new()

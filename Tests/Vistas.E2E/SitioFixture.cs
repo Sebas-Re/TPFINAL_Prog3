@@ -13,8 +13,8 @@ namespace Vistas.E2E
        temporal (variable PCBOOSTER_DB), una sola vez para todos los tests. */
     public sealed class SitioFixture : IDisposable
     {
-        readonly Process iisExpress;
-        readonly string carpetaTemporal;
+        private readonly Process _iisExpress;
+        private readonly string _carpetaTemporal;
 
         public Uri Direccion { get; }
 
@@ -28,8 +28,8 @@ namespace Vistas.E2E
                     "No encontré Vistas\\bin\\Vistas.dll. Compilá la solución en Visual Studio (o con MSBuild) antes de correr los tests E2E.");
             }
 
-            carpetaTemporal = Path.Combine(Path.GetTempPath(), "pcbooster-e2e-" + Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(carpetaTemporal);
+            _carpetaTemporal = Path.Combine(Path.GetTempPath(), "pcbooster-e2e-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(_carpetaTemporal);
             int puerto = PuertoLibre();
             Direccion = new Uri("http://localhost:" + puerto + "/");
 
@@ -40,11 +40,11 @@ namespace Vistas.E2E
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-            inicio.EnvironmentVariables["PCBOOSTER_DB"] = Path.Combine(carpetaTemporal, "PCbooster.db");
-            iisExpress = Process.Start(inicio);
-            iisExpress.OutputDataReceived += (s, e) => { };
-            iisExpress.BeginOutputReadLine();
-            iisExpress.BeginErrorReadLine();
+            inicio.EnvironmentVariables["PCBOOSTER_DB"] = Path.Combine(_carpetaTemporal, "PCbooster.db");
+            _iisExpress = Process.Start(inicio);
+            _iisExpress.OutputDataReceived += (s, e) => { };
+            _iisExpress.BeginOutputReadLine();
+            _iisExpress.BeginErrorReadLine();
 
             EsperarQueResponda();
         }
@@ -56,9 +56,9 @@ namespace Vistas.E2E
                 DateTime limite = DateTime.Now.AddSeconds(60);
                 while (DateTime.Now < limite)
                 {
-                    if (iisExpress.HasExited)
+                    if (_iisExpress.HasExited)
                     {
-                        throw new InvalidOperationException("IIS Express terminó con código " + iisExpress.ExitCode + ".");
+                        throw new InvalidOperationException("IIS Express terminó con código " + _iisExpress.ExitCode + ".");
                     }
                     try
                     {
@@ -81,16 +81,16 @@ namespace Vistas.E2E
         {
             try
             {
-                if (!iisExpress.HasExited)
+                if (!_iisExpress.HasExited)
                 {
-                    iisExpress.Kill();
-                    iisExpress.WaitForExit(10000);
+                    _iisExpress.Kill();
+                    _iisExpress.WaitForExit(10000);
                 }
             }
             catch (InvalidOperationException)
             {
             }
-            try { Directory.Delete(carpetaTemporal, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            try { Directory.Delete(_carpetaTemporal, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
 
         private static string BuscarRaizRepositorio()
